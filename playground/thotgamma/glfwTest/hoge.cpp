@@ -8,6 +8,19 @@
 
 GLFWwindow* window;
 
+
+void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
+	// If a key is pressed, toggle the relevant key-press flag
+	if (action == GLFW_PRESS){
+		std::cout << "Key " << std::string(1, key) << " plessed" << std::endl;
+
+	}else if(action == GLFW_RELEASE){ // If a key is released, toggle the relevant key-release flag
+		std::cout << "Key " << std::string(1, key) << " released" << std::endl;
+
+	}
+}
+
+
 int main(){
 	if (!glfwInit()){
 		// Initialization failed
@@ -139,6 +152,8 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
+	//glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
+	glfwSetKeyCallback(window, handleKeypress);
 
 	while (glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
