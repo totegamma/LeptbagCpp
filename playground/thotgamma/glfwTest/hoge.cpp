@@ -118,6 +118,8 @@ int main(){
 	// 1.0f, 1.0f,-1.0f
 	// 1.0f, 1.0f, 1.0f
 
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
 
 		// One color for each vertex. They were generated randomly.
 	static GLfloat g_color_buffer_data[36*3];
