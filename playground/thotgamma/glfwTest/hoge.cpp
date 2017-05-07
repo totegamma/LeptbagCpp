@@ -9,13 +9,133 @@
 GLFWwindow* window;
 
 
+GLint windowWidth  = 800;                    // Width of our window
+GLint windowHeight = 600;                    // Heightof our window
+
+GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
+GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
+
+glm::mat4 ViewMatrix;
+glm::mat4 ProjectionMatrix;
+
+// Initial position : on +Z
+glm::vec3 position = glm::vec3( 0, 0, 5 ); 
+// Initial horizontal angle : toward -Z
+double horizontalAngle = 3.14f;
+// Initial vertical angle : none
+double verticalAngle = 0.0f;
+// Initial Field of View
+float initialFoV = 45.0f;
+
+float speed = 0.1f; // 3 units / second
+float mouseSpeed = 0.001f;
+
+
+// Hoding any keys down?
+bool holdingForward     = false;
+bool holdingBackward    = false;
+bool holdingLeftStrafe  = false;
+bool holdingRightStrafe = false;
+
+void computeMatricesFromInputs(){
+
+
+	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	glm::vec3 direction(
+		cos(verticalAngle) * sin(horizontalAngle), 
+		sin(verticalAngle),
+		cos(verticalAngle) * cos(horizontalAngle)
+	);
+	
+	// Right vector
+	glm::vec3 right = glm::vec3(
+		sin(horizontalAngle - 3.14f/2.0f), 
+		0,
+		cos(horizontalAngle - 3.14f/2.0f)
+	);
+	
+	glm::vec3 up = glm::cross( right, direction );
+
+	// Move forward
+	if (holdingForward == true){
+		position += direction * speed;
+	}
+	// Move backward
+	if (holdingBackward == true){
+		position -= direction * speed;
+	}
+	// Strafe right
+	if (holdingRightStrafe == true){
+		position += right * speed;
+	}
+	// Strafe left
+	if (holdingLeftStrafe == true){
+		position -= right * speed;
+	}
+
+	float FoV = initialFoV;// - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	ProjectionMatrix = glm::perspective(FoV, 4.0f / 3.0f, 0.1f, 100.0f);
+	// Camera matrix
+	ViewMatrix       = glm::lookAt(
+								position,           // Camera is here
+								position+direction, // and looks here : at the same position, plus "direction"
+								up                  // Head is up (set to 0,-1,0 to look upside-down)
+						   );
+
+}
+
+void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
+	horizontalAngle += mouseSpeed * float(midWindowX - xpos );
+	verticalAngle   += mouseSpeed * float(midWindowY - ypos );
+	glfwSetCursorPos(window, midWindowX, midWindowY);
+}
+
 void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
 	// If a key is pressed, toggle the relevant key-press flag
 	if (action == GLFW_PRESS){
-		std::cout << "Key " << std::string(1, key) << " plessed" << std::endl;
+		switch(key) {
+			case 'W':
+				holdingForward = true;
+				break;
 
+			case 'S':
+				holdingBackward = true;
+				break;
+
+			case 'A':
+				holdingLeftStrafe = true;
+				break;
+
+			case 'D':
+				holdingRightStrafe = true;
+				break;
+
+			default:
+				break;
+		}
 	}else if(action == GLFW_RELEASE){ // If a key is released, toggle the relevant key-release flag
-		std::cout << "Key " << std::string(1, key) << " released" << std::endl;
+		switch(key) {
+			case 'W':
+				holdingForward = false;
+				break;
+
+			case 'S':
+				holdingBackward = false;
+				break;
+
+			case 'A':
+				holdingLeftStrafe = false;
+				break;
+
+			case 'D':
+				holdingRightStrafe = false;
+				break;
+
+			default:
+				break;
+		}
 
 	}
 }
@@ -32,7 +152,7 @@ int main(){
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "My Title", NULL, NULL);
 	if (!window){
 		// Window or OpenGL context creation failed
 	}
@@ -122,17 +242,6 @@ int main(){
 		 1.0f,-1.0f, 1.0f
 	};
 
-	//-1.0f,-1.0f,-1.0f
-	//-1.0f,-1.0f, 1.0f
-	//-1.0f, 1.0f,-1.0f
-	//-1.0f, 1.0f, 1.0f
-	// 1.0f,-1.0f,-1.0f
-	// 1.0f,-1.0f, 1.0f
-	// 1.0f, 1.0f,-1.0f
-	// 1.0f, 1.0f, 1.0f
-
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
 
 		// One color for each vertex. They were generated randomly.
 	static GLfloat g_color_buffer_data[36*3];
@@ -152,14 +261,21 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
-	//glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	glfwSetKeyCallback(window, handleKeypress);
+	glfwSetCursorPosCallback(window, handleMouseMove);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	while (glfwWindowShouldClose(window) == GL_FALSE){
+	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
 		glUseProgram(programID);
+
+		// Compute the MVP matrix from keyboard and mouse input
+		computeMatricesFromInputs();
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 		
 		// Send our transformation to the currently bound shader, 
@@ -199,7 +315,7 @@ int main(){
 
 
 		glfwSwapBuffers(window);
-		glfwWaitEvents();
+		glfwPollEvents();
 	}
 
 	// Cleanup VBO
