@@ -271,10 +271,17 @@ int main(){
 		// Use our shader
 		glUseProgram(programID);
 
+		float angle = glfwGetTime() / 10.0 * 45;  // 45° per second
+		glm::vec3 position(10.0f, 0.0f, 0.0f);
+		glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), position);
+		glm::vec3 axis_y(0.0, 1.0, 0.0);
+		glm::mat4 anim = glm::rotate(glm::mat4(1.0f), angle, axis_y);
+
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs();
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * anim;
+		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix * myMatrix * anim;
 
 		
 		// Send our transformation to the currently bound shader, 
@@ -305,8 +312,15 @@ int main(){
 			(void*)0                          // array buffer offset
 		);
 
-		// Draw the triangle !
+
 		glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
+		//glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
+
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
+
+
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
