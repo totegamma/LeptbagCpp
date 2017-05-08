@@ -10,8 +10,8 @@
 GLFWwindow* window;
 
 
-GLint windowWidth  = 800;                    // Width of our window
-GLint windowHeight = 600;                    // Heightof our window
+GLint windowWidth  = 1000;                    // Width of our window
+GLint windowHeight = 800;                    // Heightof our window
 
 GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
 GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
@@ -157,6 +157,10 @@ class cube_shape{
 	//GLuint cube_colorbuffer;
 
 
+
+	glm::mat4 translateMatrix;
+
+
 	public:
 
 	static GLuint cube_sequencialbuffer;
@@ -175,37 +179,27 @@ class cube_shape{
 		this->Y = Y;
 		this->Z = Z;
 
+		glm::vec3 position(X, Y, Z);
+		translateMatrix = glm::translate(glm::mat4(1.0f), position);
+
 	}
 
 	void render(){
 
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+
 		glBindBuffer(GL_ARRAY_BUFFER, cube_sequencialbuffer);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)(sizeof(GLfloat)*3));
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-		//float angle = glfwGetTime() / 10.0 * 45;  // 45° per second
-		//glm::vec3 axis_y(0.0, 1.0, 0.0);
-		//glm::mat4 anim = glm::rotate(glm::mat4(1.0f), angle, axis_y);
 
-		glm::vec3 position(X, Y, Z);
-		glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), position);
-
-		// Compute the MVP matrix from keyboard and mouse input
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		//glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * translateMatrix;
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * translateMatrix;
 
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 
-		//glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
-		 // 三角形を描く！
 
 		glDrawElements(
 			GL_TRIANGLE_STRIP,      // mode
@@ -213,10 +207,6 @@ class cube_shape{
 			GL_UNSIGNED_INT,   // type
 			(void*)0           // element array buffer offset
 		);
-
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
 
 	}
 };
@@ -342,16 +332,19 @@ int main(){
 
 
 
-	int size = 64;
+	int size = 1;
+	double space = 1;
 	for(int z = 0; z < size; z++){
 		for(int y = 0; y < size; y++){
 			for(int x = 0; x < size; x++){
-				cube_shape_list.push_back(cube_shape(2*x, 2*y, 2*z));
+				cube_shape_list.push_back(cube_shape(space*x, space*y, space*z));
 			}
 		}
 	}
 
 
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -370,6 +363,9 @@ int main(){
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	// Cleanup VBO
 	/*
