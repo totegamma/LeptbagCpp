@@ -153,16 +153,19 @@ class cube_shape{
 	double Y;
 	double Z;
 
-	GLuint cube_vertexbuffer;
-	GLuint cube_colorbuffer;
-
-	GLuint elementbuffer;
+	//GLuint cube_vertexbuffer;
+	//GLuint cube_colorbuffer;
 
 
 	public:
 
+	static GLuint cube_sequencialbuffer;
+	static GLuint elementbuffer;
+
 	static GLfloat cube_vertex_buffer_data[8*3];
 	static GLfloat cube_color_buffer_data[8*3];
+
+	static GLfloat cube_sequencial_array[8*3*2];
 
 	static GLuint cube_index_buffer_object[14];
 
@@ -172,47 +175,15 @@ class cube_shape{
 		this->Y = Y;
 		this->Z = Z;
 
-
-		glGenBuffers(1, &cube_vertexbuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, cube_vertexbuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertex_buffer_data), cube_vertex_buffer_data, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &cube_colorbuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, cube_colorbuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cube_color_buffer_data), cube_color_buffer_data, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &elementbuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_index_buffer_object), cube_index_buffer_object, GL_STATIC_DRAW);
-
-
-
 	}
 
 	void render(){
 
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, cube_vertexbuffer);
-		glVertexAttribPointer(
-				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
-				);
-
-		// 2nd attribute buffer : colors
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, cube_colorbuffer);
-		glVertexAttribPointer(
-				1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-				3,                                // size
-				GL_FLOAT,                         // type
-				GL_FALSE,                         // normalized?
-				0,                                // stride
-				(void*)0                          // array buffer offset
-				);
+		glBindBuffer(GL_ARRAY_BUFFER, cube_sequencialbuffer);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)(sizeof(GLfloat)*3));
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
@@ -250,6 +221,10 @@ class cube_shape{
 	}
 };
 
+GLuint cube_shape::cube_sequencialbuffer;
+GLuint cube_shape::elementbuffer;
+
+
 GLfloat cube_shape::cube_vertex_buffer_data[8*3] = { 
 	-0.5f, -0.5f, -0.5f,
 	-0.5f, -0.5f,  0.5f,
@@ -263,10 +238,41 @@ GLfloat cube_shape::cube_vertex_buffer_data[8*3] = {
 
 GLfloat cube_shape::cube_color_buffer_data[8*3];
 
+GLfloat cube_shape::cube_sequencial_array[8*3*2];
+
 GLuint cube_shape::cube_index_buffer_object[14] = {
 	//5, 1, 7, 3, 2, 1, 0, 5, 4, 7, 6, 2, 4, 0
 	1, 5, 3, 7, 6, 5, 4, 1, 0, 3, 2, 6, 0, 4
 };
+
+
+void init_cube_shape(){
+
+	for(int i = 0; i < 8*3; i++){
+		cube_shape::cube_color_buffer_data[i] = (cube_shape::cube_vertex_buffer_data[i] == 0.5f) ? 0.0f : 1.0f;
+	}
+
+	for(int i = 0; i < 8; i ++){
+		cube_shape::cube_sequencial_array[(i*6)+0] = cube_shape::cube_vertex_buffer_data[(i*3)+0];
+		cube_shape::cube_sequencial_array[(i*6)+1] = cube_shape::cube_vertex_buffer_data[(i*3)+1];
+		cube_shape::cube_sequencial_array[(i*6)+2] = cube_shape::cube_vertex_buffer_data[(i*3)+2];
+		cube_shape::cube_sequencial_array[(i*6)+3] = cube_shape::cube_color_buffer_data[(i*3)+0];
+		cube_shape::cube_sequencial_array[(i*6)+4] = cube_shape::cube_color_buffer_data[(i*3)+1];
+		cube_shape::cube_sequencial_array[(i*6)+5] = cube_shape::cube_color_buffer_data[(i*3)+2];
+	}
+
+	glGenBuffers(1, &cube_shape::cube_sequencialbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, cube_shape::cube_sequencialbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_shape::cube_sequencial_array), cube_shape::cube_sequencial_array, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &cube_shape::elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_shape::elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_shape::cube_index_buffer_object), cube_shape::cube_index_buffer_object, GL_STATIC_DRAW);
+}
+
+
+
+
 
 
 
@@ -330,13 +336,13 @@ int main(){
 
 
 
-	for(int i = 0; i < 8*3; i++){
-		cube_shape::cube_color_buffer_data[i] = (cube_shape::cube_vertex_buffer_data[i] == 0.5f) ? 0.0f : 1.0f;
-	}
+
+
+	init_cube_shape();
 
 
 
-	int size = 32;
+	int size = 64;
 	for(int z = 0; z < size; z++){
 		for(int y = 0; y < size; y++){
 			for(int x = 0; x < size; x++){
