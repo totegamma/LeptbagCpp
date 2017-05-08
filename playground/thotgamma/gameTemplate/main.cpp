@@ -13,6 +13,9 @@ GLFWwindow* window;
 GLint windowWidth  = 1000;                    // Width of our window
 GLint windowHeight = 800;                    // Heightof our window
 
+const int num_of_cube = 64;
+const double space = 5;
+
 GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
 GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
 
@@ -146,76 +149,13 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 
 
-class cube_shape{
+
+GLuint cube_sequencialbuffer;
+GLuint elementbuffer;
+GLuint positionbuffer;
 
 
-	double X;
-	double Y;
-	double Z;
-
-	//GLuint cube_vertexbuffer;
-	//GLuint cube_colorbuffer;
-
-
-
-	glm::mat4 translateMatrix;
-
-
-	public:
-
-	static GLuint cube_sequencialbuffer;
-	static GLuint elementbuffer;
-
-	static GLfloat cube_vertex_buffer_data[8*3];
-	static GLfloat cube_color_buffer_data[8*3];
-
-	static GLfloat cube_sequencial_array[8*3*2];
-
-	static GLuint cube_index_buffer_object[14];
-
-
-	cube_shape(double X, double Y, double Z){
-		this->X = X;
-		this->Y = Y;
-		this->Z = Z;
-
-		glm::vec3 position(X, Y, Z);
-		translateMatrix = glm::translate(glm::mat4(1.0f), position);
-
-	}
-
-	void render(){
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, cube_sequencialbuffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)(sizeof(GLfloat)*3));
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * translateMatrix;
-
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-
-
-
-		glDrawElements(
-			GL_TRIANGLE_STRIP,      // mode
-			14,    // count
-			GL_UNSIGNED_INT,   // type
-			(void*)0           // element array buffer offset
-		);
-
-	}
-};
-
-GLuint cube_shape::cube_sequencialbuffer;
-GLuint cube_shape::elementbuffer;
-
-
-GLfloat cube_shape::cube_vertex_buffer_data[8*3] = { 
+GLfloat cube_vertex_buffer_data[8*3] = { 
 	-0.5f, -0.5f, -0.5f,
 	-0.5f, -0.5f,  0.5f,
 	-0.5f,  0.5f, -0.5f,
@@ -226,48 +166,58 @@ GLfloat cube_shape::cube_vertex_buffer_data[8*3] = {
 	 0.5f,  0.5f,  0.5f
 };
 
-GLfloat cube_shape::cube_color_buffer_data[8*3];
+GLfloat cube_color_buffer_data[8*3];
 
-GLfloat cube_shape::cube_sequencial_array[8*3*2];
+GLfloat cube_sequencial_array[8*3*2];
 
-GLuint cube_shape::cube_index_buffer_object[14] = {
+GLuint cube_index_buffer_object[14] = {
 	//5, 1, 7, 3, 2, 1, 0, 5, 4, 7, 6, 2, 4, 0
 	1, 5, 3, 7, 6, 5, 4, 1, 0, 3, 2, 6, 0, 4
 };
+
+GLfloat g_position_instanced_array[num_of_cube*num_of_cube*num_of_cube*3];
 
 
 void init_cube_shape(){
 
 	for(int i = 0; i < 8*3; i++){
-		cube_shape::cube_color_buffer_data[i] = (cube_shape::cube_vertex_buffer_data[i] == 0.5f) ? 0.0f : 1.0f;
+		cube_color_buffer_data[i] = (cube_vertex_buffer_data[i] == 0.5f) ? 0.0f : 1.0f;
 	}
 
 	for(int i = 0; i < 8; i ++){
-		cube_shape::cube_sequencial_array[(i*6)+0] = cube_shape::cube_vertex_buffer_data[(i*3)+0];
-		cube_shape::cube_sequencial_array[(i*6)+1] = cube_shape::cube_vertex_buffer_data[(i*3)+1];
-		cube_shape::cube_sequencial_array[(i*6)+2] = cube_shape::cube_vertex_buffer_data[(i*3)+2];
-		cube_shape::cube_sequencial_array[(i*6)+3] = cube_shape::cube_color_buffer_data[(i*3)+0];
-		cube_shape::cube_sequencial_array[(i*6)+4] = cube_shape::cube_color_buffer_data[(i*3)+1];
-		cube_shape::cube_sequencial_array[(i*6)+5] = cube_shape::cube_color_buffer_data[(i*3)+2];
+		cube_sequencial_array[(i*6)+0] = cube_vertex_buffer_data[(i*3)+0];
+		cube_sequencial_array[(i*6)+1] = cube_vertex_buffer_data[(i*3)+1];
+		cube_sequencial_array[(i*6)+2] = cube_vertex_buffer_data[(i*3)+2];
+		cube_sequencial_array[(i*6)+3] = cube_color_buffer_data[(i*3)+0];
+		cube_sequencial_array[(i*6)+4] = cube_color_buffer_data[(i*3)+1];
+		cube_sequencial_array[(i*6)+5] = cube_color_buffer_data[(i*3)+2];
 	}
 
-	glGenBuffers(1, &cube_shape::cube_sequencialbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, cube_shape::cube_sequencialbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_shape::cube_sequencial_array), cube_shape::cube_sequencial_array, GL_STATIC_DRAW);
+	for(int z = 0; z < num_of_cube; z++){
+		for(int y = 0; y < num_of_cube; y++){
+			for(int x = 0; x < num_of_cube; x++){
+				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+0] = space * x;
+				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+1] = space * y;
+				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+2] = space * z;
+			}
+		}
+	}
 
-	glGenBuffers(1, &cube_shape::elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_shape::elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_shape::cube_index_buffer_object), cube_shape::cube_index_buffer_object, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &cube_sequencialbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, cube_sequencialbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_sequencial_array), cube_sequencial_array, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_index_buffer_object), cube_index_buffer_object, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &positionbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, positionbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_position_instanced_array), g_position_instanced_array, GL_STATIC_DRAW);
 }
 
 
-
-
-
-
-
-
-std::vector<cube_shape> cube_shape_list;
 
 
 
@@ -332,19 +282,12 @@ int main(){
 
 
 
-	int size = 1;
-	double space = 1;
-	for(int z = 0; z < size; z++){
-		for(int y = 0; y < size; y++){
-			for(int x = 0; x < size; x++){
-				cube_shape_list.push_back(cube_shape(space*x, space*y, space*z));
-			}
-		}
-	}
+
 
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -355,9 +298,35 @@ int main(){
 		glUseProgram(programID);
 
 
-		for(auto elem: cube_shape_list){
-			elem.render();
-		}
+		glBindBuffer(GL_ARRAY_BUFFER, cube_sequencialbuffer);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)(sizeof(GLfloat)*3));
+
+		glBindBuffer(GL_ARRAY_BUFFER, positionbuffer);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribDivisor(2, 1);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+
+
+		/*
+		glDrawElements(
+			GL_TRIANGLE_STRIP,      // mode
+			14,    // count
+			GL_UNSIGNED_INT,   // type
+			(void*)0           // element array buffer offset
+		);
+		*/
+
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, num_of_cube*num_of_cube*num_of_cube);
 
 
 		glfwSwapBuffers(window);
@@ -366,6 +335,7 @@ int main(){
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 
 	// Cleanup VBO
 	/*
