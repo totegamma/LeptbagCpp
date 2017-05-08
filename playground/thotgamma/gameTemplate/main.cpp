@@ -146,8 +146,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 
 
-static GLfloat cube_color_buffer_data[36*3];
-
 class cube_shape{
 
 
@@ -158,13 +156,15 @@ class cube_shape{
 	GLuint cube_vertexbuffer;
 	GLuint cube_colorbuffer;
 
-
+	GLuint elementbuffer;
 
 
 	public:
 
-	static GLfloat cube_vertex_buffer_data[36*3];
-	static GLfloat cube_color_buffer_data[36*3];
+	static GLfloat cube_vertex_buffer_data[8*3];
+	static GLfloat cube_color_buffer_data[8*3];
+
+	static GLuint cube_index_buffer_object[14];
 
 
 	cube_shape(double X, double Y, double Z){
@@ -180,6 +180,10 @@ class cube_shape{
 		glGenBuffers(1, &cube_colorbuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, cube_colorbuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(cube_color_buffer_data), cube_color_buffer_data, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &elementbuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_index_buffer_object), cube_index_buffer_object, GL_STATIC_DRAW);
 
 
 
@@ -210,6 +214,8 @@ class cube_shape{
 				(void*)0                          // array buffer offset
 				);
 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
 		//float angle = glfwGetTime() / 10.0 * 45;  // 45° per second
 		//glm::vec3 axis_y(0.0, 1.0, 0.0);
 		//glm::mat4 anim = glm::rotate(glm::mat4(1.0f), angle, axis_y);
@@ -227,64 +233,43 @@ class cube_shape{
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
+		//glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
+		 // 三角形を描く！
+
+		glDrawElements(
+			GL_TRIANGLE_STRIP,      // mode
+			14,    // count
+			GL_UNSIGNED_INT,   // type
+			(void*)0           // element array buffer offset
+		);
 
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+
 	}
 };
 
-GLfloat cube_shape::cube_vertex_buffer_data[36*3] = { 
-	-0.5f,-0.5f,-0.5f,
-	-0.5f,-0.5f, 0.5f,
-	-0.5f, 0.5f, 0.5f,
-
-	0.5f, 0.5f,-0.5f,
-	-0.5f,-0.5f,-0.5f,
-	-0.5f, 0.5f,-0.5f,
-
-	0.5f,-0.5f, 0.5f,
-	-0.5f,-0.5f,-0.5f,
-	0.5f,-0.5f,-0.5f,
-
-	0.5f, 0.5f,-0.5f,
-	0.5f,-0.5f,-0.5f,
-	-0.5f,-0.5f,-0.5f,
-
-	-0.5f,-0.5f,-0.5f,
-	-0.5f, 0.5f, 0.5f,
-	-0.5f, 0.5f,-0.5f,
-
-	0.5f,-0.5f, 0.5f,
-	-0.5f,-0.5f, 0.5f,
-	-0.5f,-0.5f,-0.5f,
-
-	-0.5f, 0.5f, 0.5f,
-	-0.5f,-0.5f, 0.5f,
-	0.5f,-0.5f, 0.5f,
-
-	0.5f, 0.5f, 0.5f,
-	0.5f,-0.5f,-0.5f,
-	0.5f, 0.5f,-0.5f,
-
-	0.5f,-0.5f,-0.5f,
-	0.5f, 0.5f, 0.5f,
-	0.5f,-0.5f, 0.5f,
-
-	0.5f, 0.5f, 0.5f,
-	0.5f, 0.5f,-0.5f,
-	-0.5f, 0.5f,-0.5f,
-
-	0.5f, 0.5f, 0.5f,
-	-0.5f, 0.5f,-0.5f,
-	-0.5f, 0.5f, 0.5f,
-
-	0.5f, 0.5f, 0.5f,
-	-0.5f, 0.5f, 0.5f,
-	0.5f,-0.5f, 0.5f
+GLfloat cube_shape::cube_vertex_buffer_data[8*3] = { 
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f,  0.5f,  0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f,  0.5f
 };
-GLfloat cube_shape::cube_color_buffer_data[36*3];
+
+GLfloat cube_shape::cube_color_buffer_data[8*3];
+
+GLuint cube_shape::cube_index_buffer_object[14] = {
+	//5, 1, 7, 3, 2, 1, 0, 5, 4, 7, 6, 2, 4, 0
+	1, 5, 3, 7, 6, 5, 4, 1, 0, 3, 2, 6, 0, 4
+};
+
+
+
 
 std::vector<cube_shape> cube_shape_list;
 
@@ -345,13 +330,13 @@ int main(){
 
 
 
-	for(int i = 0; i < 36*3; i++){
+	for(int i = 0; i < 8*3; i++){
 		cube_shape::cube_color_buffer_data[i] = (cube_shape::cube_vertex_buffer_data[i] == 0.5f) ? 0.0f : 1.0f;
 	}
 
 
 
-	int size = 20;
+	int size = 32;
 	for(int z = 0; z < size; z++){
 		for(int y = 0; y < size; y++){
 			for(int x = 0; x < size; x++){
