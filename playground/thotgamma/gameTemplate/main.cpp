@@ -316,16 +316,6 @@ int main(){
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 
-
-		/*
-		glDrawElements(
-			GL_TRIANGLE_STRIP,      // mode
-			14,    // count
-			GL_UNSIGNED_INT,   // type
-			(void*)0           // element array buffer offset
-		);
-		*/
-
 		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, num_of_cube*num_of_cube*num_of_cube);
 
 

@@ -16,9 +16,9 @@ int main (void) {
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
 
-	btCollisionShape* fallShape = new btSphereShape(1);
+	btCollisionShape* fallShape = new btBoxShape(btVector3(2, 2, 2));
 
 
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
