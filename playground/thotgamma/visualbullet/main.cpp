@@ -1,20 +1,23 @@
 #include <iostream>
+#include <vector>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <vector>
+
+#include <btBulletDynamicsCommon.h>
 
 #include "shader.hpp"
 
 GLFWwindow* window;
 
+const GLint num_of_cube = 1;
+
 
 GLint windowWidth  = 1000;                    // Width of our window
 GLint windowHeight = 800;                    // Heightof our window
 
-const int num_of_cube = 100;
-const double space = 2;
 
 GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
 GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
@@ -23,11 +26,11 @@ glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
 // Initial position : on +Z
-glm::vec3 position = glm::vec3( 0, 0, 0 ); 
+glm::vec3 position = glm::vec3( 2, 30, 2 ); 
 // Initial horizontal angle : toward -Z
-double horizontalAngle = 3.14f;
+double horizontalAngle = 2.5f;
 // Initial vertical angle : none
-double verticalAngle = 0.0f;
+double verticalAngle = 1.0f;
 // Initial Field of View
 float initialFoV = 45.0f;
 
@@ -175,7 +178,7 @@ GLuint cube_index_buffer_object[14] = {
 	1, 5, 3, 7, 6, 5, 4, 1, 0, 3, 2, 6, 0, 4
 };
 
-GLfloat g_position_instanced_array[num_of_cube*num_of_cube*num_of_cube*3];
+GLfloat g_position_instanced_array[num_of_cube*3];
 
 
 void init_cube_shape(){
@@ -193,15 +196,7 @@ void init_cube_shape(){
 		cube_sequencial_array[(i*6)+5] = cube_color_buffer_data[(i*3)+2];
 	}
 
-	for(int z = 0; z < num_of_cube; z++){
-		for(int y = 0; y < num_of_cube; y++){
-			for(int x = 0; x < num_of_cube; x++){
-				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+0] = space * x;
-				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+1] = space * y;
-				g_position_instanced_array[(3*((z*num_of_cube*num_of_cube) + (y*num_of_cube) + (x)))+2] = space * z;
-			}
-		}
-	}
+
 
 
 	glGenBuffers(1, &cube_sequencialbuffer);
@@ -214,7 +209,16 @@ void init_cube_shape(){
 
 	glGenBuffers(1, &positionbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, positionbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_position_instanced_array), g_position_instanced_array, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_position_instanced_array), g_position_instanced_array, GL_DYNAMIC_DRAW);
+}
+
+void setcubeposition(GLint id, GLfloat X, GLfloat Y, GLfloat Z){
+	g_position_instanced_array[(id*3)+0] = X;
+	g_position_instanced_array[(id*3)+1] = Y;
+	g_position_instanced_array[(id*3)+2] = Z;
+
+	glBindBuffer(GL_ARRAY_BUFFER, positionbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_position_instanced_array), g_position_instanced_array, GL_DYNAMIC_DRAW);
 }
 
 
@@ -276,9 +280,73 @@ int main(){
 
 
 
-
-
 	init_cube_shape();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+
+	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+
+	dynamicsWorld->setGravity(btVector3(0, -10, 0));
+
+
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+
+	btCollisionShape* fallShape = new btBoxShape(btVector3(2, 2, 2));
+
+
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	dynamicsWorld->addRigidBody(groundRigidBody);
+
+
+	btDefaultMotionState* fallMotionState =
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
+	btScalar mass = 1;
+	btVector3 fallInertia(0, 0, 0);
+	fallShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
+	dynamicsWorld->addRigidBody(fallRigidBody);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -288,6 +356,8 @@ int main(){
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+
+	GLfloat cubex, cubey, cubez = 0;
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -316,7 +386,22 @@ int main(){
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, num_of_cube*num_of_cube*num_of_cube);
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, num_of_cube);
+
+
+
+
+
+		dynamicsWorld->stepSimulation(1 / 60.f, 10);
+
+		btTransform trans;
+		fallRigidBody->getMotionState()->getWorldTransform(trans);
+
+
+		setcubeposition(0, trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+
+
+
 
 
 		glfwSwapBuffers(window);
@@ -326,6 +411,50 @@ int main(){
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+	dynamicsWorld->removeRigidBody(fallRigidBody);
+	delete fallRigidBody->getMotionState();
+	delete fallRigidBody;
+
+	dynamicsWorld->removeRigidBody(groundRigidBody);
+	delete groundRigidBody->getMotionState();
+	delete groundRigidBody;
+
+
+	delete fallShape;
+
+	delete groundShape;
+
+
+	delete dynamicsWorld;
+	delete solver;
+	delete collisionConfiguration;
+	delete dispatcher;
+	delete broadphase;
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// Cleanup VBO
 	/*
