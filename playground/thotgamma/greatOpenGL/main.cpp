@@ -4,10 +4,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include <btBulletDynamicsCommon.h>
-
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #include "shader.hpp"
 
@@ -17,8 +13,6 @@ GLFWwindow* window;
 GLint windowWidth  = 1000;                    // Width of our window
 GLint windowHeight = 800;                    // Heightof our window
 
-const int numOfCube = 1;
-
 
 GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
 GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
@@ -27,13 +21,9 @@ glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
 
-glm::vec3 position = glm::vec3( 0, 50, 0 ); 
-//double horizontalAngle = 3.14f;
-//double verticalAngle = 0.0f;
-
-double horizontalAngle = 2.485f;
-double verticalAngle = -1.63153f;
-
+glm::vec3 position = glm::vec3( 0, 0, 0 ); 
+double horizontalAngle = 3.14f;
+double verticalAngle = 0.0f;
 float initialFoV = 45.0f;
 
 float speed = 0.1f; // 3 units / second
@@ -190,7 +180,7 @@ GLuint cube_indexBufferObject[14] = {
 };
 
 
-glm::mat4 cube_instanceMatrixArray[numOfCube];
+glm::mat4 cube_instanceMatrixArray[8];
 
 
 void init_cube_shape(){
@@ -205,6 +195,23 @@ void init_cube_shape(){
 		cube_complexArray[(i*6)+5] = cube_vertexColorArray[(i*3)+2];
 	}
 
+	cube_instanceMatrixArray[0] = glm::rotate(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f)) , glm::vec3(1.0f, 1.0f ,1.0f)), 3.0f, glm::vec3(1.0f, 1.0f ,1.0f));
+	cube_instanceMatrixArray[1] = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 5.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.0f ,2.0f));
+	cube_instanceMatrixArray[2] = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 2.0f ,1.0f));
+	cube_instanceMatrixArray[3] = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 5.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 2.0f ,2.0f));
+	cube_instanceMatrixArray[4] = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(3.0f, 1.0f ,1.0f));
+	cube_instanceMatrixArray[5] = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 5.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f ,2.0f));
+	cube_instanceMatrixArray[6] = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 0.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 3.0f ,1.0f));
+	cube_instanceMatrixArray[7] = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)) 
+									* glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f ,5.0f));
+
+
 	glGenBuffers(1, &cube_complexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cube_complexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_complexArray), cube_complexArray, GL_STATIC_DRAW);
@@ -215,17 +222,7 @@ void init_cube_shape(){
 
 	glGenBuffers(1, &cube_instanceMatrixBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cube_instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_instanceMatrixArray), cube_instanceMatrixArray, GL_DYNAMIC_DRAW);
-}
-
-void setCubeState(float posx, float posy, float posz, float rotw, float rotx, float roty, float rotz){
-	cube_instanceMatrixArray[0] = glm::translate(glm::mat4(1.0f), glm::vec3(posx, posy, posz)) 
-									* glm::toMat4(glm::quat(rotw, rotx, roty, rotz))
-									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f ,1.0f));
-
-	glBindBuffer(GL_ARRAY_BUFFER, cube_instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_instanceMatrixArray), cube_instanceMatrixArray, GL_DYNAMIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_instanceMatrixArray), cube_instanceMatrixArray, GL_STATIC_DRAW);
 }
 
 
@@ -287,51 +284,9 @@ int main(){
 
 
 
+
+
 	init_cube_shape();
-
-
-
-
-
-
-
-
-	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
-
-	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));
-
-
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-
-	btCollisionShape* fallShape = new btBoxShape(btVector3(2, 2, 2));
-
-
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
-	btRigidBody::btRigidBodyConstructionInfo
-		groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	dynamicsWorld->addRigidBody(groundRigidBody);
-
-
-	btDefaultMotionState* fallMotionState =
-		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
-	btScalar mass = 1;
-	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
-	btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	dynamicsWorld->addRigidBody(fallRigidBody);
-
-
-
-
 
 
 
@@ -349,39 +304,6 @@ int main(){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		computeMatricesFromInputs();
-
-
-
-
-
-
-		dynamicsWorld->stepSimulation(1 / 60.f, 10);
-
-		btTransform transform;
-		fallRigidBody->getMotionState()->getWorldTransform(transform);
-
-		btVector3 pos = transform.getOrigin();
-		btQuaternion quaternion = transform.getRotation();
-
-		setCubeState(	pos.getX(),
-						pos.getY(),
-						pos.getZ(),
-						quaternion.getW(),
-						quaternion.getX(),
-						quaternion.getY(),
-						quaternion.getZ()
-						);
-
-
-
-		//std::cout << horizontalAngle << " : " << verticalAngle << std::endl;
-		//std::cout << pos.getY() << std::endl;
-
-		//std::cout << quaternion.getW() << " : " << quaternion.getX() << " : " << quaternion.getY() << " : " << quaternion.getZ() << std::endl;
-
-
-
-
 
 		// Use our shader
 		glUseProgram(programID);
@@ -408,7 +330,7 @@ int main(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 
 
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, numOfCube);
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, 8);
 
 
 		glfwSwapBuffers(window);
@@ -421,42 +343,6 @@ int main(){
 	glDisableVertexAttribArray(3);
 	glDisableVertexAttribArray(4);
 	glDisableVertexAttribArray(5);
-
-
-
-
-
-
-	dynamicsWorld->removeRigidBody(fallRigidBody);
-	delete fallRigidBody->getMotionState();
-	delete fallRigidBody;
-
-	dynamicsWorld->removeRigidBody(groundRigidBody);
-	delete groundRigidBody->getMotionState();
-	delete groundRigidBody;
-
-
-	delete fallShape;
-
-	delete groundShape;
-
-
-	delete dynamicsWorld;
-	delete solver;
-	delete collisionConfiguration;
-	delete dispatcher;
-	delete broadphase;
-
-
-
-
-
-
-
-
-
-
-
 
 	// Cleanup VBO
 	/*
