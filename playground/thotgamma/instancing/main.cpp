@@ -199,6 +199,27 @@ int main(){
 		2.0f, 2.0f, 2.0f
 	};
 
+	glm::mat4 g_scale_instanced_array[] = {
+		/*
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f),
+		glm::mat4(1.0f)
+		*/
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f)),
+		glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f))
+	};
+
 	// Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 	static const GLfloat g_vertex_buffer_data[] = { 
@@ -275,6 +296,11 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, positionbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_position_instanced_array), g_position_instanced_array, GL_STATIC_DRAW);
 
+	GLuint scalebuffer;
+	glGenBuffers(1, &scalebuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, scalebuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_scale_instanced_array), g_scale_instanced_array, GL_STATIC_DRAW);
+
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	glfwSetKeyCallback(window, handleKeypress);
 	glfwSetCursorPosCallback(window, handleMouseMove);
@@ -327,6 +353,23 @@ int main(){
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glVertexAttribDivisor(2, 1);
 
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
+		glEnableVertexAttribArray(5);
+		glEnableVertexAttribArray(6);
+		glBindBuffer(GL_ARRAY_BUFFER, scalebuffer);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*0));
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*1));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*2));
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*3));
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
 
 		//glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 12*3, 8);
@@ -334,6 +377,10 @@ int main(){
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(3);
+		glDisableVertexAttribArray(4);
+		glDisableVertexAttribArray(5);
+		glDisableVertexAttribArray(6);
 
 
 

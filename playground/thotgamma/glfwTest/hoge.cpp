@@ -1,5 +1,6 @@
 #include <iostream>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -274,13 +275,14 @@ int main(){
 		float angle = glfwGetTime() / 10.0 * 45;  // 45° per second
 		glm::vec3 position(10.0f, 0.0f, 0.0f);
 		glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), position);
-		glm::vec3 axis_y(0.0, 1.0, 0.0);
+		glm::vec3 axis_y(0.0, 1.0, 1.0);
 		glm::mat4 anim = glm::rotate(glm::mat4(1.0f), angle, axis_y);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 2.0f ,1.0f));
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs();
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * anim;
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * scale * anim;
 		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix * myMatrix * anim;
 
 		

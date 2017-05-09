@@ -13,8 +13,8 @@ GLFWwindow* window;
 GLint windowWidth  = 1000;                    // Width of our window
 GLint windowHeight = 800;                    // Heightof our window
 
-const int num_of_cube = 100;
-const double space = 2;
+const int num_of_cube = 50;
+const double space = 10;
 
 GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
 GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
