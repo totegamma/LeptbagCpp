@@ -2,7 +2,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
-int main (void) {
+int main (void){
 
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 
@@ -16,12 +16,12 @@ int main (void) {
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 0, 0), 0);
 
-	btCollisionShape* fallShape = new btBoxShape(btVector3(2, 2, 2));
+	btCollisionShape* fallShape = new btSphereShape(1);
 
 
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
 	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
@@ -62,10 +62,10 @@ int main (void) {
 
 
 	delete dynamicsWorld;
-	delete solver;
-	delete collisionConfiguration;
-	delete dispatcher;
-	delete broadphase;
+        delete solver;
+        delete collisionConfiguration;
+        delete dispatcher;
+        delete broadphase;
 
-	return 0;
+        return 0;
 }
