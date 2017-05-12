@@ -1,22 +1,40 @@
 #ifndef FLOORSHAPE_HPP
 #define FLOORSHAPE_HPP
 
-namespace floorshape{
-	GLuint floor_indexBufferObject;
-	GLuint floor_instanceMatrixBuffer;
+#include <vector>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <btBulletDynamicsCommon.h>
+
+#include "vertexmanage.hpp"
+
+class floorshapeObject;
+
+namespace floorshape{
+	extern GLuint floor_indexBufferObject;
+	extern GLuint floor_instanceMatrixBuffer;
+	extern GLuint floor_indexBufferArray[4];
+
+	/*
 	GLuint floor_indexBufferArray[4] = {
 		8, 9, 10, 11
 	};
+	*/
 
-	glm::mat4 floor_instanceMatrixArray[1];
+	extern glm::mat4 floor_instanceMatrixArray[1];
 
 
 
-	void init();
-	void create(int id);
-	void destroy(int id);
-	void render(int id);
+	extern void init();
+	extern floorshapeObject* create(glm::vec3 position, glm::vec3 face, glm::quat quat, btDiscreteDynamicsWorld *dynamicsWorld);
+	extern void destroy(int id);
+	extern void render();
 
 
 }

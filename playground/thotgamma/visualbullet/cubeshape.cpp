@@ -1,7 +1,5 @@
 #include "cubeshape.hpp"
 
-#include <iostream>
-
 class cubeshapeObject{
 	int id;
 	btRigidBody* body;
@@ -21,8 +19,6 @@ class cubeshapeObject{
 
 		btVector3 pos = transform.getOrigin();
 		btQuaternion quaternion = transform.getRotation();
-
-		//std::cout << "[id: " << id << "]: " << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << std::endl;
 
 		cubeshape::instanceMatrixArray[id] = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
 			* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
@@ -71,11 +67,6 @@ namespace cubeshape{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexBufferArray), indexBufferArray, GL_STATIC_DRAW);
 
-		/*
-		for(auto elem: indexBufferArray){
-			std::cout << elem << std::endl;
-		}
-		*/
 
 		glGenBuffers(1, &instanceMatrixBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
@@ -93,7 +84,7 @@ namespace cubeshape{
 				);
 
 
-		btCollisionShape* shape = new btBoxShape(btVector3(size.x, size.y, size.z));
+		btCollisionShape* shape = new btBoxShape(btVector3(size.x/2, size.y/2, size.z/2));
 
 		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
 		btVector3 inertia(0, 0, 0);
@@ -135,15 +126,6 @@ namespace cubeshape{
 
 		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, numOfObject);
 	}
-
-
-
-
-
-	/*
-
-	   }
-	   */
 
 
 }

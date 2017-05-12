@@ -14,6 +14,7 @@
 #include "vertexmanage.hpp"
 #include "shader.hpp"
 #include "cubeshape.hpp"
+#include "floorshape.hpp"
 
 GLFWwindow* window;
 
@@ -205,12 +206,12 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 
 
-btQuaternion createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
+glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
 	double x = RotationAxisX * sin(RotationAngle / 2);
 	double y = RotationAxisY * sin(RotationAngle / 2);
 	double z = RotationAxisZ * sin(RotationAngle / 2);
 	double w = cos(RotationAngle / 2);
-	return btQuaternion(x, y, z, w);
+	return glm::quat(w, x, y, z);
 }
 
 
@@ -285,8 +286,58 @@ int main(){
 
 
 	cubeshape::init();
-	cubeshape::create(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(10, 0, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	floorshape::init();
+
+	cubeshape::create(glm::vec3(-1, 10, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 11, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 12, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 13, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 14, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 15, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 16, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 17, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 18, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 19, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+
+	cubeshape::create(glm::vec3(-1, 10, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 11, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 12, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 13, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 14, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 15, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 16, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 17, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 18, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(-1, 19, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+
+	cubeshape::create(glm::vec3(1, 10, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 11, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 12, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 13, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 14, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 15, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 16, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 17, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 18, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 19, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+
+	cubeshape::create(glm::vec3(1, 10, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 11, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 12, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 13, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 14, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 15, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 16, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 17, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 18, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(1, 19, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+
+	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
+
+	/*
+	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), createq(3.14/4, 1, 0, 0), dynamicsWorld);
+	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), createq(-3.14/4, 1, 0, 0), dynamicsWorld);
+	*/
 
 
 	glEnableVertexAttribArray(0);
@@ -321,6 +372,7 @@ int main(){
 
 
 		cubeshape::render();
+		floorshape::render();
 
 
 
