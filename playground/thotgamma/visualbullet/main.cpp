@@ -1,15 +1,19 @@
 #include <iostream>
+#include <vector>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <vector>
-#include <btBulletDynamicsCommon.h>
-
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <btBulletDynamicsCommon.h>
+
+
+#include "vertexmanage.hpp"
 #include "shader.hpp"
+#include "cubeshape.hpp"
 
 GLFWwindow* window;
 
@@ -201,115 +205,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 
 
-
-GLuint vertexBufferObject;
-
-GLuint cube_indexBufferObject;
-GLuint cube_instanceMatrixBuffer;
-
-GLuint floor_indexBufferObject;
-GLuint floor_instanceMatrixBuffer;
-
-struct vertex{
-	GLfloat positionX;
-	GLfloat positionY;
-	GLfloat positionZ;
-	GLfloat colorR;
-	GLfloat colorG;
-	GLfloat colorB;
-
-	vertex(GLfloat positionX, GLfloat positionY, GLfloat positionZ, GLfloat colorR, GLfloat colorG, GLfloat colorB){
-		this->positionX = positionX;
-		this->positionY = positionY;
-		this->positionZ = positionZ;
-		this->colorR = colorR;
-		this->colorG = colorG;
-		this->colorB = colorB;
-	}
-};
-
-vertex vertexBufferArray[] = {
-	vertex(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
-	vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
-	vertex(-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
-	vertex(-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f),
-	vertex( 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f),
-	vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
-	vertex( 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f),
-	vertex( 0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-	vertex(-100.0f, 0.0f, -100.0f, 0.0f, 0.0f, 1.0f),
-	vertex(-100.0f, 0.0f,  100.0f, 0.0f, 1.0f, 0.0f),
-	vertex( 100.0f, 0.0f, -100.0f, 1.0f, 0.0f, 0.0f),
-	vertex( 100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f)
-};
-
-
-
-GLuint cube_indexBufferArray[14] = {
-	//5, 1, 7, 3, 2, 1, 0, 5, 4, 7, 6, 2, 4, 0
-	1, 5, 3, 7, 6, 5, 4, 1, 0, 3, 2, 6, 0, 4
-};
-
-GLuint floor_indexBufferArray[4] = {
-	8, 9, 10, 11
-};
-
-
-glm::mat4 cube_instanceMatrixArray[numOfCube];
-glm::mat4 floor_instanceMatrixArray[1];
-
-
-void init_cube_shape(){
-
-
-	float angle = 20.0f;
-	floor_instanceMatrixArray[0] = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)) 
-									* glm::toMat4(glm::quat(cos((3.14f/angle) / 2), (1) * sin((3.14f/angle) / 2), (0) * sin((3.14f/angle) / 2), (0) * sin((3.14f/angle) / 2)))
-									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f ,1.0f));
-
-
-
-	glGenBuffers(1, &vertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferArray), vertexBufferArray, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &cube_indexBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_indexBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indexBufferArray), cube_indexBufferArray, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &cube_instanceMatrixBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, cube_instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_instanceMatrixArray), cube_instanceMatrixArray, GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &floor_indexBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floor_indexBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floor_indexBufferArray), floor_indexBufferArray, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &floor_instanceMatrixBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, floor_instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(floor_instanceMatrixArray), floor_instanceMatrixArray, GL_STATIC_DRAW);
-
-
-
-
-}
-
-
-
-
-void setCubeState(float posx, float posy, float posz, float rotw, float rotx, float roty, float rotz){
-	cube_instanceMatrixArray[0] = glm::translate(glm::mat4(1.0f), glm::vec3(posx, posy, posz)) 
-									* glm::toMat4(glm::quat(rotw, rotx, roty, rotz))
-									* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f ,1.0f));
-
-	glBindBuffer(GL_ARRAY_BUFFER, cube_instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_instanceMatrixArray), cube_instanceMatrixArray, GL_DYNAMIC_DRAW);
-
-}
-
-
-
 btQuaternion createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
 	double x = RotationAxisX * sin(RotationAngle / 2);
 	double y = RotationAxisY * sin(RotationAngle / 2);
@@ -375,13 +270,6 @@ int main(){
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
-
-
-	init_cube_shape();
-
-
-
-
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -393,34 +281,12 @@ int main(){
 
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
-
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-
-	btCollisionShape* fallShape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+	initVBO();
 
 
-//	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(createq(3.14f/20.0f, 1, 0, 0), btVector3(0, 0, 0)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	dynamicsWorld->addRigidBody(groundRigidBody);
-
-
-	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
-	btScalar mass = 1;
-	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
-	btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	dynamicsWorld->addRigidBody(fallRigidBody);
-
-
-
-
-
-
-
-
+	cubeshape::init();
+	cubeshape::create(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshape::create(glm::vec3(10, 0, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
 
 
 	glEnableVertexAttribArray(0);
@@ -437,23 +303,7 @@ int main(){
 
 
 
-		if(DOstepsim == true)
-		dynamicsWorld->stepSimulation(1 / 60.f, 10);
-
-		btTransform transform;
-		fallRigidBody->getMotionState()->getWorldTransform(transform);
-
-		btVector3 pos = transform.getOrigin();
-		btQuaternion quaternion = transform.getRotation();
-
-		setCubeState(	pos.getX(),
-						pos.getY(),
-						pos.getZ(),
-						quaternion.getW(),
-						quaternion.getX(),
-						quaternion.getY(),
-						quaternion.getZ()
-						);
+		if(DOstepsim == true) dynamicsWorld->stepSimulation(1 / 60.f, 10);
 
 
 
@@ -465,42 +315,14 @@ int main(){
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3*2, (void*)(sizeof(GLfloat)*3));
-
-		glBindBuffer(GL_ARRAY_BUFFER, cube_instanceMatrixBuffer);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*0));
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*1));
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*2));
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*3));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glVertexAttribDivisor(2, 1);
-		glVertexAttribDivisor(3, 1);
-		glVertexAttribDivisor(4, 1);
-		glVertexAttribDivisor(5, 1);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_indexBufferObject);
-
-
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, numOfCube);
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, floor_instanceMatrixBuffer);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*0));
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*1));
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*2));
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*3));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glVertexAttribDivisor(2, 1);
-		glVertexAttribDivisor(3, 1);
-		glVertexAttribDivisor(4, 1);
-		glVertexAttribDivisor(5, 1);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 
 
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floor_indexBufferObject);
+		cubeshape::render();
 
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void*)0, 1);
+
 
 
 		glfwSwapBuffers(window);
@@ -518,6 +340,7 @@ int main(){
 
 
 
+	/*
 
 	dynamicsWorld->removeRigidBody(fallRigidBody);
 	delete fallRigidBody->getMotionState();
@@ -538,6 +361,7 @@ int main(){
 	delete collisionConfiguration;
 	delete dispatcher;
 	delete broadphase;
+	*/
 
 
 
