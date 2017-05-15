@@ -246,7 +246,7 @@ int main(){
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
 	glDepthFunc(GL_LESS);
-	//glEnable( GL_CULL_FACE );
+	glEnable( GL_CULL_FACE );
 
 
 	GLuint VertexArrayID;
@@ -288,49 +288,94 @@ int main(){
 	cubeshape::init();
 	floorshape::init();
 
-	cubeshape::create(glm::vec3(-1, 10, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 11, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 12, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 13, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 14, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 15, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 16, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 17, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 18, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 19, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	/*
+	int count = 10;
+	for(int z = 0; z < count; z++){
+		for(int y = 0; y < count*2; y++){
+			for(int x = 0; x < count; x++){
+				cubeshape::create(glm::vec3(1*x, 1*y+30, 1*z), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+			}
+		}
+	}
+	*/
 
-	cubeshape::create(glm::vec3(-1, 10, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 11, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 12, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 13, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 14, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 15, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 16, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 17, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 18, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(-1, 19, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	float dogHeight = 10;
 
-	cubeshape::create(glm::vec3(1, 10, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 11, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 12, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 13, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 14, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 15, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 16, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 17, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 18, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 19, -1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* body			= cubeshape::create(glm::vec3(0, dogHeight, 0),		glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2, dynamicsWorld);
+	cubeshapeObject* head			= cubeshape::create(glm::vec3(1.4, dogHeight, 0),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.6, dynamicsWorld);
+	cubeshapeObject* muzzle			= cubeshape::create(glm::vec3(2.1, dogHeight -0.2, 0),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.2, dynamicsWorld);
+	cubeshapeObject* earLeft		= cubeshape::create(glm::vec3(1.4, dogHeight + 0.5, -0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.1, dynamicsWorld);
+	cubeshapeObject* earRight		= cubeshape::create(glm::vec3(1.4, dogHeight + 0.5, 0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.1, dynamicsWorld);
+	cubeshapeObject* legFrontLeft	= cubeshape::create(glm::vec3(0.5, dogHeight - 1, -0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
+	cubeshapeObject* legFrontRight	= cubeshape::create(glm::vec3(0.5, dogHeight -1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
+	cubeshapeObject* legBackLeft	= cubeshape::create(glm::vec3(-0.5, dogHeight -1, -0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
+	cubeshapeObject* legBackRight	= cubeshape::create(glm::vec3(-0.5, dogHeight -1, 0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
+	cubeshapeObject* tail			= cubeshape::create(glm::vec3(-1.5, dogHeight + 0.4, 0),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2, dynamicsWorld);
 
-	cubeshape::create(glm::vec3(1, 10, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 11, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 12, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 13, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 14, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 15, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 16, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 17, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 18, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshape::create(glm::vec3(1, 19, 1), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	btHingeConstraint* hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_head->setLimit(-3.14/6, 3.14/6);
+	dynamicsWorld->addConstraint(hinge_body_head, true);
+
+	btHingeConstraint* hinge_head_muzzle = new btHingeConstraint(*(head->body), *(muzzle->body), btVector3(0.4, -0.2, 0), btVector3(-0.3, 0, 0), btVector3(1, 0, 0), btVector3(1, 0, 0));
+	hinge_head_muzzle->setLimit(0, 0);
+	dynamicsWorld->addConstraint(hinge_head_muzzle, true);
+
+	btHingeConstraint* hinge_earLeft_head = new btHingeConstraint(*(earLeft->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, -0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
+	hinge_earLeft_head->setLimit(0, 0);
+	dynamicsWorld->addConstraint(hinge_earLeft_head, true);
+
+	btHingeConstraint* hinge_earRight_head = new btHingeConstraint(*(earRight->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, 0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
+	hinge_earRight_head->setLimit(0, 0);
+	dynamicsWorld->addConstraint(hinge_earRight_head, true);
+
+
+	btHingeConstraint* hinge_body_legFrontLeft = new btHingeConstraint(*(body->body), *(legFrontLeft->body), btVector3(0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_legFrontLeft->setLimit(-3.14/2, 3.14/2);
+	dynamicsWorld->addConstraint(hinge_body_legFrontLeft, true);
+
+	btHingeConstraint* hinge_body_legFrontRight = new btHingeConstraint(*(body->body), *(legFrontRight->body), btVector3(0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_legFrontRight->setLimit(-3.14/2, 3.14/2);
+	dynamicsWorld->addConstraint(hinge_body_legFrontRight, true);
+
+	btHingeConstraint* hinge_body_legBackLeft = new btHingeConstraint(*(body->body), *(legBackLeft->body), btVector3(-0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_legBackLeft->setLimit(-3.14/2, 3.14/2);
+	dynamicsWorld->addConstraint(hinge_body_legBackLeft, true);
+
+	btHingeConstraint* hinge_body_legBackRight = new btHingeConstraint(*(body->body), *(legBackRight->body), btVector3(-0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_legBackRight->setLimit(-3.14/2, 3.14/2);
+	dynamicsWorld->addConstraint(hinge_body_legBackRight, true);
+
+	btHingeConstraint* hinge_body_tail = new btHingeConstraint(*(body->body), *(tail->body), btVector3(-1, 0.4, 0), btVector3(0.5, 0, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+	hinge_body_tail->setLimit(-3.14/3, 3.14/3);
+	dynamicsWorld->addConstraint(hinge_body_tail, true);
+
+
+	/*
+	cubeshapeObject* cubeA = cubeshape::create(glm::vec3(0, 15, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* cubeB = cubeshape::create(glm::vec3(1, 14, 1), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* cubeC = cubeshape::create(glm::vec3(2, 13, 2), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* cubeD = cubeshape::create(glm::vec3(3, 12, 3), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* cubeE = cubeshape::create(glm::vec3(4, 11, 4), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+	cubeshapeObject* cubeF = cubeshape::create(glm::vec3(5, 10, 5), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+
+
+
+	btTypedConstraint *joint_A = new btPoint2PointConstraint(*(cubeA->body), btVector3(0.5, 0.5, 0.5));
+	btTypedConstraint *jointAB = new btPoint2PointConstraint(*(cubeA->body), *(cubeB->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
+	btTypedConstraint *jointBC = new btPoint2PointConstraint(*(cubeB->body), *(cubeC->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
+	btTypedConstraint *jointCD = new btPoint2PointConstraint(*(cubeC->body), *(cubeD->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
+	btTypedConstraint *jointDE = new btPoint2PointConstraint(*(cubeD->body), *(cubeE->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
+	btTypedConstraint *jointEF = new btPoint2PointConstraint(*(cubeE->body), *(cubeF->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
+
+	dynamicsWorld->addConstraint(joint_A);
+	dynamicsWorld->addConstraint(jointAB);
+	dynamicsWorld->addConstraint(jointBC);
+	dynamicsWorld->addConstraint(jointCD);
+	dynamicsWorld->addConstraint(jointDE);
+	dynamicsWorld->addConstraint(jointEF);
+	*/
+
+
 
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 

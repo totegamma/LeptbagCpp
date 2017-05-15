@@ -20,10 +20,10 @@ namespace floorshape{
 	int numOfObject = 0;;
 
 	vertex objectData[4] = {
-		vertex(-100.0f,  0.0f, -100.0f, 0.0f, 0.0f, 0.0f),
-		vertex(-100.0f,  0.0f,  100.0f, 0.0f, 0.0f, 1.0f),
-		vertex( 100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f),
-		vertex( 100.0f,  0.0f,  100.0f, 1.0f, 0.0f, 0.0f)
+		vertex(-1000.0f,  0.0f, -1000.0f, 0.0f, 0.0f, 0.0f),
+		vertex(-1000.0f,  0.0f,  1000.0f, 0.0f, 0.0f, 1.0f),
+		vertex( 1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f),
+		vertex( 1000.0f,  0.0f,  1000.0f, 1.0f, 0.0f, 0.0f)
 	};
 
 	std::vector<glm::mat4> instanceMatrixArray;

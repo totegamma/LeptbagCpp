@@ -1,32 +1,25 @@
 #include "cubeshape.hpp"
 
-class cubeshapeObject{
-	int id;
-	btRigidBody* body;
-	glm::vec3 size;
+cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, glm::vec3 size){
+	this->id = id;
+	this->body = body;
+	this->size = size;
+}
 
-	public:
-	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size){
-		this->id = id;
-		this->body = body;
-		this->size = size;
-	}
 
-	void loadMotionState(){
+void cubeshapeObject::loadMotionState(){
 
-		btTransform transform;
-		body->getMotionState()->getWorldTransform(transform);
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
 
-		btVector3 pos = transform.getOrigin();
-		btQuaternion quaternion = transform.getRotation();
+	btVector3 pos = transform.getOrigin();
+	btQuaternion quaternion = transform.getRotation();
 
-		cubeshape::instanceMatrixArray[id] = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
-			* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
-			* glm::scale(glm::mat4(1.0f), size);
+	cubeshape::instanceMatrixArray[id] = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
+		* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
+		* glm::scale(glm::mat4(1.0f), size);
 
-	}
-
-};
+}
 
 
 namespace cubeshape{
@@ -38,6 +31,24 @@ namespace cubeshape{
 	int numOfObject = 0;;
 
 	vertex objectData[14] = {
+
+		/*
+		vertex(-0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex(-0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
+		vertex( 0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f)
+		*/
+
 		vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
 		vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
 		vertex(-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f),

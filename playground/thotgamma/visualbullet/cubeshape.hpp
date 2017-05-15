@@ -14,7 +14,14 @@
 
 #include "vertexmanage.hpp"
 
-class cubeshapeObject;
+class cubeshapeObject{
+	public:
+	int id;
+	btRigidBody* body;
+	glm::vec3 size;
+	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size);
+	void loadMotionState();
+};
 
 namespace cubeshape{
 
