@@ -52,6 +52,9 @@ bool holdingRightStrafe = false;
 bool holdingSneek = false;
 bool holdingSpace = false;
 
+bool pressj = false;
+bool pressk = false;
+
 bool DOstepsim = false;
 
 
@@ -164,6 +167,14 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				holdingSpace = true;
 				break;
 
+			case 'J':
+				pressj = true;
+				break;
+
+			case 'K':
+				pressk = true;
+				break;
+
 			default:
 				break;
 		}
@@ -197,6 +208,15 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				holdingSpace = false;
 				break;
 
+			case 'J':
+				pressj = false;
+				break;
+
+			case 'K':
+				pressk = false;
+				break;
+
+
 			default:
 				break;
 		}
@@ -212,6 +232,14 @@ glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxi
 	double z = RotationAxisZ * sin(RotationAngle / 2);
 	double w = cos(RotationAngle / 2);
 	return glm::quat(w, x, y, z);
+}
+
+btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
+	double x = RotationAxisX * sin(RotationAngle / 2);
+	double y = RotationAxisY * sin(RotationAngle / 2);
+	double z = RotationAxisZ * sin(RotationAngle / 2);
+	double w = cos(RotationAngle / 2);
+	return btQuaternion(x, y, z, w);
 }
 
 
@@ -293,7 +321,7 @@ int main(){
 	for(int z = 0; z < count; z++){
 		for(int y = 0; y < count*2; y++){
 			for(int x = 0; x < count; x++){
-				cubeshape::create(glm::vec3(1*x, 1*y+30, 1*z), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
+				cubeshape::create(glm::vec3(1*x+5, 1*y+30, 1*z+5), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
 			}
 		}
 	}
@@ -301,16 +329,16 @@ int main(){
 
 	float dogHeight = 10;
 
-	cubeshapeObject* body			= cubeshape::create(glm::vec3(0, dogHeight, 0),		glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2, dynamicsWorld);
-	cubeshapeObject* head			= cubeshape::create(glm::vec3(1.4, dogHeight, 0),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.6, dynamicsWorld);
-	cubeshapeObject* muzzle			= cubeshape::create(glm::vec3(2.1, dogHeight -0.2, 0),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.2, dynamicsWorld);
-	cubeshapeObject* earLeft		= cubeshape::create(glm::vec3(1.4, dogHeight + 0.5, -0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.1, dynamicsWorld);
-	cubeshapeObject* earRight		= cubeshape::create(glm::vec3(1.4, dogHeight + 0.5, 0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.1, dynamicsWorld);
-	cubeshapeObject* legFrontLeft	= cubeshape::create(glm::vec3(0.5, dogHeight - 1, -0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
-	cubeshapeObject* legFrontRight	= cubeshape::create(glm::vec3(0.5, dogHeight -1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
-	cubeshapeObject* legBackLeft	= cubeshape::create(glm::vec3(-0.5, dogHeight -1, -0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
-	cubeshapeObject* legBackRight	= cubeshape::create(glm::vec3(-0.5, dogHeight -1, 0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3, dynamicsWorld);
-	cubeshapeObject* tail			= cubeshape::create(glm::vec3(-1.5, dogHeight + 0.4, 0),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2, dynamicsWorld);
+	cubeshapeObject* body			= cubeshape::create(glm::vec3(0,	dogHeight, 0),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
+	cubeshapeObject* head			= cubeshape::create(glm::vec3(1.4,	dogHeight, 0),			glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
+	cubeshapeObject* muzzle			= cubeshape::create(glm::vec3(2.1,	dogHeight-0.2, 0),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
+	cubeshapeObject* earLeft		= cubeshape::create(glm::vec3(1.4,	dogHeight+0.5, -0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+	cubeshapeObject* earRight		= cubeshape::create(glm::vec3(1.4,	dogHeight+0.5, 0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+	cubeshapeObject* legFrontLeft	= cubeshape::create(glm::vec3(0.5,	dogHeight-1, -0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+	cubeshapeObject* legFrontRight	= cubeshape::create(glm::vec3(0.5,	dogHeight-1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+	cubeshapeObject* legBackLeft	= cubeshape::create(glm::vec3(-0.5,	dogHeight-1, -0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+	cubeshapeObject* legBackRight	= cubeshape::create(glm::vec3(-0.5,	dogHeight-1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+	cubeshapeObject* tail			= cubeshape::create(glm::vec3(-1.5,	dogHeight+0.4, 0),		glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
 
 	btHingeConstraint* hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
 	hinge_body_head->setLimit(-3.14/6, 3.14/6);
@@ -350,6 +378,8 @@ int main(){
 	dynamicsWorld->addConstraint(hinge_body_tail, true);
 
 
+	//hinge_body_head->enableAngularMotor(true, -0.3f, 1.650f);
+
 	/*
 	cubeshapeObject* cubeA = cubeshape::create(glm::vec3(0, 15, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
 	cubeshapeObject* cubeB = cubeshape::create(glm::vec3(1, 14, 1), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
@@ -384,6 +414,9 @@ int main(){
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), createq(-3.14/4, 1, 0, 0), dynamicsWorld);
 	*/
 
+	hinge_body_head->enableMotor(true);
+	hinge_body_head->setMaxMotorImpulse(1);
+
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -399,7 +432,27 @@ int main(){
 
 
 
-		if(DOstepsim == true) dynamicsWorld->stepSimulation(1 / 60.f, 10);
+		//if(DOstepsim == true) dynamicsWorld->stepSimulation(1 / 60.f, 10);
+		dynamicsWorld->stepSimulation(1 / 60.f, 10);
+
+		if(pressj){
+			hinge_body_head->setMotorTarget(3.14/6, 0.1);
+			hinge_body_legFrontLeft->enableAngularMotor(true, 1.0f, 100.0f);
+			hinge_body_legFrontRight->enableAngularMotor(true, -1.0f, 100.0f);
+			hinge_body_legBackLeft->enableAngularMotor(true, -1.0f, 100.0f);
+			hinge_body_legBackRight->enableAngularMotor(true, 1.0f, 100.0f);
+		}else if(pressk){
+			hinge_body_head->setMotorTarget(-3.14/6, 0.1);
+			hinge_body_legFrontLeft->enableAngularMotor(true, -1.0f, 100.0f);
+			hinge_body_legFrontRight->enableAngularMotor(true, 1.0f, 100.0f);
+			hinge_body_legBackLeft->enableAngularMotor(true, 1.0f,   100.0f);
+			hinge_body_legBackRight->enableAngularMotor(true, -1.0f, 100.0f);
+		}else{
+			hinge_body_legFrontLeft->enableAngularMotor(true, 0, 1);
+			hinge_body_legFrontRight->enableAngularMotor(true, 0, 1);
+			hinge_body_legBackLeft->enableAngularMotor(true, 0, 1);
+			hinge_body_legBackRight->enableAngularMotor(true, 0, 1);
+		}
 
 
 
