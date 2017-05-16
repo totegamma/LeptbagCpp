@@ -62,7 +62,13 @@ namespace floorshape{
 		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(0, motionState, shape, btVector3(0, 0, 0));
 		btRigidBody* body = new btRigidBody(bodyCI);
+
+		btScalar friction = btScalar(0.7);
+        body->setFriction(friction);
+
 		dynamicsWorld->addRigidBody(body);
+
+
 
 		objects.push_back(new floorshapeObject(numOfObject++, body));
 

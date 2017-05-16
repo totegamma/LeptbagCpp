@@ -340,13 +340,13 @@ class dog{
 		dynamicsWorld->addConstraint(hinge_body_tail, true);
 
 		hinge_body_legFrontLeft->enableMotor(true);
-		hinge_body_legFrontLeft->setMaxMotorImpulse(5);
+		hinge_body_legFrontLeft->setMaxMotorImpulse(2);
 		hinge_body_legFrontRight->enableMotor(true);
-		hinge_body_legFrontRight->setMaxMotorImpulse(5);
+		hinge_body_legFrontRight->setMaxMotorImpulse(2);
 		hinge_body_legBackLeft->enableMotor(true);
-		hinge_body_legBackLeft->setMaxMotorImpulse(5);
+		hinge_body_legBackLeft->setMaxMotorImpulse(2);
 		hinge_body_legBackRight->enableMotor(true);
-		hinge_body_legBackRight->setMaxMotorImpulse(5);
+		hinge_body_legBackRight->setMaxMotorImpulse(2);
 
 	}
 
@@ -371,6 +371,7 @@ class dog{
 		dynamicsWorld->removeConstraint(hinge_body_legBackLeft);
 		dynamicsWorld->removeConstraint(hinge_body_legBackRight);
 		dynamicsWorld->removeConstraint(hinge_body_tail);
+
 		body->destroy();
 		head->destroy();
 		muzzle->destroy();
@@ -480,11 +481,21 @@ int main(){
 	int generation = 0;
 	int sequence = 0;
 
-	std::vector<dog> doglist;
+	std::vector<dog*> doglist;
 
-	for(int i = 0; i < 10; i++){
-		doglist.push_back(dog(0, 1.5, -5*i));
+	for(int i = 0; i < 100; i++){
+		doglist.push_back(new dog(0, 1.5, -5*i));
 	}
+
+	std::random_device rd;
+
+	std::mt19937 mt(rd());
+
+	std::uniform_int_distribution<int> coin(0,1);
+	std::uniform_int_distribution<int> RNDnumOfAttack(0,10);
+	std::uniform_int_distribution<int> RNDnumOfRow(0,3);
+	std::uniform_int_distribution<int> RNDnumOfColumn(0,19);
+	std::uniform_real_distribution<double> score(-1.57,1.57);
 
 
 
@@ -504,41 +515,111 @@ int main(){
 			time ++;
 		}
 
-		if(time == 10){
+		//世代終わり
+		if(time == 60){
 
-			if(doglist.size() > 0){
-				doglist.back().destroy();
+
+			float firstdna[20][4];
+			float seconddna[20][4];
+
+			float current1stMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
+			float current2ndMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
+
+			for(auto elem: doglist){
+				btTransform transform;
+				elem->muzzle->body->getMotionState()->getWorldTransform(transform);
+				btVector3 pos = transform.getOrigin();
+
+				//std::cout << pos.getX() << std::endl;
+
+				//1番と2番を求める
+				if(pos.getX() > current1stMax){
+					current2ndMax = current1stMax;
+					current1stMax = pos.getX();
+					memcpy(seconddna, firstdna, sizeof(float)*20*4);
+					memcpy(firstdna, elem->dna, sizeof(float)*20*4);
+				}else if(pos.getX() > current2ndMax){
+					current2ndMax = pos.getX();
+					memcpy(seconddna, elem->dna, sizeof(float)*20*4);
+				}
+			}
+
+			/*
+			std::cout << current1stMax << ":" << current2ndMax << std::endl;
+			std::cout << std::endl;
+			std::cout << std::endl;
+			*/
+
+			//今の犬を削除
+			while(doglist.size() > 0){
+				doglist.back()->destroy();
 				doglist.pop_back();
 			}
 
 
-			/*
-			for(auto elem: doglist){
-				elem.destroy();
-			}
-			*/
+			//新しく犬をつくる
+
+			dog* newdog;
+
+			//1番の犬
+			newdog = new dog(0, 1.5, -5*0);
+			memcpy(newdog->dna, firstdna, sizeof(float)*20*4);
 
 			/*
-			generation++;
-
-			for(auto elem: doglist){
-				btTransform transform;
-				elem.muzzle->body->getMotionState()->getWorldTransform(transform);
-				btVector3 pos = transform.getOrigin();
-				std::cout << pos.getX() << std::endl;
+			for(int a = 0; a < 20; a++){
+				for(int b = 0; b < 4; b++){
+					std::cout << newdog->dna[a][b];
+				}
+				std::cout << std::endl;
 			}
-			std::cout << std::endl << std::endl;
+			std::cout << std::endl;
 
-			for(int i = 0; i < 10; i++){
-				doglist.push_back(dog(0, 1.5,(-50*generation) -5*i));
+			for(int a = 0; a < 20; a++){
+				for(int b = 0; b < 4; b++){
+					std::cout << firstdna[a][b];
+				}
+				std::cout << std::endl;
 			}
-
+			std::cout << std::endl;
+			std::cout << std::endl;
 			*/
+
+
+			doglist.push_back(newdog);
+
+			//2番の犬
+			newdog = new dog(0, 1.5, -5*1);
+			memcpy(newdog->dna, seconddna, sizeof(float)*20*4);
+			doglist.push_back(newdog);
+
+			//残りの犬
+			for(int i = 2; i < 100; i++){
+				newdog = new dog(0, 1.5, -5*i);
+
+				//交叉
+				for(int dnaIndex = 0; dnaIndex < 20; dnaIndex++){
+					if(coin(mt) == 0){
+						memcpy(newdog->dna[dnaIndex], firstdna[dnaIndex], sizeof(float)*4);
+					}else{
+						memcpy(newdog->dna[dnaIndex], seconddna[dnaIndex], sizeof(float)*4);
+					}
+				}
+
+				//突然変異の回数
+				int numOfAttack = RNDnumOfAttack(mt);
+				
+				for(int j = 0; j < numOfAttack; j++){
+					newdog->dna[RNDnumOfColumn(mt)][RNDnumOfRow(mt)] = score(mt);
+				}
+
+				doglist.push_back(newdog);
+			}
+
 			time = 0;
 		}
 
 		for(auto elem: doglist){
-			elem.move(sequence);
+			elem->move(sequence);
 		}
 
 
