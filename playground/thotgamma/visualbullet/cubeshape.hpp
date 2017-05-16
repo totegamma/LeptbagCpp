@@ -17,9 +17,12 @@
 class cubeshapeObject{
 	public:
 	int id;
+	btDiscreteDynamicsWorld *dynamicsWorld;
 	btRigidBody* body;
 	glm::vec3 size;
-	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size);
+	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
+	void destroy();
+	void changeID(int newID);
 	void loadMotionState();
 };
 

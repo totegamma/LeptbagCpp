@@ -1,9 +1,12 @@
 #include "cubeshape.hpp"
 
-cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, glm::vec3 size){
+#include <iostream>
+
+cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld){
 	this->id = id;
 	this->body = body;
 	this->size = size;
+	this->dynamicsWorld = dynamicsWorld;
 }
 
 
@@ -21,6 +24,19 @@ void cubeshapeObject::loadMotionState(){
 
 }
 
+void cubeshapeObject::destroy(){
+	cubeshape::destroy(id);
+
+	dynamicsWorld->removeRigidBody(body);
+	delete body->getMotionState();
+	delete body;
+
+}
+
+void cubeshapeObject::changeID(int newID){
+	id = newID;
+}
+
 
 namespace cubeshape{
 
@@ -31,23 +47,6 @@ namespace cubeshape{
 	int numOfObject = 0;;
 
 	vertex objectData[14] = {
-
-		/*
-		vertex(-0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f, -0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f,  0.5f,  0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f,  0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex(-0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f),
-		vertex( 0.5f, -0.5f, -0.5f, 0.972549019607843, 0.709803921568627, 0.0f)
-		*/
 
 		vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
 		vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
@@ -66,7 +65,6 @@ namespace cubeshape{
 	};
 
 	std::vector<glm::mat4> instanceMatrixArray;
-
 	std::vector<cubeshapeObject*> objects;
 
 
@@ -104,12 +102,22 @@ namespace cubeshape{
 		btRigidBody* body = new btRigidBody(bodyCI);
 		dynamicsWorld->addRigidBody(body);
 
-		objects.push_back(new cubeshapeObject(numOfObject++, body, size));
+		objects.push_back(new cubeshapeObject(numOfObject, body, size, dynamicsWorld));
+
+
+		numOfObject++;
 
 		return objects.back();
 	}
 
 	void destroy(int id){
+		objects[id] = objects.back();
+		objects[id]->changeID(id);
+		objects.pop_back();
+
+		instanceMatrixArray[id] = instanceMatrixArray.back();
+		instanceMatrixArray.pop_back();
+		numOfObject--;
 	}
 
 	void render(){

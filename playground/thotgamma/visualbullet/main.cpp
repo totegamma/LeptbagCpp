@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <random>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,6 +31,8 @@ GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
 
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
+
+btDiscreteDynamicsWorld* dynamicsWorld;
 
 
 glm::vec3 position = glm::vec3( 0, 0, 0 ); 
@@ -243,6 +246,148 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 }
 
 
+class dog{
+
+	public:
+
+	float dna[20][4] = {};
+
+
+	cubeshapeObject* body;
+	cubeshapeObject* head;
+	cubeshapeObject* muzzle;
+	cubeshapeObject* earLeft;
+	cubeshapeObject* earRight;
+	cubeshapeObject* legFrontLeft;
+	cubeshapeObject* legFrontRight;
+	cubeshapeObject* legBackLeft;
+	cubeshapeObject* legBackRight;
+	cubeshapeObject* tail;
+
+	btHingeConstraint* hinge_body_head;
+	btHingeConstraint* hinge_head_muzzle;
+	btHingeConstraint* hinge_earLeft_head;
+	btHingeConstraint* hinge_earRight_head;
+	btHingeConstraint* hinge_body_legFrontLeft;
+	btHingeConstraint* hinge_body_legFrontRight;
+	btHingeConstraint* hinge_body_legBackLeft;
+	btHingeConstraint* hinge_body_legBackRight;
+	btHingeConstraint* hinge_body_tail;
+
+
+	dog(float dogX, float dogY, float dogZ){
+
+
+		std::random_device rd;
+
+		std::mt19937 mt(rd());
+
+		std::uniform_real_distribution<double> score(-1.57,1.57);
+
+		for(auto elem: dna){
+			elem[0] = score(mt);
+			elem[1] = score(mt);
+			elem[2] = score(mt);
+			elem[3] = score(mt);
+		}
+
+		body			= cubeshape::create(glm::vec3(dogX,		dogY,dogZ),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
+		head			= cubeshape::create(glm::vec3(dogX+1.4,	dogY, dogZ),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
+		muzzle			= cubeshape::create(glm::vec3(dogX+2.1,	dogY-0.2, dogZ),	glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
+		earLeft			= cubeshape::create(glm::vec3(dogX+1.4,	dogY+0.5, dogZ-0.2),glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+		earRight		= cubeshape::create(glm::vec3(dogX+1.4,	dogY+0.5, dogZ+0.2),glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+		legFrontLeft	= cubeshape::create(glm::vec3(dogX+0.5,	dogY-1, dogZ-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legFrontRight	= cubeshape::create(glm::vec3(dogX+0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legBackLeft		= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legBackRight	= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		tail			= cubeshape::create(glm::vec3(dogX-1.5,	dogY+0.4, dogZ),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
+
+		hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_head->setLimit(-3.14/6, 3.14/6);
+		dynamicsWorld->addConstraint(hinge_body_head, true);
+
+		hinge_head_muzzle = new btHingeConstraint(*(head->body), *(muzzle->body), btVector3(0.4, -0.2, 0), btVector3(-0.3, 0, 0), btVector3(1, 0, 0), btVector3(1, 0, 0));
+		hinge_head_muzzle->setLimit(0, 0);
+		dynamicsWorld->addConstraint(hinge_head_muzzle, true);
+
+		hinge_earLeft_head = new btHingeConstraint(*(earLeft->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, -0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
+		hinge_earLeft_head->setLimit(0, 0);
+		dynamicsWorld->addConstraint(hinge_earLeft_head, true);
+
+		hinge_earRight_head = new btHingeConstraint(*(earRight->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, 0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
+		hinge_earRight_head->setLimit(0, 0);
+		dynamicsWorld->addConstraint(hinge_earRight_head, true);
+
+
+		hinge_body_legFrontLeft = new btHingeConstraint(*(body->body), *(legFrontLeft->body), btVector3(0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_legFrontLeft->setLimit(-3.14/2, 3.14/2);
+		dynamicsWorld->addConstraint(hinge_body_legFrontLeft, true);
+
+		hinge_body_legFrontRight = new btHingeConstraint(*(body->body), *(legFrontRight->body), btVector3(0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_legFrontRight->setLimit(-3.14/2, 3.14/2);
+		dynamicsWorld->addConstraint(hinge_body_legFrontRight, true);
+
+		hinge_body_legBackLeft = new btHingeConstraint(*(body->body), *(legBackLeft->body), btVector3(-0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_legBackLeft->setLimit(-3.14/2, 3.14/2);
+		dynamicsWorld->addConstraint(hinge_body_legBackLeft, true);
+
+		hinge_body_legBackRight = new btHingeConstraint(*(body->body), *(legBackRight->body), btVector3(-0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_legBackRight->setLimit(-3.14/2, 3.14/2);
+		dynamicsWorld->addConstraint(hinge_body_legBackRight, true);
+
+		hinge_body_tail = new btHingeConstraint(*(body->body), *(tail->body), btVector3(-1, 0.4, 0), btVector3(0.5, 0, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_body_tail->setLimit(-3.14/3, 3.14/3);
+		dynamicsWorld->addConstraint(hinge_body_tail, true);
+
+		hinge_body_legFrontLeft->enableMotor(true);
+		hinge_body_legFrontLeft->setMaxMotorImpulse(5);
+		hinge_body_legFrontRight->enableMotor(true);
+		hinge_body_legFrontRight->setMaxMotorImpulse(5);
+		hinge_body_legBackLeft->enableMotor(true);
+		hinge_body_legBackLeft->setMaxMotorImpulse(5);
+		hinge_body_legBackRight->enableMotor(true);
+		hinge_body_legBackRight->setMaxMotorImpulse(5);
+
+	}
+
+
+	void move(int sequence){
+		hinge_body_legFrontLeft->setMotorTarget(dna[sequence][0], 0.1);
+		hinge_body_legFrontRight->setMotorTarget(dna[sequence][1], 0.1);
+		hinge_body_legBackLeft->setMotorTarget(dna[sequence][2], 0.1);
+		hinge_body_legBackRight->setMotorTarget(dna[sequence][3], 0.1);
+	}
+
+	void destroy(){
+
+
+		dynamicsWorld->removeConstraint(hinge_body_head);
+		dynamicsWorld->removeConstraint(hinge_body_head);
+		dynamicsWorld->removeConstraint(hinge_head_muzzle);
+		dynamicsWorld->removeConstraint(hinge_earLeft_head);
+		dynamicsWorld->removeConstraint(hinge_earRight_head);
+		dynamicsWorld->removeConstraint(hinge_body_legFrontLeft);
+		dynamicsWorld->removeConstraint(hinge_body_legFrontRight);
+		dynamicsWorld->removeConstraint(hinge_body_legBackLeft);
+		dynamicsWorld->removeConstraint(hinge_body_legBackRight);
+		dynamicsWorld->removeConstraint(hinge_body_tail);
+		body->destroy();
+		head->destroy();
+		muzzle->destroy();
+		earLeft->destroy();
+		earRight->destroy();
+		legFrontLeft->destroy();
+		legFrontRight->destroy();
+		legBackLeft->destroy();
+		legBackRight->destroy();
+		tail->destroy();
+
+	}
+
+
+};
+
+
 
 
 int main(){
@@ -306,7 +451,7 @@ int main(){
 
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
@@ -316,106 +461,11 @@ int main(){
 	cubeshape::init();
 	floorshape::init();
 
-	/*
-	int count = 10;
-	for(int z = 0; z < count; z++){
-		for(int y = 0; y < count*2; y++){
-			for(int x = 0; x < count; x++){
-				cubeshape::create(glm::vec3(1*x+5, 1*y+30, 1*z+5), glm::vec3(0.5, 0.5, 0.5), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-			}
-		}
-	}
-	*/
-
-	float dogHeight = 10;
-
-	cubeshapeObject* body			= cubeshape::create(glm::vec3(0,	dogHeight, 0),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
-	cubeshapeObject* head			= cubeshape::create(glm::vec3(1.4,	dogHeight, 0),			glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
-	cubeshapeObject* muzzle			= cubeshape::create(glm::vec3(2.1,	dogHeight-0.2, 0),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
-	cubeshapeObject* earLeft		= cubeshape::create(glm::vec3(1.4,	dogHeight+0.5, -0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-	cubeshapeObject* earRight		= cubeshape::create(glm::vec3(1.4,	dogHeight+0.5, 0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-	cubeshapeObject* legFrontLeft	= cubeshape::create(glm::vec3(0.5,	dogHeight-1, -0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-	cubeshapeObject* legFrontRight	= cubeshape::create(glm::vec3(0.5,	dogHeight-1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-	cubeshapeObject* legBackLeft	= cubeshape::create(glm::vec3(-0.5,	dogHeight-1, -0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-	cubeshapeObject* legBackRight	= cubeshape::create(glm::vec3(-0.5,	dogHeight-1, 0.4),		glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-	cubeshapeObject* tail			= cubeshape::create(glm::vec3(-1.5,	dogHeight+0.4, 0),		glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
-
-	btHingeConstraint* hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_head->setLimit(-3.14/6, 3.14/6);
-	dynamicsWorld->addConstraint(hinge_body_head, true);
-
-	btHingeConstraint* hinge_head_muzzle = new btHingeConstraint(*(head->body), *(muzzle->body), btVector3(0.4, -0.2, 0), btVector3(-0.3, 0, 0), btVector3(1, 0, 0), btVector3(1, 0, 0));
-	hinge_head_muzzle->setLimit(0, 0);
-	dynamicsWorld->addConstraint(hinge_head_muzzle, true);
-
-	btHingeConstraint* hinge_earLeft_head = new btHingeConstraint(*(earLeft->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, -0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
-	hinge_earLeft_head->setLimit(0, 0);
-	dynamicsWorld->addConstraint(hinge_earLeft_head, true);
-
-	btHingeConstraint* hinge_earRight_head = new btHingeConstraint(*(earRight->body), *(head->body), btVector3(0, -0.1, 0), btVector3(0, 0.4, 0.2), btVector3(1, 0, 0), btVector3(1, 0, 0));
-	hinge_earRight_head->setLimit(0, 0);
-	dynamicsWorld->addConstraint(hinge_earRight_head, true);
-
-
-	btHingeConstraint* hinge_body_legFrontLeft = new btHingeConstraint(*(body->body), *(legFrontLeft->body), btVector3(0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_legFrontLeft->setLimit(-3.14/2, 3.14/2);
-	dynamicsWorld->addConstraint(hinge_body_legFrontLeft, true);
-
-	btHingeConstraint* hinge_body_legFrontRight = new btHingeConstraint(*(body->body), *(legFrontRight->body), btVector3(0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_legFrontRight->setLimit(-3.14/2, 3.14/2);
-	dynamicsWorld->addConstraint(hinge_body_legFrontRight, true);
-
-	btHingeConstraint* hinge_body_legBackLeft = new btHingeConstraint(*(body->body), *(legBackLeft->body), btVector3(-0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_legBackLeft->setLimit(-3.14/2, 3.14/2);
-	dynamicsWorld->addConstraint(hinge_body_legBackLeft, true);
-
-	btHingeConstraint* hinge_body_legBackRight = new btHingeConstraint(*(body->body), *(legBackRight->body), btVector3(-0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_legBackRight->setLimit(-3.14/2, 3.14/2);
-	dynamicsWorld->addConstraint(hinge_body_legBackRight, true);
-
-	btHingeConstraint* hinge_body_tail = new btHingeConstraint(*(body->body), *(tail->body), btVector3(-1, 0.4, 0), btVector3(0.5, 0, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-	hinge_body_tail->setLimit(-3.14/3, 3.14/3);
-	dynamicsWorld->addConstraint(hinge_body_tail, true);
-
-
-	//hinge_body_head->enableAngularMotor(true, -0.3f, 1.650f);
-
-	/*
-	cubeshapeObject* cubeA = cubeshape::create(glm::vec3(0, 15, 0), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshapeObject* cubeB = cubeshape::create(glm::vec3(1, 14, 1), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshapeObject* cubeC = cubeshape::create(glm::vec3(2, 13, 2), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshapeObject* cubeD = cubeshape::create(glm::vec3(3, 12, 3), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshapeObject* cubeE = cubeshape::create(glm::vec3(4, 11, 4), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-	cubeshapeObject* cubeF = cubeshape::create(glm::vec3(5, 10, 5), glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), 1, dynamicsWorld);
-
-
-
-	btTypedConstraint *joint_A = new btPoint2PointConstraint(*(cubeA->body), btVector3(0.5, 0.5, 0.5));
-	btTypedConstraint *jointAB = new btPoint2PointConstraint(*(cubeA->body), *(cubeB->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
-	btTypedConstraint *jointBC = new btPoint2PointConstraint(*(cubeB->body), *(cubeC->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
-	btTypedConstraint *jointCD = new btPoint2PointConstraint(*(cubeC->body), *(cubeD->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
-	btTypedConstraint *jointDE = new btPoint2PointConstraint(*(cubeD->body), *(cubeE->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
-	btTypedConstraint *jointEF = new btPoint2PointConstraint(*(cubeE->body), *(cubeF->body), btVector3(-0.5, -0.5, -0.5), btVector3(0.5, 0.5, 0.5));
-
-	dynamicsWorld->addConstraint(joint_A);
-	dynamicsWorld->addConstraint(jointAB);
-	dynamicsWorld->addConstraint(jointBC);
-	dynamicsWorld->addConstraint(jointCD);
-	dynamicsWorld->addConstraint(jointDE);
-	dynamicsWorld->addConstraint(jointEF);
-	*/
-
 
 
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 
-	/*
-	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), createq(3.14/4, 1, 0, 0), dynamicsWorld);
-	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), createq(-3.14/4, 1, 0, 0), dynamicsWorld);
-	*/
 
-	hinge_body_head->enableMotor(true);
-	hinge_body_head->setMaxMotorImpulse(1);
 
 
 	glEnableVertexAttribArray(0);
@@ -424,6 +474,19 @@ int main(){
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
 	glEnableVertexAttribArray(5);
+
+	int timerDivisor = 0;
+	int time = 0;
+	int generation = 0;
+	int sequence = 0;
+
+	std::vector<dog> doglist;
+
+	for(int i = 0; i < 10; i++){
+		doglist.push_back(dog(0, 1.5, -5*i));
+	}
+
+
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -435,24 +498,50 @@ int main(){
 		//if(DOstepsim == true) dynamicsWorld->stepSimulation(1 / 60.f, 10);
 		dynamicsWorld->stepSimulation(1 / 60.f, 10);
 
-		if(pressj){
-			hinge_body_head->setMotorTarget(3.14/6, 0.1);
-			hinge_body_legFrontLeft->enableAngularMotor(true, 1.0f, 100.0f);
-			hinge_body_legFrontRight->enableAngularMotor(true, -1.0f, 100.0f);
-			hinge_body_legBackLeft->enableAngularMotor(true, -1.0f, 100.0f);
-			hinge_body_legBackRight->enableAngularMotor(true, 1.0f, 100.0f);
-		}else if(pressk){
-			hinge_body_head->setMotorTarget(-3.14/6, 0.1);
-			hinge_body_legFrontLeft->enableAngularMotor(true, -1.0f, 100.0f);
-			hinge_body_legFrontRight->enableAngularMotor(true, 1.0f, 100.0f);
-			hinge_body_legBackLeft->enableAngularMotor(true, 1.0f,   100.0f);
-			hinge_body_legBackRight->enableAngularMotor(true, -1.0f, 100.0f);
-		}else{
-			hinge_body_legFrontLeft->enableAngularMotor(true, 0, 1);
-			hinge_body_legFrontRight->enableAngularMotor(true, 0, 1);
-			hinge_body_legBackLeft->enableAngularMotor(true, 0, 1);
-			hinge_body_legBackRight->enableAngularMotor(true, 0, 1);
+		if(timerDivisor++ == 6){
+			sequence = (sequence+1)%20;
+			timerDivisor = 0;
+			time ++;
 		}
+
+		if(time == 10){
+
+			if(doglist.size() > 0){
+				doglist.back().destroy();
+				doglist.pop_back();
+			}
+
+
+			/*
+			for(auto elem: doglist){
+				elem.destroy();
+			}
+			*/
+
+			/*
+			generation++;
+
+			for(auto elem: doglist){
+				btTransform transform;
+				elem.muzzle->body->getMotionState()->getWorldTransform(transform);
+				btVector3 pos = transform.getOrigin();
+				std::cout << pos.getX() << std::endl;
+			}
+			std::cout << std::endl << std::endl;
+
+			for(int i = 0; i < 10; i++){
+				doglist.push_back(dog(0, 1.5,(-50*generation) -5*i));
+			}
+
+			*/
+			time = 0;
+		}
+
+		for(auto elem: doglist){
+			elem.move(sequence);
+		}
+
+
 
 
 
@@ -492,26 +581,26 @@ int main(){
 
 	/*
 
-	dynamicsWorld->removeRigidBody(fallRigidBody);
-	delete fallRigidBody->getMotionState();
-	delete fallRigidBody;
+	   dynamicsWorld->removeRigidBody(fallRigidBody);
+	   delete fallRigidBody->getMotionState();
+	   delete fallRigidBody;
 
-	dynamicsWorld->removeRigidBody(groundRigidBody);
-	delete groundRigidBody->getMotionState();
-	delete groundRigidBody;
-
-
-	delete fallShape;
-
-	delete groundShape;
+	   dynamicsWorld->removeRigidBody(groundRigidBody);
+	   delete groundRigidBody->getMotionState();
+	   delete groundRigidBody;
 
 
-	delete dynamicsWorld;
-	delete solver;
-	delete collisionConfiguration;
-	delete dispatcher;
-	delete broadphase;
-	*/
+	   delete fallShape;
+
+	   delete groundShape;
+
+	   */
+
+	   delete dynamicsWorld;
+	   delete solver;
+	   delete collisionConfiguration;
+	   delete dispatcher;
+	   delete broadphase;
 
 
 
