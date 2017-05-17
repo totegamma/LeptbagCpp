@@ -19,31 +19,34 @@
 
 GLFWwindow* window;
 
+//ウィンドウの大きさ
+GLint windowWidth  = 1000;
+GLint windowHeight = 800;
 
-GLint windowWidth  = 1000;                    // Width of our window
-GLint windowHeight = 800;                    // Heightof our window
+//半分の大きさを定義しておく。ポインタを固定する位置に使う。
+GLint midWindowX = windowWidth  / 2;
+GLint midWindowY = windowHeight / 2;
 
-const int numOfCube = 1;
-
-
-GLint midWindowX = windowWidth  / 2;         // Middle of the window horizontally
-GLint midWindowY = windowHeight / 2;         // Middle of the window vertically
 
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
+GLuint MatrixID;
+
+// 物理演算ワールド
 btDiscreteDynamicsWorld* dynamicsWorld;
 
 
+//カメラの位置など
 glm::vec3 position = glm::vec3( 0, 0, 0 ); 
 double horizontalAngle = 3.14f;
 double verticalAngle = 0.0f;
 
-
 float initialFoV = 45.0f;
 
-float speed = 0.1f; // 3 units / second
+float speed = 0.1f;
 float mouseSpeed = 0.001f;
+
 
 
 // Hoding any keys down?
@@ -55,18 +58,11 @@ bool holdingRightStrafe = false;
 bool holdingSneek = false;
 bool holdingSpace = false;
 
-bool pressj = false;
-bool pressk = false;
-
-bool DOstepsim = false;
-
-
-GLuint MatrixID;
 
 void computeMatricesFromInputs(){
 
 
-	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	//カメラの向きを計算する
 	glm::vec3 direction(
 			cos(verticalAngle) * sin(horizontalAngle), 
 			sin(verticalAngle),
@@ -74,12 +70,12 @@ void computeMatricesFromInputs(){
 			);
 
 
-	// Move forward
+	//カメラ移動
 	if (holdingForward == true){
 		position[0] += sin(horizontalAngle)* speed;
 		position[2] += cos(horizontalAngle)* speed;
 	}
-	// Move backward
+
 	if (holdingBackward == true){
 		position[0] += sin(horizontalAngle+3.14)* speed;
 		position[2] += cos(horizontalAngle+3.14)* speed;
@@ -89,7 +85,7 @@ void computeMatricesFromInputs(){
 		position[0] += sin(horizontalAngle-(3.14/2))* speed;
 		position[2] += cos(horizontalAngle-(3.14/2))* speed;
 	}
-	// Strafe left
+
 	if (holdingLeftStrafe == true){
 		position[0] += sin(horizontalAngle+(3.14/2)) * speed;
 		position[2] += cos(horizontalAngle+(3.14/2)) * speed;
@@ -104,21 +100,23 @@ void computeMatricesFromInputs(){
 	}
 
 
-	float FoV = initialFoV;// - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
+	float FoV = initialFoV;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	ProjectionMatrix = glm::perspective(FoV, 4.0f / 3.0f, 0.1f, 100.0f);
+
 	// Camera matrix
-	ViewMatrix       = glm::lookAt(
+	ViewMatrix = glm::lookAt(
 			position,           // Camera is here
 			position+direction, // and looks here : at the same position, plus "direction"
-			glm::vec3(0,1,0)                  // Head is up (set to 0,-1,0 to look upside-down)
+			glm::vec3(0,1,0)    // Head is up (set to 0,-1,0 to look upside-down)
 			);
 
 }
 
 void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 
+	//カメラが一回転したら強制的に2PI回すことで無限に回れるようにする
 	if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) > 3.14){
 		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) - (3.14*2);
 	}else if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) < -3.14){
@@ -127,6 +125,7 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 		horizontalAngle += mouseSpeed * float(midWindowX - xpos );
 	}
 
+	//カメラは真下から真上までの範囲しか動かない。頭は縦に一回転しない。
 	if(verticalAngle + mouseSpeed * float(midWindowY - ypos ) > 3.14/2){
 		verticalAngle = 3.14/2;
 	}else if(verticalAngle + mouseSpeed * float(midWindowY - ypos ) < -3.14/2){
@@ -135,11 +134,12 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 		verticalAngle   += mouseSpeed * float(midWindowY - ypos );
 	}
 
+	//マウスを強制的に真ん中に戻す
 	glfwSetCursorPos(window, midWindowX, midWindowY);
 }
 
 void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
-	// If a key is pressed, toggle the relevant key-press flag
+
 	if (action == GLFW_PRESS){
 		switch(key) {
 			case 'W':
@@ -158,10 +158,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				holdingRightStrafe = true;
 				break;
 
-			case 'P':
-				DOstepsim = true;
-				break;
-
 			case GLFW_KEY_LEFT_SHIFT:
 				holdingSneek = true;
 				break;
@@ -170,18 +166,10 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				holdingSpace = true;
 				break;
 
-			case 'J':
-				pressj = true;
-				break;
-
-			case 'K':
-				pressk = true;
-				break;
-
 			default:
 				break;
 		}
-	}else if(action == GLFW_RELEASE){ // If a key is released, toggle the relevant key-release flag
+	}else if(action == GLFW_RELEASE){
 		switch(key) {
 			case 'W':
 				holdingForward = false;
@@ -199,10 +187,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				holdingRightStrafe = false;
 				break;
 
-			case 'P':
-				DOstepsim = false;
-				break;
-
 			case GLFW_KEY_LEFT_SHIFT :
 				holdingSneek = false;
 				break;
@@ -210,15 +194,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 			case GLFW_KEY_SPACE:
 				holdingSpace = false;
 				break;
-
-			case 'J':
-				pressj = false;
-				break;
-
-			case 'K':
-				pressk = false;
-				break;
-
 
 			default:
 				break;
@@ -228,7 +203,7 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 }
 
 
-
+//オイラー角から４次元数を計算する。opengl-math用とbullet用で2つある。
 glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
 	double x = RotationAxisX * sin(RotationAngle / 2);
 	double y = RotationAxisY * sin(RotationAngle / 2);
@@ -277,13 +252,11 @@ class dog{
 
 	dog(float dogX, float dogY, float dogZ){
 
-
 		std::random_device rd;
-
 		std::mt19937 mt(rd());
-
 		std::uniform_real_distribution<double> score(-1.57,1.57);
 
+		//DNAをランダムで初期化する
 		for(auto elem: dna){
 			elem[0] = score(mt);
 			elem[1] = score(mt);
@@ -291,6 +264,8 @@ class dog{
 			elem[3] = score(mt);
 		}
 
+		//犬の体の構造を定義している
+		//キューブで肉体を作る
 		body			= cubeshape::create(glm::vec3(dogX,		dogY,dogZ),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
 		head			= cubeshape::create(glm::vec3(dogX+1.4,	dogY, dogZ),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
 		muzzle			= cubeshape::create(glm::vec3(dogX+2.1,	dogY-0.2, dogZ),	glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
@@ -302,6 +277,7 @@ class dog{
 		legBackRight	= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
 		tail			= cubeshape::create(glm::vec3(dogX-1.5,	dogY+0.4, dogZ),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
 
+		//肉体同士を関節で接続する
 		hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
 		hinge_body_head->setLimit(-3.14/6, 3.14/6);
 		dynamicsWorld->addConstraint(hinge_body_head, true);
@@ -339,6 +315,7 @@ class dog{
 		hinge_body_tail->setLimit(-3.14/3, 3.14/3);
 		dynamicsWorld->addConstraint(hinge_body_tail, true);
 
+		//足の関節にモーターをつけている
 		hinge_body_legFrontLeft->enableMotor(true);
 		hinge_body_legFrontLeft->setMaxMotorImpulse(2);
 		hinge_body_legFrontRight->enableMotor(true);
@@ -351,6 +328,7 @@ class dog{
 	}
 
 
+	//シーケンス番号に対応するDNAに記録されている角度まで足を動かす
 	void move(int sequence){
 		hinge_body_legFrontLeft->setMotorTarget(dna[sequence][0], 0.1);
 		hinge_body_legFrontRight->setMotorTarget(dna[sequence][1], 0.1);
@@ -359,8 +337,6 @@ class dog{
 	}
 
 	void destroy(){
-
-
 		dynamicsWorld->removeConstraint(hinge_body_head);
 		dynamicsWorld->removeConstraint(hinge_body_head);
 		dynamicsWorld->removeConstraint(hinge_head_muzzle);
@@ -382,7 +358,6 @@ class dog{
 		legBackLeft->destroy();
 		legBackRight->destroy();
 		tail->destroy();
-
 	}
 
 
@@ -393,9 +368,8 @@ class dog{
 
 int main(){
 	if (!glfwInit()){
-		// Initialization failed
+		std::cout << "glfw init failed...." << std::endl;
 	}
-
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -404,25 +378,24 @@ int main(){
 
 	window = glfwCreateWindow(windowWidth, windowHeight, "My Title", NULL, NULL);
 	if (!window){
-		// Window or OpenGL context creation failed
+		std::cout << "cannot open OpenGL window" << std::endl;
 	}
 	glfwMakeContextCurrent(window);
 
 	glewExperimental = GL_TRUE;
 	if(glewInit () != GLEW_OK){
-		//失敗😩
+		std::cout << "glew init failed...." << std::endl;
 	}
 
 	glClearColor(0.5f, 0.5f, 1.0f, 0.0f);
 
 
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-	glEnable( GL_CULL_FACE );
+	glEnable(GL_DEPTH_TEST); //隠面消去
+	glDepthFunc(GL_LESS);    //近いものを表示
+	glEnable(GL_CULL_FACE);  //ウラは表示しない
 
 
+	//VAOを作る
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
@@ -430,42 +403,37 @@ int main(){
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
-
 	// Get a handle for our "MVP" uniform
 	MatrixID = glGetUniformLocation(programID, "MVP");
-
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
 
-
+	//入力のコールバック・カーソルタイプの設定
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	glfwSetKeyCallback(window, handleKeypress);
 	glfwSetCursorPosCallback(window, handleMouseMove);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
+	//物理ワールドの生成
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
-
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
+
+	//頂点バッファオブジェクトを作る
 	initVBO();
 
-
+	//使う図形についてinit
 	cubeshape::init();
 	floorshape::init();
 
-
-
+	//床を作る
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
-
 
 
 
@@ -476,21 +444,25 @@ int main(){
 	glEnableVertexAttribArray(4);
 	glEnableVertexAttribArray(5);
 
+
+
+
 	int timerDivisor = 0;
-	int time = 0;
+	int time = 0; //0.1秒ごとに増えるんじゃない？知らんけど。
 	int generation = 0;
 	int sequence = 0;
 
 	std::vector<dog*> doglist;
 
+	//0世代目の犬。全部ランダム。
 	for(int i = 0; i < 100; i++){
 		doglist.push_back(new dog(0, 1.5, -5*i));
 	}
 
+
+	//犬の交配計算に使う乱数生成器
 	std::random_device rd;
-
 	std::mt19937 mt(rd());
-
 	std::uniform_int_distribution<int> coin(0,1);
 	std::uniform_int_distribution<int> RNDnumOfAttack(0,10);
 	std::uniform_int_distribution<int> RNDnumOfRow(0,3);
@@ -499,26 +471,33 @@ int main(){
 
 
 
+	//毎フレームごとにこの中が実装される。
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//カメラ位置等を計算する
 		computeMatricesFromInputs();
 
-
-
-		//if(DOstepsim == true) dynamicsWorld->stepSimulation(1 / 60.f, 10);
+		//物理演算1ステップ進める
 		dynamicsWorld->stepSimulation(1 / 60.f, 10);
 
+		//時間
 		if(timerDivisor++ == 6){
-			sequence = (sequence+1)%20;
+			sequence = (sequence+1)%20; //犬のポーズを変更する
 			timerDivisor = 0;
+
+			//犬を動かす
+			for(auto elem: doglist){
+				elem->move(sequence);
+			}
+
 			time ++;
 		}
 
 		//世代終わり
 		if(time == 60){
 
-
+			//まずは優良個体を調べる
 			float firstdna[20][4];
 			float seconddna[20][4];
 
@@ -544,11 +523,6 @@ int main(){
 				}
 			}
 
-			/*
-			std::cout << current1stMax << ":" << current2ndMax << std::endl;
-			std::cout << std::endl;
-			std::cout << std::endl;
-			*/
 
 			//今の犬を削除
 			while(doglist.size() > 0){
@@ -564,26 +538,6 @@ int main(){
 			//1番の犬
 			newdog = new dog(0, 1.5, -5*0);
 			memcpy(newdog->dna, firstdna, sizeof(float)*20*4);
-
-			/*
-			for(int a = 0; a < 20; a++){
-				for(int b = 0; b < 4; b++){
-					std::cout << newdog->dna[a][b];
-				}
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-
-			for(int a = 0; a < 20; a++){
-				for(int b = 0; b < 4; b++){
-					std::cout << firstdna[a][b];
-				}
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-			std::cout << std::endl;
-			*/
-
 
 			doglist.push_back(newdog);
 
@@ -618,15 +572,10 @@ int main(){
 			time = 0;
 		}
 
-		for(auto elem: doglist){
-			elem->move(sequence);
-		}
 
 
 
-
-
-		// Use our shader
+		//OpenGL描画
 		glUseProgram(programID);
 
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
@@ -637,13 +586,8 @@ int main(){
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 
-
-
 		cubeshape::render();
 		floorshape::render();
-
-
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -657,48 +601,6 @@ int main(){
 	glDisableVertexAttribArray(5);
 
 
-
-
-
-	/*
-
-	   dynamicsWorld->removeRigidBody(fallRigidBody);
-	   delete fallRigidBody->getMotionState();
-	   delete fallRigidBody;
-
-	   dynamicsWorld->removeRigidBody(groundRigidBody);
-	   delete groundRigidBody->getMotionState();
-	   delete groundRigidBody;
-
-
-	   delete fallShape;
-
-	   delete groundShape;
-
-	   */
-
-	   delete dynamicsWorld;
-	   delete solver;
-	   delete collisionConfiguration;
-	   delete dispatcher;
-	   delete broadphase;
-
-
-
-
-
-
-
-
-
-
-
-
-	// Cleanup VBO
-	/*
-	   glDeleteBuffers(1, &cube_vertexbuffer);
-	   glDeleteBuffers(1, &cube_colorbuffer);
-	   */
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
 
