@@ -265,7 +265,7 @@ class dog{
 		}
 
 		//犬の体の構造を定義している
-		//キューブで肉体を作る
+		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 		body			= cubeshape::create(glm::vec3(dogX,		dogY,dogZ),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
 		head			= cubeshape::create(glm::vec3(dogX+1.4,	dogY, dogZ),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
 		muzzle			= cubeshape::create(glm::vec3(dogX+2.1,	dogY-0.2, dogZ),	glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
@@ -277,7 +277,7 @@ class dog{
 		legBackRight	= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
 		tail			= cubeshape::create(glm::vec3(dogX-1.5,	dogY+0.4, dogZ),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
 
-		//肉体同士を関節で接続する
+		//肉体同士を関節で接続する	btHingeConstraint(物体A, 物体B, 物体A上の位置, 物体B上の位置, ヒンジの軸の方向);
 		hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
 		hinge_body_head->setLimit(-3.14/6, 3.14/6);
 		dynamicsWorld->addConstraint(hinge_body_head, true);
@@ -330,10 +330,10 @@ class dog{
 
 	//シーケンス番号に対応するDNAに記録されている角度まで足を動かす
 	void move(int sequence){
-		hinge_body_legFrontLeft->setMotorTarget(dna[sequence][0], 0.1);
-		hinge_body_legFrontRight->setMotorTarget(dna[sequence][1], 0.1);
-		hinge_body_legBackLeft->setMotorTarget(dna[sequence][2], 0.1);
-		hinge_body_legBackRight->setMotorTarget(dna[sequence][3], 0.1);
+		hinge_body_legFrontLeft->setMotorTarget(dna[sequence][0], 0.3);
+		hinge_body_legFrontRight->setMotorTarget(dna[sequence][1], 0.3);
+		hinge_body_legBackLeft->setMotorTarget(dna[sequence][2], 0.3);
+		hinge_body_legBackRight->setMotorTarget(dna[sequence][3], 0.3);
 	}
 
 	void destroy(){
@@ -446,6 +446,7 @@ int main(){
 
 
 
+	float topRecord = 0;
 
 	int timerDivisor = 0;
 	int time = 0; //0.1秒ごとに増えるんじゃない？知らんけど。
@@ -495,7 +496,7 @@ int main(){
 		}
 
 		//世代終わり
-		if(time == 60){
+		if(time == 30 + generation*2){
 
 			//まずは優良個体を調べる
 			float firstdna[20][4];
@@ -521,6 +522,21 @@ int main(){
 					current2ndMax = pos.getX();
 					memcpy(seconddna, elem->dna, sizeof(float)*20*4);
 				}
+			}
+
+			if(current1stMax > topRecord){
+				topRecord = current1stMax;
+				std::cout << "New Record! " << topRecord << "m" << std::endl;
+				std::cout << std::endl;
+				std::cout << "---DNA DATA--------------------" << std::endl;
+				for(int a = 0; a < 20; a++){
+					for(int b = 0; b < 4; b++){
+						std::cout << firstdna[a][b] << ", ";
+					}
+					std::cout << std::endl;
+				}
+				std::cout << "-------------------------------" << std::endl;
+				std::cout << std::endl;
 			}
 
 
@@ -570,6 +586,8 @@ int main(){
 			}
 
 			time = 0;
+			generation++;
+			std::cout << "generation" << generation << " begin" << std::endl;
 		}
 
 
