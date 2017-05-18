@@ -33,8 +33,7 @@ glm::mat4 ProjectionMatrix;
 
 GLuint MatrixID;
 
-// 物理演算ワールド
-btDiscreteDynamicsWorld* dynamicsWorld;
+
 
 
 //カメラの位置など
@@ -226,6 +225,7 @@ class dog{
 	public:
 
 	float dna[20][4] = {};
+	btDiscreteDynamicsWorld* dynamicsWorld;
 
 
 	cubeshapeObject* body;
@@ -250,32 +250,42 @@ class dog{
 	btHingeConstraint* hinge_body_tail;
 
 
-	dog(float dogX, float dogY, float dogZ){
+	dog(btDiscreteDynamicsWorld* dynamicsWorld, float x, float y, float z, bool initialDNA){
 
-		std::random_device rd;
-		std::mt19937 mt(rd());
-		std::uniform_real_distribution<double> score(-1.57,1.57);
+		this->dynamicsWorld = dynamicsWorld;
+
 
 		//DNAをランダムで初期化する
-		for(auto elem: dna){
-			elem[0] = score(mt);
-			elem[1] = score(mt);
-			elem[2] = score(mt);
-			elem[3] = score(mt);
+		if(initialDNA == true){
+			std::random_device rd;
+			std::mt19937 mt(rd());
+			std::uniform_real_distribution<double> score(-1.57,1.57);
+
+			for(auto elem: dna){
+				elem[0] = score(mt);
+				elem[1] = score(mt);
+				elem[2] = score(mt);
+				elem[3] = score(mt);
+			}
 		}
 
+		spawn(x, y, z);
+
+	}
+
+	void spawn(float x, float y, float z){
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
-		body			= cubeshape::create(glm::vec3(dogX,		dogY,dogZ),			glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
-		head			= cubeshape::create(glm::vec3(dogX+1.4,	dogY, dogZ),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
-		muzzle			= cubeshape::create(glm::vec3(dogX+2.1,	dogY-0.2, dogZ),	glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
-		earLeft			= cubeshape::create(glm::vec3(dogX+1.4,	dogY+0.5, dogZ-0.2),glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-		earRight		= cubeshape::create(glm::vec3(dogX+1.4,	dogY+0.5, dogZ+0.2),glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-		legFrontLeft	= cubeshape::create(glm::vec3(dogX+0.5,	dogY-1, dogZ-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legFrontRight	= cubeshape::create(glm::vec3(dogX+0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legBackLeft		= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legBackRight	= cubeshape::create(glm::vec3(dogX-0.5,	dogY-1, dogZ+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		tail			= cubeshape::create(glm::vec3(dogX-1.5,	dogY+0.4, dogZ),	glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
+		body			= cubeshape::create(glm::vec3(x,     y,     z),		glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
+		head			= cubeshape::create(glm::vec3(x+1.4, y,     z),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
+		muzzle			= cubeshape::create(glm::vec3(x+2.1, y-0.2, z),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
+		earLeft			= cubeshape::create(glm::vec3(x+1.4, y+0.5, z-0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+		earRight		= cubeshape::create(glm::vec3(x+1.4, y+0.5, z+0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
+		legFrontLeft	= cubeshape::create(glm::vec3(x+0.5, y-1,   z-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legFrontRight	= cubeshape::create(glm::vec3(x+0.5, y-1,   z+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legBackLeft		= cubeshape::create(glm::vec3(x-0.5, y-1,   z-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legBackRight	= cubeshape::create(glm::vec3(x-0.5, y-1,   z+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		tail			= cubeshape::create(glm::vec3(x-1.5, y+0.4, z),		glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
 
 		//肉体同士を関節で接続する	btHingeConstraint(物体A, 物体B, 物体A上の位置, 物体B上の位置, ヒンジの軸の方向);
 		hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
@@ -324,7 +334,6 @@ class dog{
 		hinge_body_legBackLeft->setMaxMotorImpulse(2);
 		hinge_body_legBackRight->enableMotor(true);
 		hinge_body_legBackRight->setMaxMotorImpulse(2);
-
 	}
 
 
@@ -417,6 +426,7 @@ int main(){
 
 
 	//物理ワールドの生成
+	btDiscreteDynamicsWorld* dynamicsWorld;
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -457,7 +467,7 @@ int main(){
 
 	//0世代目の犬。全部ランダム。
 	for(int i = 0; i < 100; i++){
-		doglist.push_back(new dog(0, 1.5, -5*i));
+		doglist.push_back(new dog(dynamicsWorld, 0, 1.5, -5*i, true));
 	}
 
 
@@ -552,19 +562,19 @@ int main(){
 			dog* newdog;
 
 			//1番の犬
-			newdog = new dog(0, 1.5, -5*0);
+			newdog = new dog(dynamicsWorld, 0, 1.5, -5*0, false);
 			memcpy(newdog->dna, firstdna, sizeof(float)*20*4);
 
 			doglist.push_back(newdog);
 
 			//2番の犬
-			newdog = new dog(0, 1.5, -5*1);
+			newdog = new dog(dynamicsWorld, 0, 1.5, -5*1, false);
 			memcpy(newdog->dna, seconddna, sizeof(float)*20*4);
 			doglist.push_back(newdog);
 
 			//残りの犬
 			for(int i = 2; i < 100; i++){
-				newdog = new dog(0, 1.5, -5*i);
+				newdog = new dog(dynamicsWorld, 0, 1.5, -5*i, false);
 
 				//交叉
 				for(int dnaIndex = 0; dnaIndex < 20; dnaIndex++){
