@@ -224,30 +224,41 @@ class dog{
 
 	public:
 
-	float dna[20][4] = {};
+	float dna[20][8] = {};
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
 
-	cubeshapeObject* body;
+	cubeshapeObject* bodyFront;
+	cubeshapeObject* bodyBack;
 	cubeshapeObject* head;
 	cubeshapeObject* muzzle;
 	cubeshapeObject* earLeft;
 	cubeshapeObject* earRight;
-	cubeshapeObject* legFrontLeft;
-	cubeshapeObject* legFrontRight;
-	cubeshapeObject* legBackLeft;
-	cubeshapeObject* legBackRight;
+	cubeshapeObject* legUpperFrontLeft;
+	cubeshapeObject* legUpperFrontRight;
+	cubeshapeObject* legUpperBackLeft;
+	cubeshapeObject* legUpperBackRight;
+	cubeshapeObject* legLowerFrontLeft;
+	cubeshapeObject* legLowerFrontRight;
+	cubeshapeObject* legLowerBackLeft;
+	cubeshapeObject* legLowerBackRight;
 	cubeshapeObject* tail;
 
-	btHingeConstraint* hinge_body_head;
+
+	btHingeConstraint* hinge_bodyFront_bodyBack;
+	btHingeConstraint* hinge_bodyFront_head;
 	btHingeConstraint* hinge_head_muzzle;
 	btHingeConstraint* hinge_earLeft_head;
 	btHingeConstraint* hinge_earRight_head;
-	btHingeConstraint* hinge_body_legFrontLeft;
-	btHingeConstraint* hinge_body_legFrontRight;
-	btHingeConstraint* hinge_body_legBackLeft;
-	btHingeConstraint* hinge_body_legBackRight;
-	btHingeConstraint* hinge_body_tail;
+	btHingeConstraint* hinge_bodyFront_legUpperFrontLeft;
+	btHingeConstraint* hinge_bodyFront_legUpperFrontRight;
+	btHingeConstraint* hinge_bodyBack_legUpperBackLeft;
+	btHingeConstraint* hinge_bodyBack_legUpperBackRight;
+	btHingeConstraint* hinge_legUpperFrontLeft_legLowerFrontLeft;
+	btHingeConstraint* hinge_legUpperFrontRight_legLowerFrontRight;
+	btHingeConstraint* hinge_legUpperBackLeft_legLowerBackLeft;
+	btHingeConstraint* hinge_legUpperBackRight_legLowerBackRight;
+	btHingeConstraint* hinge_bodyBack_tail;
 
 
 	dog(btDiscreteDynamicsWorld* dynamicsWorld, float x, float y, float z, bool initialDNA){
@@ -260,12 +271,17 @@ class dog{
 			std::random_device rd;
 			std::mt19937 mt(rd());
 			std::uniform_real_distribution<double> score(-1.57,1.57);
+			std::uniform_real_distribution<double> scoreLower(0.0, 1.50);
 
 			for(auto elem: dna){
 				elem[0] = score(mt);
 				elem[1] = score(mt);
 				elem[2] = score(mt);
 				elem[3] = score(mt);
+				elem[4] = scoreLower(mt);
+				elem[5] = scoreLower(mt);
+				elem[6] = scoreLower(mt);
+				elem[7] = scoreLower(mt);
 			}
 		}
 
@@ -276,21 +292,39 @@ class dog{
 	void spawn(float x, float y, float z){
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
-		body			= cubeshape::create(glm::vec3(x,     y,     z),		glm::vec3(2, 1, 1),			glm::quat(1, 0, 0, 0), 2,		dynamicsWorld);
-		head			= cubeshape::create(glm::vec3(x+1.4, y,     z),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.5,		dynamicsWorld);
-		muzzle			= cubeshape::create(glm::vec3(x+2.1, y-0.2, z),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.1,		dynamicsWorld);
-		earLeft			= cubeshape::create(glm::vec3(x+1.4, y+0.5, z-0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-		earRight		= cubeshape::create(glm::vec3(x+1.4, y+0.5, z+0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.05,	dynamicsWorld);
-		legFrontLeft	= cubeshape::create(glm::vec3(x+0.5, y-1,   z-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legFrontRight	= cubeshape::create(glm::vec3(x+0.5, y-1,   z+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legBackLeft		= cubeshape::create(glm::vec3(x-0.5, y-1,   z-0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
-		legBackRight	= cubeshape::create(glm::vec3(x-0.5, y-1,   z+0.4),	glm::vec3(0.2, 1, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+
+
+		bodyFront		= cubeshape::create(glm::vec3(x+0.5,     y,     z),		glm::vec3(1, 1, 1),			glm::quat(1, 0, 0, 0), 1,		dynamicsWorld);
+		bodyBack		= cubeshape::create(glm::vec3(x-0.5,     y,     z),		glm::vec3(1, 1, 1),			glm::quat(1, 0, 0, 0), 1,		dynamicsWorld);
+		head			= cubeshape::create(glm::vec3(x+1.4, y,     z),		glm::vec3(0.8, 0.8, 0.8),	glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
+		muzzle			= cubeshape::create(glm::vec3(x+2.1, y-0.2, z),		glm::vec3(0.6, 0.4, 0.4),	glm::quat(1, 0, 0, 0), 0.03,		dynamicsWorld);
+		earLeft			= cubeshape::create(glm::vec3(x+1.4, y+0.5, z-0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.01,	dynamicsWorld);
+		earRight		= cubeshape::create(glm::vec3(x+1.4, y+0.5, z+0.2),	glm::vec3(0.2, 0.2, 0.2),	glm::quat(1, 0, 0, 0), 0.01,	dynamicsWorld);
+
+		//脚
+		legUpperFrontLeft	= cubeshape::create(glm::vec3(x+0.5, y-0.75,   z-0.4),	glm::vec3(0.2, 0.5, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legUpperFrontRight	= cubeshape::create(glm::vec3(x+0.5, y-0.75,   z+0.4),	glm::vec3(0.2, 0.5, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legUpperBackLeft		= cubeshape::create(glm::vec3(x-0.5, y-0.75,   z-0.4),	glm::vec3(0.2, 0.5, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+		legUpperBackRight	= cubeshape::create(glm::vec3(x-0.5, y-0.75,   z+0.4),	glm::vec3(0.2, 0.5, 0.2),		glm::quat(1, 0, 0, 0), 0.3,		dynamicsWorld);
+
+		legLowerFrontLeft	= cubeshape::create(glm::vec3(x+0.5, y-1.25, z-0.4),	glm::vec3(0.2, 0.5, 0.2),	glm::quat(1, 0, 0, 0), 0.25,	dynamicsWorld);
+		legLowerFrontRight	= cubeshape::create(glm::vec3(x+0.5, y-1.25, z+0.4),	glm::vec3(0.2, 0.5, 0.2),	glm::quat(1, 0, 0, 0), 0.25,	dynamicsWorld);
+		legLowerBackLeft	= cubeshape::create(glm::vec3(x-0.5, y-1.25, z-0.4),	glm::vec3(0.2, 0.5, 0.2),	glm::quat(1, 0, 0, 0), 0.25,	dynamicsWorld);
+		legLowerBackRight	= cubeshape::create(glm::vec3(x-0.5, y-1.25, z+0.4),	glm::vec3(0.2, 0.5, 0.2),	glm::quat(1, 0, 0, 0), 0.25,	dynamicsWorld);
+
 		tail			= cubeshape::create(glm::vec3(x-1.5, y+0.4, z),		glm::vec3(1, 0.2, 0.2),		glm::quat(1, 0, 0, 0), 0.2,		dynamicsWorld);
 
 		//肉体同士を関節で接続する	btHingeConstraint(物体A, 物体B, 物体A上の位置, 物体B上の位置, ヒンジの軸の方向);
-		hinge_body_head = new btHingeConstraint(*(body->body), *(head->body), btVector3(1, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_head->setLimit(-3.14/6, 3.14/6);
-		dynamicsWorld->addConstraint(hinge_body_head, true);
+
+		hinge_bodyFront_bodyBack = new btHingeConstraint(*(bodyFront->body), *(bodyBack->body), 
+				btVector3(-0.5, 0, 0), btVector3(0.5, 0, 0), btVector3(0, 1, 0), btVector3(0, 1, 0));
+		hinge_bodyFront_bodyBack->setLimit(-3.14/24.0, 3.14/24.0);
+		dynamicsWorld->addConstraint(hinge_bodyFront_bodyBack, true);
+
+		hinge_bodyFront_head = new btHingeConstraint(*(bodyFront->body), *(head->body),
+				btVector3(0.5, 0, 0), btVector3(-0.4, 0, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyFront_head->setLimit(-3.14/6, 3.14/6);
+		dynamicsWorld->addConstraint(hinge_bodyFront_head, true);
 
 		hinge_head_muzzle = new btHingeConstraint(*(head->body), *(muzzle->body), btVector3(0.4, -0.2, 0), btVector3(-0.3, 0, 0), btVector3(1, 0, 0), btVector3(1, 0, 0));
 		hinge_head_muzzle->setLimit(0, 0);
@@ -305,67 +339,123 @@ class dog{
 		dynamicsWorld->addConstraint(hinge_earRight_head, true);
 
 
-		hinge_body_legFrontLeft = new btHingeConstraint(*(body->body), *(legFrontLeft->body), btVector3(0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_legFrontLeft->setLimit(-3.14/2, 3.14/2);
-		dynamicsWorld->addConstraint(hinge_body_legFrontLeft, true);
+		//脚関節
+		hinge_bodyFront_legUpperFrontLeft = new btHingeConstraint(*(bodyFront->body), *(legUpperFrontLeft->body),
+				btVector3(0.5, -0.5, -0.49), btVector3(0, 0.25, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyFront_legUpperFrontLeft->setLimit(-3.14/2.0, 3.14/2.0);
+		dynamicsWorld->addConstraint(hinge_bodyFront_legUpperFrontLeft, true);
 
-		hinge_body_legFrontRight = new btHingeConstraint(*(body->body), *(legFrontRight->body), btVector3(0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_legFrontRight->setLimit(-3.14/2, 3.14/2);
-		dynamicsWorld->addConstraint(hinge_body_legFrontRight, true);
+		hinge_bodyFront_legUpperFrontRight = new btHingeConstraint(*(bodyFront->body), *(legUpperFrontRight->body),
+				btVector3(0.5, -0.5, 0.49), btVector3(0, 0.25, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyFront_legUpperFrontRight->setLimit(-3.14/2.0, 3.14/2.0);
+		dynamicsWorld->addConstraint(hinge_bodyFront_legUpperFrontRight, true);
 
-		hinge_body_legBackLeft = new btHingeConstraint(*(body->body), *(legBackLeft->body), btVector3(-0.5, -0.5, -0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_legBackLeft->setLimit(-3.14/2, 3.14/2);
-		dynamicsWorld->addConstraint(hinge_body_legBackLeft, true);
+		hinge_bodyBack_legUpperBackLeft = new btHingeConstraint(*(bodyBack->body), *(legUpperBackLeft->body),
+				btVector3(-0.5, -0.5, -0.49), btVector3(0, 0.25, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyBack_legUpperBackLeft->setLimit(-3.14/2.0, 3.14/2.0);
+		dynamicsWorld->addConstraint(hinge_bodyBack_legUpperBackLeft, true);
 
-		hinge_body_legBackRight = new btHingeConstraint(*(body->body), *(legBackRight->body), btVector3(-0.5, -0.5, 0.4), btVector3(0, 0.5, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_legBackRight->setLimit(-3.14/2, 3.14/2);
-		dynamicsWorld->addConstraint(hinge_body_legBackRight, true);
+		hinge_bodyBack_legUpperBackRight = new btHingeConstraint(*(bodyBack->body), *(legUpperBackRight->body),
+				btVector3(-0.5, -0.5, 0.49), btVector3(0, 0.25, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyBack_legUpperBackRight->setLimit(-3.14/2.0, 3.14/2.0);
+		dynamicsWorld->addConstraint(hinge_bodyBack_legUpperBackRight, true);
 
-		hinge_body_tail = new btHingeConstraint(*(body->body), *(tail->body), btVector3(-1, 0.4, 0), btVector3(0.5, 0, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
-		hinge_body_tail->setLimit(-3.14/3, 3.14/3);
-		dynamicsWorld->addConstraint(hinge_body_tail, true);
+		hinge_bodyBack_tail = new btHingeConstraint(*(bodyBack->body), *(tail->body),
+				btVector3(-0.5, 0.4, 0), btVector3(0.5, 0, 0.0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_bodyBack_tail->setLimit(-3.14/6.0, 3.14/6.0);
+		dynamicsWorld->addConstraint(hinge_bodyBack_tail, true);
+
+
+		hinge_legUpperFrontLeft_legLowerFrontLeft = new btHingeConstraint(*(legUpperFrontLeft->body), *(legLowerFrontLeft->body),
+				btVector3(0, -0.25, 0), btVector3(0, 0.25, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_legUpperFrontLeft_legLowerFrontLeft->setLimit(0.0, 1.50);
+		dynamicsWorld->addConstraint(hinge_legUpperFrontLeft_legLowerFrontLeft, true);
+
+		hinge_legUpperFrontRight_legLowerFrontRight = new btHingeConstraint(*(legUpperFrontRight->body), *(legLowerFrontRight->body),
+				btVector3(0, -0.25, 0), btVector3(0, 0.25, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_legUpperFrontRight_legLowerFrontRight->setLimit(0.0, 1.50);
+		dynamicsWorld->addConstraint(hinge_legUpperFrontRight_legLowerFrontRight, true);
+
+		hinge_legUpperBackLeft_legLowerBackLeft = new btHingeConstraint(*(legUpperBackLeft->body), *(legLowerBackLeft->body),
+				btVector3(0, -0.25, 0), btVector3(0, 0.25, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_legUpperBackLeft_legLowerBackLeft->setLimit(0.0, 1.50);
+		dynamicsWorld->addConstraint(hinge_legUpperBackLeft_legLowerBackLeft, true);
+
+		hinge_legUpperBackRight_legLowerBackRight = new btHingeConstraint(*(legUpperBackRight->body), *(legLowerBackRight->body),
+				btVector3(0, -0.25, 0), btVector3(0, 0.25, 0), btVector3(0, 0, 1), btVector3(0, 0, 1));
+		hinge_legUpperBackRight_legLowerBackRight->setLimit(0.0, 1.50);
+		dynamicsWorld->addConstraint(hinge_legUpperBackRight_legLowerBackRight, true);
+		
+
+
 
 		//足の関節にモーターをつけている
-		hinge_body_legFrontLeft->enableMotor(true);
-		hinge_body_legFrontLeft->setMaxMotorImpulse(2);
-		hinge_body_legFrontRight->enableMotor(true);
-		hinge_body_legFrontRight->setMaxMotorImpulse(2);
-		hinge_body_legBackLeft->enableMotor(true);
-		hinge_body_legBackLeft->setMaxMotorImpulse(2);
-		hinge_body_legBackRight->enableMotor(true);
-		hinge_body_legBackRight->setMaxMotorImpulse(2);
+		hinge_bodyFront_legUpperFrontLeft->enableMotor(true);
+		hinge_bodyFront_legUpperFrontLeft->setMaxMotorImpulse(2);
+		hinge_bodyFront_legUpperFrontRight->enableMotor(true);
+		hinge_bodyFront_legUpperFrontRight->setMaxMotorImpulse(2);
+		hinge_bodyBack_legUpperBackLeft->enableMotor(true);
+		hinge_bodyBack_legUpperBackLeft->setMaxMotorImpulse(2);
+		hinge_bodyBack_legUpperBackRight->enableMotor(true);
+		hinge_bodyBack_legUpperBackRight->setMaxMotorImpulse(2);
+
+		hinge_legUpperFrontLeft_legLowerFrontLeft->enableMotor(true);
+		hinge_legUpperFrontLeft_legLowerFrontLeft->setMaxMotorImpulse(2);
+		hinge_legUpperFrontRight_legLowerFrontRight->enableMotor(true);
+		hinge_legUpperFrontRight_legLowerFrontRight->setMaxMotorImpulse(2);
+		hinge_legUpperBackLeft_legLowerBackLeft->enableMotor(true);
+		hinge_legUpperBackLeft_legLowerBackLeft->setMaxMotorImpulse(2);
+		hinge_legUpperBackRight_legLowerBackRight->enableMotor(true);
+		hinge_legUpperBackRight_legLowerBackRight->setMaxMotorImpulse(2);
+
+
 	}
 
 
 	//シーケンス番号に対応するDNAに記録されている角度まで足を動かす
 	void move(int sequence){
-		hinge_body_legFrontLeft->setMotorTarget(dna[sequence][0], 0.3);
-		hinge_body_legFrontRight->setMotorTarget(dna[sequence][1], 0.3);
-		hinge_body_legBackLeft->setMotorTarget(dna[sequence][2], 0.3);
-		hinge_body_legBackRight->setMotorTarget(dna[sequence][3], 0.3);
+		hinge_bodyFront_legUpperFrontLeft->setMotorTarget(dna[sequence][0], 0.3);
+		hinge_bodyFront_legUpperFrontRight->setMotorTarget(dna[sequence][1], 0.3);
+		hinge_bodyBack_legUpperBackLeft->setMotorTarget(dna[sequence][2], 0.3);
+		hinge_bodyBack_legUpperBackRight->setMotorTarget(dna[sequence][3], 0.3);
+		hinge_legUpperFrontLeft_legLowerFrontLeft->setMotorTarget(dna[sequence][4], 0.3);
+		hinge_legUpperFrontRight_legLowerFrontRight->setMotorTarget(dna[sequence][5], 0.3);
+		hinge_legUpperBackLeft_legLowerBackLeft->setMotorTarget(dna[sequence][6], 0.3);
+		hinge_legUpperBackRight_legLowerBackRight->setMotorTarget(dna[sequence][7], 0.3);
 	}
 
 	void destroy(){
-		dynamicsWorld->removeConstraint(hinge_body_head);
-		dynamicsWorld->removeConstraint(hinge_body_head);
+
+		dynamicsWorld->removeConstraint(hinge_bodyFront_bodyBack);
+		dynamicsWorld->removeConstraint(hinge_bodyFront_head);
 		dynamicsWorld->removeConstraint(hinge_head_muzzle);
 		dynamicsWorld->removeConstraint(hinge_earLeft_head);
 		dynamicsWorld->removeConstraint(hinge_earRight_head);
-		dynamicsWorld->removeConstraint(hinge_body_legFrontLeft);
-		dynamicsWorld->removeConstraint(hinge_body_legFrontRight);
-		dynamicsWorld->removeConstraint(hinge_body_legBackLeft);
-		dynamicsWorld->removeConstraint(hinge_body_legBackRight);
-		dynamicsWorld->removeConstraint(hinge_body_tail);
+		dynamicsWorld->removeConstraint(hinge_bodyFront_legUpperFrontLeft);
+		dynamicsWorld->removeConstraint(hinge_bodyFront_legUpperFrontRight);
+		dynamicsWorld->removeConstraint(hinge_bodyBack_legUpperBackLeft);
+		dynamicsWorld->removeConstraint(hinge_bodyBack_legUpperBackRight);
+		dynamicsWorld->removeConstraint(hinge_legUpperFrontLeft_legLowerFrontLeft);
+		dynamicsWorld->removeConstraint(hinge_legUpperFrontRight_legLowerFrontRight);
+		dynamicsWorld->removeConstraint(hinge_legUpperBackLeft_legLowerBackLeft);
+		dynamicsWorld->removeConstraint(hinge_legUpperBackRight_legLowerBackRight);
+		dynamicsWorld->removeConstraint(hinge_bodyBack_tail);
 
-		body->destroy();
+
+		bodyFront->destroy();
+		bodyBack->destroy();
 		head->destroy();
 		muzzle->destroy();
 		earLeft->destroy();
 		earRight->destroy();
-		legFrontLeft->destroy();
-		legFrontRight->destroy();
-		legBackLeft->destroy();
-		legBackRight->destroy();
+		legUpperFrontLeft->destroy();
+		legUpperFrontRight->destroy();
+		legUpperBackLeft->destroy();
+		legUpperBackRight->destroy();
+		legLowerFrontLeft->destroy();
+		legLowerFrontRight->destroy();
+		legLowerBackLeft->destroy();
+		legLowerBackRight->destroy();
 		tail->destroy();
 	}
 
@@ -476,13 +566,13 @@ int main(){
 	std::mt19937 mt(rd());
 	std::uniform_int_distribution<int> coin(0,1);
 	std::uniform_int_distribution<int> RNDnumOfAttack(0,10);
-	std::uniform_int_distribution<int> RNDnumOfRow(0,3);
+	std::uniform_int_distribution<int> RNDnumOfRow(0,7);
 	std::uniform_int_distribution<int> RNDnumOfColumn(0,19);
-	std::uniform_real_distribution<double> score(-1.57,1.57);
+	std::uniform_real_distribution<double> score(-1.57, 1.57);
+	std::uniform_real_distribution<double> scoreLower(0.0, 1.50);
 
 
-
-	//毎フレームごとにこの中が実装される。
+	//毎フレームごとにこの中が実行される。
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -509,8 +599,8 @@ int main(){
 		if(time == 30 + generation*2){
 
 			//まずは優良個体を調べる
-			float firstdna[20][4];
-			float seconddna[20][4];
+			float firstdna[20][8];
+			float seconddna[20][8];
 
 			float current1stMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
 			float current2ndMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
@@ -526,11 +616,11 @@ int main(){
 				if(pos.getX() > current1stMax){
 					current2ndMax = current1stMax;
 					current1stMax = pos.getX();
-					memcpy(seconddna, firstdna, sizeof(float)*20*4);
-					memcpy(firstdna, elem->dna, sizeof(float)*20*4);
+					memcpy(seconddna, firstdna, sizeof(float)*20*8);
+					memcpy(firstdna, elem->dna, sizeof(float)*20*8);
 				}else if(pos.getX() > current2ndMax){
 					current2ndMax = pos.getX();
-					memcpy(seconddna, elem->dna, sizeof(float)*20*4);
+					memcpy(seconddna, elem->dna, sizeof(float)*20*8);
 				}
 			}
 
@@ -540,7 +630,7 @@ int main(){
 				std::cout << std::endl;
 				std::cout << "---DNA DATA--------------------" << std::endl;
 				for(int a = 0; a < 20; a++){
-					for(int b = 0; b < 4; b++){
+					for(int b = 0; b < 8; b++){
 						std::cout << firstdna[a][b] << ", ";
 					}
 					std::cout << std::endl;
@@ -563,13 +653,13 @@ int main(){
 
 			//1番の犬
 			newdog = new dog(dynamicsWorld, 0, 1.5, -5*0, false);
-			memcpy(newdog->dna, firstdna, sizeof(float)*20*4);
+			memcpy(newdog->dna, firstdna, sizeof(float)*20*8);
 
 			doglist.push_back(newdog);
 
 			//2番の犬
 			newdog = new dog(dynamicsWorld, 0, 1.5, -5*1, false);
-			memcpy(newdog->dna, seconddna, sizeof(float)*20*4);
+			memcpy(newdog->dna, seconddna, sizeof(float)*20*8);
 			doglist.push_back(newdog);
 
 			//残りの犬
@@ -579,9 +669,9 @@ int main(){
 				//交叉
 				for(int dnaIndex = 0; dnaIndex < 20; dnaIndex++){
 					if(coin(mt) == 0){
-						memcpy(newdog->dna[dnaIndex], firstdna[dnaIndex], sizeof(float)*4);
+						memcpy(newdog->dna[dnaIndex], firstdna[dnaIndex], sizeof(float)*8);
 					}else{
-						memcpy(newdog->dna[dnaIndex], seconddna[dnaIndex], sizeof(float)*4);
+						memcpy(newdog->dna[dnaIndex], seconddna[dnaIndex], sizeof(float)*8);
 					}
 				}
 
