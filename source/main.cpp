@@ -38,6 +38,9 @@ glm::mat4 ProjectionMatrix;
 GLuint MatrixID;
 
 
+btDiscreteDynamicsWorld* dynamicsWorld;
+
+
 
 
 //カメラの位置など
@@ -226,30 +229,6 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 
 int main(){
 
-
-	/*
-	void *lh = dlopen("plugins/testdll.so", RTLD_LAZY);
-	if (!lh) {
-		fprintf(stderr, "dlopen error: %s\n", dlerror());
-		exit(1);
-	}
-	printf("libdll.so is loaded\n");
-
-	int (*fn)() = (int (*)())dlsym(lh, "dll");
-	char *error = dlerror();
-	if (error) {
-		fprintf(stderr, "dlsym error: %s\n", error);
-		exit(1);
-	}
-	printf("dll() function is found\n");
-
-	(*fn)();
-
-	printf("unloading libdll.so\n");
-	dlclose(lh);
-	*/
-
-
 	if (!glfwInit()){
 		std::cout << "glfw init failed...." << std::endl;
 	}
@@ -300,7 +279,6 @@ int main(){
 
 
 	//物理ワールドの生成
-	btDiscreteDynamicsWorld* dynamicsWorld;
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -318,6 +296,28 @@ int main(){
 
 	//床を作る
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
+
+	void *lh = dlopen("plugins/libdog.so", RTLD_LAZY);
+	if (!lh) {
+		fprintf(stderr, "dlopen error: %s\n", dlerror());
+		exit(1);
+	}
+	printf("libdog.so is loaded\n");
+
+	void (*fn)() = (void (*)())dlsym(lh, "init");
+	char *error = dlerror();
+	if (error) {
+		fprintf(stderr, "dlsym error: %s\n", error);
+		exit(1);
+	}
+	printf("init() function is found\n");
+
+	(*fn)();
+
+	/*
+	printf("unloading libdll.so\n");
+	dlclose(lh);
+	*/
 
 
 

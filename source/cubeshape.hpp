@@ -14,6 +14,8 @@
 
 #include "vertexmanage.hpp"
 
+extern btDiscreteDynamicsWorld *dynamicsWorld;
+
 class cubeshapeObject{
 	public:
 	int id;
@@ -41,5 +43,7 @@ namespace cubeshape{
 	extern void destroy(int id);
 	extern void render();
 }
+
+extern cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
 
 #endif
