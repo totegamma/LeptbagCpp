@@ -13,10 +13,11 @@ class hingeConstraint{
 	public:
 	hingeConstraint();
 	hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
-	void enableMotor(bool flag);
-	void setLimit(float lower, float upper);
-	void setMaxMotorImpulse(float power);
-	void destroy();
+	virtual void sayHello();
+	virtual void enableMotor(bool flag);
+	virtual void setLimit(float lower, float upper);
+	virtual void setMaxMotorImpulse(float power);
+	virtual void destroy();
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
