@@ -1,1 +1,0 @@
-dmd -oftestdll.so dll.d -fPIC -shared -defaultlib=libphobos2.so
