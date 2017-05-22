@@ -2,10 +2,6 @@ import core.stdc.stdio;
 import std.stdio;
 import core.runtime;
 
-extern (C) int dll() {
-    printf("dll()\n");
-    return 0;
-}
 
 //Library-----------------------------------
 
@@ -16,6 +12,20 @@ extern (C++) {
 	}
 
 	cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
+
+}
+
+extern (C++) {
+	interface hingeConstraint{
+		void enableMotor(bool flag);
+		void setLimit(float lower, float upper);
+		void setMaxMotorImpulse(float power);
+		void destroy();	
+	}
+}
+
+extern (C) {
+	hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
 }
 
 //------------------------------------------
@@ -37,6 +47,16 @@ cubeshapeObject* legBackLeft;
 cubeshapeObject* legBackRight;
 cubeshapeObject* tail;
 
+hingeConstraint* hinge_body_head;
+hingeConstraint* hinge_head_muzzle;
+hingeConstraint* hinge_earLeft_head;
+hingeConstraint* hinge_earRight_head;
+hingeConstraint* hinge_body_legFrontLeft;
+hingeConstraint* hinge_body_legFrontRight;
+hingeConstraint* hinge_body_legBackLeft;
+hingeConstraint* hinge_body_legBackRight;
+hingeConstraint* hinge_body_tail;
+
 
 	this(float x, float y, float z) {
 		spawn(x, y, z);
@@ -54,6 +74,33 @@ cubeshapeObject* tail;
 		legBackLeft		= cubeshape_create( x-0.5,   y-1, z-0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
 		legBackRight	= cubeshape_create( x-0.5,   y-1, z+0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
 		tail			= cubeshape_create( x-1.5, y+0.4,     z,		  1, 0.2, 0.2,		1, 0, 0, 0,		 0.2);
+
+
+		hinge_body_head			= hingeConstraint_create(chest   , head         ,    1,    0,    0, -0.4,   0,    0, 0, 0, 1);
+		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       ,  0.4, -0.2,    0, -0.3,   0,    0, 0, 0, 1);
+		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         ,    0, -0.1,    0,    0, 0.4, -0.2, 0, 0, 1);
+		hinge_earRight_head		= hingeConstraint_create(earRight, head         ,    0, -0.1,    0,    0, 0.4,  0.2, 0, 0, 1);
+		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft ,  0.5, -0.5, -0.4,    0, 0.5,  0.0, 0, 0, 1);
+		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight,  0.5, -0.5,  0.4,    0, 0.5,  0.0, 0, 0, 1);
+		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , -0.5, -0.5, -0.4,    0, 0.5,  0.0, 0, 0, 1);
+		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , -0.5, -0.5,  0.4,    0, 0.5,  0.0, 0, 0, 1);
+		hinge_body_tail			= hingeConstraint_create(chest   , tail         ,   -1,  0.4,    0,  0.5,   0,  0.0, 0, 0, 1);
+
+
+		hinge_body_head.setLimit(-3.14/6, 3.14/6);
+		/*
+		hinge_head_muzzle.setLimit(0, 0);
+		hinge_earLeft_head.setLimit(0, 0);
+		hinge_earRight_head.setLimit(0, 0);
+		hinge_body_legFrontLeft.setLimit(-3.14/2, 3.14/2);
+		hinge_body_legFrontRight.setLimit(-3.14/2, 3.14/2);
+		hinge_body_legBackLeft.setLimit(-3.14/2, 3.14/2);
+		hinge_body_legBackRight.setLimit(-3.14/2, 3.14/2);
+		hinge_body_tail.setLimit(-3.14/3, 3.14/3);
+		*/
+
+
+
 	}
 	void despawn(){
 		chest.destroy();
@@ -74,7 +121,6 @@ cubeshapeObject* tail;
 
 extern (C) void init(){
 	rt_init();
-	printf("I will call trueinit!\n");
 	mydog = new dog(0, 0, 0);
 }
 

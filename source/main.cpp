@@ -20,6 +20,7 @@
 #include "shader.hpp"
 #include "cubeshape.hpp"
 #include "floorshape.hpp"
+#include "constraints.hpp"
 
 GLFWwindow* window;
 
@@ -39,7 +40,6 @@ GLuint MatrixID;
 
 
 btDiscreteDynamicsWorld* dynamicsWorld;
-
 
 
 
