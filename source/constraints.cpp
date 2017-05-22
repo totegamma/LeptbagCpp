@@ -1,4 +1,5 @@
 #include "constraints.hpp"
+#include <iostream>
 
 hingeConstraint::hingeConstraint(){
 }
@@ -8,6 +9,10 @@ hingeConstraint::hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB,
 	hinge = new btHingeConstraint(*(cubeA->body), *(cubeB->body), btVector3(ax, ay, az), btVector3(bx, by, bz), btVector3(vx, vy, vz), btVector3(vx, vy, vz));
 	dynamicsWorld->addConstraint(hinge, true);
 
+}
+
+void hingeConstraint::sayHello(){
+	std::cout << "Hello!" << std::endl;
 }
 
 void hingeConstraint::enableMotor(bool flag){
