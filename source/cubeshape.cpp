@@ -148,3 +148,8 @@ namespace cubeshape{
 
 
 }
+
+
+cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g){
+	return cubeshape::create(glm::vec3(x, y, z), glm::vec3(w, h, d), glm::quat(qw, qx, qy, qz), g, dynamicsWorld);
+}
