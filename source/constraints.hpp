@@ -17,6 +17,7 @@ class hingeConstraint{
 	virtual void enableMotor(bool flag);
 	virtual void setLimit(float lower, float upper);
 	virtual void setMaxMotorImpulse(float power);
+	virtual void setMotorTarget(float angle, float duration);
 	virtual void destroy();
 };
 
