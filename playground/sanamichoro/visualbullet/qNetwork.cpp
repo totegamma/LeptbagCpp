@@ -14,7 +14,7 @@ class qNetwork{
 		std::deque<Eigen::MatrixXf> qout;
 		std::deque<Eigen::MatrixXf> weight[3];
 		std::deque<Eigen::VectorXf> bias[3];
-		double learningRate = 0.1; //学習率
+		double learningRate = 0.01; //学習率
 
 
 		qNetwork( int inputSize, int hiddenLayer1, int hiddenLayer2){
@@ -31,8 +31,10 @@ class qNetwork{
 		Eigen::MatrixXf forward(Eigen::MatrixXf input){
 
 			this->input.push_front(input);
+			//std::cout<<this->W1<<std::endl<<std::endl;
 
 			input = input * this->W1;
+			//std::cout<<input<<std::endl<<std::endl;
 			input = input.rowwise() + this->b1.transpose();
 			input = input.array().tanh().matrix();
 			input = input * this->W2;
@@ -55,37 +57,48 @@ class qNetwork{
 
 		}
 
+
 		Eigen::MatrixXf gradTanh(Eigen::MatrixXf input, Eigen::MatrixXf dout){
 			input = 2.0 * input;
 
 			Eigen::MatrixXf plus = input.array().exp() + 1;
-			Eigen::MatrixXf minus = input.array().exp() - 1;
 
-			return 2.0*( plus.array().inverse() - minus.array() /* *( ( plus.array()*plus.array() ).cwiseInverse() ) */ ).array() * dout.array();
+			return 4.0 * plus.array().inverse() * dout.array();
 
 
 		}
 
 		//中間ファイルを生成しないようにするために式が長いのでここを読みたかったらchoroから計算グラフをもらってください
-		void backward(double error){
+		void backward(Eigen::MatrixXf dout){
 
+			/*
 			Eigen::MatrixXf dout = Eigen::MatrixXf::Zero(256, 1);
 			Eigen::Index maxIndex,maxCol;
 			this->qout.back().maxCoeff(&maxIndex, &maxCol);
 			dout(maxIndex, 0) = error;
+			*/
+
+			Eigen::MatrixXf inputData = this->input.back();
+
+			Eigen::MatrixXf w[3];
+			Eigen::VectorXf b[3];
+
+			for(int i=0; i<3; i++){
+				w[i] = this->weight[i].back();
+				b[i] = this->bias[i].back();
+			}
 
 
 			Eigen::MatrixXf prePara[2];
-			prePara[0] = ( this->input.back() * this->weight[0].back() ).rowwise() + this->bias[0].back().transpose();
-			prePara[1] = ( prePara[0].array().tanh().matrix() * this->weight[1].back() ).rowwise() + this->bias[1].back().transpose();
-			
-			Eigen::MatrixXf gradtan = gradTanh(prePara[1], dout * this->weight[2].back().transpose() );
-			this->b3 = this->b3 - learningRate * dout.block(maxIndex, 0, 1, 1);
-			this->W3 = this->W3 - prePara[1].array().tanh().matrix().transpose() * dout;
-			this->b2 = this->b2 - gradtan.block(maxIndex, 0,  1, this->hiddenLayer2).transpose();
-			this->W2 = this->W2 - prePara[0].array().tanh().matrix().transpose() * gradtan;
-			this->b1 = this->b1 - ( gradTanh( prePara[0], gradtan  * this->weight[1].back().transpose() ) ).block(maxIndex, 0, 1, this->hiddenLayer1).transpose();
-			this->W1 = this->W1 - this->input.back().transpose() * gradTanh( prePara[0], gradtan * this->weight[1].back().transpose() );
+			prePara[0] = (inputData * w[0]).rowwise() + b[0].transpose();
+			prePara[1] = ( prePara[0].array().tanh().matrix() * w[1] ).rowwise() + b[1].transpose();
+
+			this->b3 = this->b3 - learningRate * dout.colwise().sum();
+			this->W3 = this->W3 - learningRate * prePara[1].array().tanh().matrix().transpose() * dout;
+			this->b2 = this->b2 - learningRate * gradTanh( prePara[1], dout*w[2].transpose() ).colwise().sum().transpose();
+			this->W2 = this->W2 - learningRate * prePara[0].array().tanh().matrix().transpose() * gradTanh( prePara[1], dout*w[2].transpose() );
+			this->b1 = this->b1 - learningRate * gradTanh( prePara[0], gradTanh(prePara[1], dout*w[2].transpose()) * w[1].transpose() ).colwise().sum().transpose();
+			this->W1 = this->W1 - learningRate * inputData.transpose() * gradTanh( prePara[0], gradTanh(prePara[1], dout*w[2].transpose()) * w[1].transpose() );
 			//std::cout<<gradTanh( prePara[0], gradtan * this->weight[1].back().transpose() )<<std::endl<<std::endl;
 
 			this->qout.pop_back();

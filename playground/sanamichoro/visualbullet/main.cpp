@@ -27,6 +27,7 @@ int hiddenLayer1 = 9;
 int hiddenLayer2 = 5;
 int delayEvaluateSection = 5; //qNetworkは現在からdelayEvaluateSection先までの移動距離を予想する．
 double theta = 3.14/6.0; //1ステップで現在の関節角度からどれくらい前後に動かすか
+double epsilon = 0.5;
 
 GLFWwindow* window;
 
@@ -246,7 +247,7 @@ class dog{
 		qNetwork* brain;
 		double dogXpre = 0; //Q値計算のために移動距離を算出する用
 		std::deque<int> neko;
-		std::deque<double> qValue; //予想移動距離を保存する
+		std::deque<Eigen::MatrixXf> qValue; //予想移動距離を保存する
 		std::deque<double> qResult; //実際の移動距離を保存する．qValueと比べ，それをqNetworkへの誤差とする．
 
 		float dna[20][8] = {};
@@ -294,6 +295,8 @@ class dog{
 
 			//DNAをランダムで初期化する
 			if(initialDNA == true){
+
+
 				std::random_device rd;
 				std::mt19937 mt(rd());
 				std::uniform_real_distribution<double> score(-1.57,1.57);
@@ -463,10 +466,13 @@ class dog{
 			   hinge_legUpperBackLeft_legLowerBackLeft->setMotorTarget(dna[sequence][6], 0.3);
 			   hinge_legUpperBackRight_legLowerBackRight->setMotorTarget(dna[sequence][7], 0.3);
 			   */
-
-
-			int action = this->chooseAction();
-			std::cout<<action<<std::endl;
+			std::random_device rd;
+			std::mt19937 mt(rd());
+			std::uniform_int_distribution<int> rndAction(0,255);
+			std::uniform_real_distribution<double> eps(0, 1.0);
+			int action = rndAction(mt);
+			if( eps(mt) >= epsilon ) action = this->chooseAction();
+			//std::cout<<action<<std::endl;
 			double act[8];
 			for(int a=0; a<8; a++){
 				act[a] = this->currentState[a] + 2.0*((action & 1) - 0.5) * theta;
@@ -507,15 +513,32 @@ class dog{
 		//どの行動パターンをとるべきか返す．その過程で予想Q値と実際のQ値を計算し，qNetworkを更新する．
 		int chooseAction(){
 
+			std::random_device rd;
+			std::mt19937 mt(rd());
+			std::uniform_int_distribution<int> rndAction(0,255);
+			std::uniform_real_distribution<double> eps(0, 1.0);
+
+			int action = rndAction(mt);
+
+			Eigen::MatrixXf::Index maxRow, maxCol;
+
 			//移動距離を計算し現在位置を保存しておく
 			btTransform transform;
 			this->muzzle->body->getMotionState()->getWorldTransform(transform);
 			btVector3 pos = transform.getOrigin();
 
 			Eigen::MatrixXf qValueSet = this->calculateQ();
-			Eigen::MatrixXf::Index maxRow, maxCol;
 			this->qResult.push_front(0.0);
-			this->qValue.push_front( qValueSet.maxCoeff(&maxRow, &maxCol) );
+
+			if( eps(mt) >= epsilon ){
+				action = qValueSet.maxCoeff(&maxRow, &maxCol);
+			}else{
+				double value = qValueSet(action, 0);
+				qValueSet = Eigen::MatrixXf::Zero(256, 1);
+				qValueSet(action, 0) = value;
+			}
+
+			this->qValue.push_front( qValueSet );
 			//std::cout<<qValueSet.transpose()<<std::endl;
 
 			for(int q=0; q < this->qResult.size(); q++){
@@ -523,17 +546,23 @@ class dog{
 			}
 
 			if( qResult.size() >= delayEvaluateSection ){
-				double error = pow(this->qValue.back() - this->qResult.back(),2) / 2.0;
-				this->brain->backward( error );
+
+				double qPredict = this->qValue.back().maxCoeff(&maxRow, &maxCol);
+				double error = pow(qPredict - this->qResult.back(),2) / 2.0;
+				Eigen::MatrixXf dout = Eigen::MatrixXf::Zero(256, 1);
+				dout(maxRow, maxCol) = error;
+				this->brain->backward( dout );
 				this->qResult.pop_back();
 				this->qValue.pop_back();
+
+
 			}
 
 			this->dogXpre = pos.getX();
 
 			//std::cout<<qValueSet.transpose()<<std::endl;
 
-			return maxRow;
+			return action;
 
 		}
 
@@ -580,6 +609,7 @@ class dog{
 
 
 int main(){
+
 
 	if (!glfwInit()){
 		std::cout << "glfw init failed...." << std::endl;
@@ -673,7 +703,7 @@ int main(){
 	std::vector<dog*> doglist;
 
 	//0世代目の犬。全部ランダム。
-	for(int i = 0; i < 100; i++){
+	for(int i = 0; i < 10; i++){
 		doglist.push_back(new dog(dynamicsWorld, 0, 1.5, -5*i, true));
 	}
 
@@ -784,7 +814,7 @@ int main(){
 			doglist.push_back(newdog);
 
 			//残りの犬
-			for(int i = 2; i < 100; i++){
+			for(int i = 2; i < 10; i++){
 				newdog = new dog(dynamicsWorld, 0, 1.5, -5*i, false);
 
 				//交叉
