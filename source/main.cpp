@@ -304,7 +304,7 @@ int main(){
 	}
 	printf("libdog.so is loaded\n");
 
-	void (*fn)() = (void (*)())dlsym(lh, "init");
+	void (*pluginInit)() = (void (*)())dlsym(lh, "init");
 	char *error = dlerror();
 	if (error) {
 		fprintf(stderr, "dlsym error: %s\n", error);
@@ -312,12 +312,17 @@ int main(){
 	}
 	printf("init() function is found\n");
 
-	(*fn)();
+	(*pluginInit)();
 
-	/*
-	printf("unloading libdll.so\n");
-	dlclose(lh);
-	*/
+	void (*pluginTick)() = (void (*)())dlsym(lh, "tick");
+	error = dlerror();
+	if (error) {
+		fprintf(stderr, "dlsym error: %s\n", error);
+		exit(1);
+	}
+	printf("tick() function is found\n");
+
+
 
 
 
@@ -336,6 +341,9 @@ int main(){
 
 		//カメラ位置等を計算する
 		computeMatricesFromInputs();
+
+		(*pluginTick)();
+
 
 		//物理演算1ステップ進める
 		dynamicsWorld->stepSimulation(1 / 60.f, 10);
@@ -365,6 +373,9 @@ int main(){
 	glDisableVertexAttribArray(3);
 	glDisableVertexAttribArray(4);
 	glDisableVertexAttribArray(5);
+
+	printf("unloading libdll.so\n");
+	dlclose(lh);
 
 
 	glDeleteVertexArrays(1, &VertexArrayID);
