@@ -5,7 +5,6 @@ import std.random;
 import std.math;
 import std.algorithm;
 
-
 //Library-----------------------------------
 
 extern (C++) {
@@ -87,7 +86,6 @@ class dog{
 
 
 
-
 	void spawn(float x, float y, float z){
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
@@ -152,7 +150,6 @@ class dog{
 		legBackLeft.destroy();
 		legBackRight.destroy();
 		tail.destroy();
-
 		hinge_body_head.destroy();
 		hinge_head_muzzle.destroy();
 		hinge_earLeft_head.destroy();

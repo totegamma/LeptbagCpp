@@ -41,6 +41,10 @@ GLuint MatrixID;
 
 btDiscreteDynamicsWorld* dynamicsWorld;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 
 
 //カメラの位置など
@@ -305,6 +309,7 @@ int main(){
 	printf("libdog.so is loaded\n");
 
 	void (*pluginInit)() = (void (*)())dlsym(lh, "init");
+
 	char *error = dlerror();
 	if (error) {
 		fprintf(stderr, "dlsym error: %s\n", error);
@@ -321,7 +326,6 @@ int main(){
 		exit(1);
 	}
 	printf("tick() function is found\n");
-
 
 
 
