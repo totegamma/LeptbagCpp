@@ -33,6 +33,28 @@ void cubeshapeObject::destroy(){
 
 }
 
+float cubeshapeObject::getXpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getX();
+}
+
+float cubeshapeObject::getYpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getY();
+}
+
+float cubeshapeObject::getZpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getZ();
+}
+
+
 void cubeshapeObject::changeID(int newID){
 	id = newID;
 }
