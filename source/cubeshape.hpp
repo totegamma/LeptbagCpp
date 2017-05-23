@@ -23,9 +23,13 @@ class cubeshapeObject{
 	btRigidBody* body;
 	glm::vec3 size;
 	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
-	void destroy();
 	void changeID(int newID);
-	void loadMotionState();
+
+	virtual void destroy();
+	virtual float getXpos();
+	virtual float getYpos();
+	virtual float getZpos();
+	virtual void loadMotionState();
 };
 
 namespace cubeshape{
