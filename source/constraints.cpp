@@ -27,6 +27,10 @@ void hingeConstraint::setMaxMotorImpulse(float power){
 	hinge->setMaxMotorImpulse(power);
 }
 
+void hingeConstraint::setMotorTarget(float angle, float duration){
+	hinge->setMotorTarget(angle, duration);
+}
+
 void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
 }
