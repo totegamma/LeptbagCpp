@@ -13,7 +13,6 @@ class hingeConstraint{
 	public:
 	hingeConstraint();
 	hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
-	virtual void sayHello();
 	virtual void enableMotor(bool flag);
 	virtual void setLimit(float lower, float upper);
 	virtual void setMaxMotorImpulse(float power);
