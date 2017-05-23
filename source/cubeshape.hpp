@@ -18,14 +18,23 @@ extern btDiscreteDynamicsWorld *dynamicsWorld;
 
 class cubeshapeObject{
 	public:
+
 	int id;
 	btDiscreteDynamicsWorld *dynamicsWorld;
 	btRigidBody* body;
 	glm::vec3 size;
+
 	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
-	void destroy();
+	virtual void destroy();
+	virtual float getXpos();
+	virtual float getYpos();
+	virtual float getZpos();
+
 	void changeID(int newID);
 	void loadMotionState();
+
+
+
 };
 
 namespace cubeshape{
