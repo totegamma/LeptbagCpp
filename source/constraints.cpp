@@ -11,10 +11,6 @@ hingeConstraint::hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB,
 
 }
 
-void hingeConstraint::sayHello(){
-	std::cout << "Hello!" << std::endl;
-}
-
 void hingeConstraint::enableMotor(bool flag){
 	hinge->enableMotor(flag);
 }
