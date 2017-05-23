@@ -41,10 +41,6 @@ GLuint MatrixID;
 
 btDiscreteDynamicsWorld* dynamicsWorld;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 
 
 //カメラの位置など
