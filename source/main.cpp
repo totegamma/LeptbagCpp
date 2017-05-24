@@ -1,10 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <string>
+#include <sstream>
+#include <cstdlib>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <dirent.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -42,6 +46,10 @@ GLuint MatrixID;
 btDiscreteDynamicsWorld* dynamicsWorld;
 
 
+typedef void (*pluginfunc_t)();
+std::vector<pluginfunc_t> pluginInitVector;
+std::vector<pluginfunc_t> pluginTickVector;
+
 
 //カメラの位置など
 glm::vec3 position = glm::vec3( 0, 0, 0 ); 
@@ -63,6 +71,16 @@ bool holdingRightStrafe = false;
 
 bool holdingSneek = false;
 bool holdingSpace = false;
+
+std::vector<std::string> split(const std::string &str, char sep){
+	std::vector<std::string> v;
+	std::stringstream ss(str);
+	std::string buffer;
+	while( std::getline(ss, buffer, sep) ) {
+		v.push_back(buffer);
+	}
+	return v;
+}
 
 
 void computeMatricesFromInputs(){
@@ -297,31 +315,58 @@ int main(){
 	//床を作る
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 
-	void *lh = dlopen("plugins/libdog.so", RTLD_LAZY);
-	if (!lh) {
-		fprintf(stderr, "dlopen error: %s\n", dlerror());
-		exit(1);
+
+
+
+
+	void *lh;
+	const char* path = "./friends/";
+	DIR *dp;       // ディレクトリへのポインタ
+	dirent* entry; // readdir() で返されるエントリーポイント
+
+	std::string hoge;
+
+	dp = opendir(path);
+	if (dp==NULL) exit(1);
+	entry = readdir(dp);
+	while (entry != NULL){
+		std::string filename(entry->d_name);
+		if(split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends"){
+
+			lh = dlopen((path + filename).c_str(), RTLD_LAZY);
+			if (!lh) {
+				fprintf(stderr, "dlopen error: %s\n", dlerror());
+				exit(1);
+			}
+
+			void (*pluginInit)() = (void (*)())dlsym(lh, "init");
+			char *error = dlerror();
+			if (error) {
+				fprintf(stderr, "dlsym error: %s\n", error);
+				exit(1);
+			}
+			pluginInitVector.push_back(*pluginInit);
+
+			void (*pluginTick)() = (void (*)())dlsym(lh, "tick");
+			error = dlerror();
+			if (error) {
+				fprintf(stderr, "dlsym error: %s\n", error);
+				exit(1);
+			}
+			pluginTickVector.push_back(*pluginTick);
+
+
+
+		}
+
+		entry = readdir(dp);
 	}
-	printf("libdog.so is loaded\n");
 
-	void (*pluginInit)() = (void (*)())dlsym(lh, "init");
 
-	char *error = dlerror();
-	if (error) {
-		fprintf(stderr, "dlsym error: %s\n", error);
-		exit(1);
+	for(auto elem: pluginInitVector){
+		(elem)();
 	}
-	printf("init() function is found\n");
 
-	(*pluginInit)();
-
-	void (*pluginTick)() = (void (*)())dlsym(lh, "tick");
-	error = dlerror();
-	if (error) {
-		fprintf(stderr, "dlsym error: %s\n", error);
-		exit(1);
-	}
-	printf("tick() function is found\n");
 
 
 
@@ -342,7 +387,10 @@ int main(){
 		//カメラ位置等を計算する
 		computeMatricesFromInputs();
 
-		(*pluginTick)();
+		for(auto elem: pluginTickVector){
+			(elem)();
+		}
+
 
 
 		//物理演算1ステップ進める
