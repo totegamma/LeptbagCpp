@@ -42,13 +42,9 @@ class qNetwork{
 		}
 
 
-		Eigen::MatrixXf forward(Eigen::MatrixXf input){
-
-			this->input.push_front(input);
-			//std::cout<<this->W1<<std::endl<<std::endl;
+		Eigen::MatrixXf forwardCalculate(Eigen::MatrixXf input){
 
 			input = input * this->W1;
-			//std::cout<<input<<std::endl<<std::endl;
 			input = input.rowwise() + this->b1.transpose();
 			input = input.array().tanh().matrix();
 			input = input * this->W2;
@@ -56,6 +52,19 @@ class qNetwork{
 			input = input.array().tanh().matrix();
 			input = input * this->W3;
 			input = input.rowwise() + this->b3.transpose();
+
+			return input;
+
+		}
+
+
+
+
+		Eigen::MatrixXf forward(Eigen::MatrixXf input){
+
+			this->input.push_front(input);
+			//std::cout<<this->W1<<std::endl<<std::endl;
+			input = this->forwardCalculate(input);
 
 			this->qout.push_front(input); //Qは保存しておく
 			//重みを保存しておく
@@ -84,7 +93,7 @@ class qNetwork{
 
 
 		void gradient(Eigen::MatrixXf weightSet[], Eigen::VectorXf biasSet[],
-				Eigen::MatrixXf data, Eigen::MatrixXf dout){
+					Eigen::MatrixXf data, Eigen::MatrixXf dout){
 
 
 			Eigen::MatrixXf prePara[2];
@@ -102,6 +111,114 @@ class qNetwork{
 
 
 		}
+
+
+		//バックプロパゲーションの検証用数値微分
+		void numericalGradient(Eigen::MatrixXf weightSet[], Eigen::VectorXf biasSet[],
+							Eigen::MatrixXf data, Eigen::MatrixXf dout){
+
+			double h = 1.0e-4;
+
+			Eigen::MatrixXf g5 = Eigen::MatrixXf::Zero(this->W1.rows(), this->W1.cols());
+			for(int r=0; r < this->W1.rows(); r++){
+				for(int c=0; c < this->W1.cols(); c++){
+
+					this->W1.coeffRef(r, c) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->W1.coeffRef(r, c) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g5(r, c) = (fh1 - fh2) / (2.0*h);
+					this->W1.coeffRef(r, c) += h;
+
+				}
+			}
+			this->grad[5] = g5;
+
+			Eigen::MatrixXf g3 = Eigen::MatrixXf::Zero(this->W2.rows(), this->W2.cols());
+			for(int r=0; r < this->W2.rows(); r++){
+				for(int c=0; c < this->W2.cols(); c++){
+
+					this->W2.coeffRef(r, c) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->W2.coeffRef(r, c) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g3(r, c) = (fh1 - fh2) / (2.0*h);
+					this->W2.coeffRef(r, c) += h;
+
+				}
+			}
+			this->grad[3] = g3;
+
+			Eigen::MatrixXf g1 = Eigen::MatrixXf::Zero(this->W3.rows(), this->W3.cols());
+			for(int r=0; r < this->W3.rows(); r++){
+				for(int c=0; c < this->W3.cols(); c++){
+
+					this->W3.coeffRef(r, c) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->W3.coeffRef(r, c) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g1(r, c) = (fh1 - fh2) / (2.0*h);
+					this->W3.coeffRef(r, c) += h;
+
+				}
+			}
+			this->grad[1] = g1;
+
+
+
+
+					Eigen::VectorXf g4 = Eigen::VectorXf::Zero(this->b1.size());
+			for(int s=0; s < this->b1.size(); s++){
+
+					this->b1.coeffRef(s) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->b1.coeffRef(s) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g4(s) = (fh1 - fh2) / (2.0*h);
+					this->b1.coeffRef(s) += h;
+
+			}
+			this->grad[4] = g4;
+
+			Eigen::VectorXf g2 = Eigen::VectorXf::Zero(this->b2.size());
+			for(int s=0; s < this->b2.size(); s++){
+
+					this->b2.coeffRef(s) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->b2.coeffRef(s) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g2(s) = (fh1 - fh2) / (2.0*h);
+					this->b2.coeffRef(s) += h;
+
+			}
+			this->grad[2] = g2;
+			
+			Eigen::VectorXf g0 = Eigen::VectorXf::Zero(this->b3.size());
+			for(int s=0; s < this->b3.size(); s++){
+
+					this->b3.coeffRef(s) += h;
+					double fh1 = this->forwardCalculate(data).maxCoeff();
+					this->b3.coeffRef(s) -= 2.0*h;
+					double fh2 = this->forwardCalculate(data).maxCoeff();
+
+					g0(s) = (fh1 - fh2) / (2.0*h);
+					this->b3.coeffRef(s) += h;
+
+			}
+			this->grad[0] = g0;
+
+
+
+
+		}
+
+
+
 
 		//中間ファイルを生成しないようにするために式が長いのでここを読みたかったらchoroから計算グラフをもらってください
 		void backward(Eigen::MatrixXf dout){
