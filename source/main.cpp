@@ -256,7 +256,7 @@ int main(){
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(windowWidth, windowHeight, "My Title", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "Japari", NULL, NULL);
 	if (!window){
 		std::cout << "cannot open OpenGL window" << std::endl;
 	}
