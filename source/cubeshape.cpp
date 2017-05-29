@@ -70,20 +70,20 @@ namespace cubeshape{
 
 	vertex objectData[14] = {
 
-		vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
-		vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
-		vertex(-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f),
-		vertex( 0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f),
-		vertex( 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f),
-		vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
-		vertex( 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f),
-		vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
-		vertex(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
-		vertex(-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f),
-		vertex(-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
-		vertex( 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f),
-		vertex(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
-		vertex( 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f)
+		vertex(-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 1.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f, 1.0f, 1.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 1.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f),
+		vertex(-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f, 1.0f, 1.0f),
+		vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f)
 	};
 
 	std::vector<glm::mat4> instanceMatrixArray;
