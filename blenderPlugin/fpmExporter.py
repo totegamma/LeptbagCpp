@@ -16,13 +16,14 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
         fo = open(self.filepath, 'w')
 
 
-        fo.write("{\n")
+        fo.write("[\n")
 
         for keyname in bpy.data.objects.keys():
             obj = bpy.data.objects[keyname]
             if obj.type == "EMPTY":
-                fo.write("\t\"%s\":{\n" % (keyname))
+                fo.write("\t{\n")
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
+                fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"constraintType\":\"%s\",\n" % obj.rigid_body_constraint.type)
                 fo.write("\t\t\"xpos\":\"%f\",\n" % obj.location[0])
                 fo.write("\t\t\"ypos\":\"%f\",\n" % obj.location[1])
@@ -37,8 +38,9 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"limitUpper\":\"%f\"\n" % obj.rigid_body_constraint.limit_ang_z_upper)
                 fo.write("\t},\n")
             elif obj.type == "MESH":
-                fo.write("\t\"%s\":{\n" % (keyname))
+                fo.write("\t{\n")
                 fo.write("\t\t\"objectType\":\"MESH\",\n")
+                fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"rigidBodyType\":\"%s\",\n" % obj.rigid_body.type)
                 fo.write("\t\t\"rigidBodyShape\":\"%s\",\n" % obj.rigid_body.collision_shape)
                 fo.write("\t\t\"mass\":\"%s\",\n" % obj.rigid_body.mass)
@@ -59,11 +61,11 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"zscl\":\"%f\"\n" % obj.scale[2])
                 fo.write("\t},\n")
 
-        fo.write("\t\"dummy\":{\n")
+        fo.write("\t{\n")
         fo.write("\t\t\"objectType\":\"DUMMY\"\n")
-        fo.write("\t}\n");
+        fo.write("\t}\n")
 
-        fo.write("}\n")
+        fo.write("]\n")
 
 
         fo.close()
