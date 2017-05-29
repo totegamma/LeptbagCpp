@@ -115,7 +115,7 @@ namespace cubeshape{
 				);
 
 
-		btCollisionShape* shape = new btBoxShape(btVector3(size.x/2, size.y/2, size.z/2));
+		btCollisionShape* shape = new btBoxShape(btVector3(size.x, size.y, size.z));
 
 		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
 		btVector3 inertia(0, 0, 0);
