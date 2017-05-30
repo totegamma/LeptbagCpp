@@ -377,6 +377,7 @@ int main(){
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
 	glEnableVertexAttribArray(5);
+	glEnableVertexAttribArray(6);
 
 
 
@@ -407,6 +408,7 @@ int main(){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
 		cubeshape::render();
 		floorshape::render();
@@ -421,6 +423,7 @@ int main(){
 	glDisableVertexAttribArray(3);
 	glDisableVertexAttribArray(4);
 	glDisableVertexAttribArray(5);
+	glDisableVertexAttribArray(6);
 
 	printf("unloading libdll.so\n");
 	dlclose(lh);
