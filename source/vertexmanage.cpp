@@ -8,8 +8,6 @@ std::vector <vertex> vertexBufferArray;
 
 void initVBO(){
 	glGenBuffers(1, &vertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferArray), &vertexBufferArray[0], GL_STATIC_DRAW);
 }
 
 void registervertex(vertex input[], GLuint* arrayaddr, int length){

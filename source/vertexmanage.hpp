@@ -17,14 +17,22 @@ struct vertex{
 	GLfloat positionX;
 	GLfloat positionY;
 	GLfloat positionZ;
+	GLfloat normalX;
+	GLfloat normalY;
+	GLfloat normalZ;
 	GLfloat colorR;
 	GLfloat colorG;
 	GLfloat colorB;
 
-	vertex(GLfloat positionX, GLfloat positionY, GLfloat positionZ, GLfloat colorR, GLfloat colorG, GLfloat colorB){
+	vertex(	GLfloat positionX, GLfloat positionY, GLfloat positionZ,
+			GLfloat normalX, GLfloat normalY, GLfloat normalZ,
+			GLfloat colorR, GLfloat colorG, GLfloat colorB){
 		this->positionX = positionX;
 		this->positionY = positionY;
 		this->positionZ = positionZ;
+		this->normalX = normalX;
+		this->normalY = normalY;
+		this->normalZ = normalZ;
 		this->colorR = colorR;
 		this->colorG = colorG;
 		this->colorB = colorB;
@@ -34,6 +42,9 @@ struct vertex{
 		return (	this->positionX == v.positionX
 				&&	this->positionY == v.positionY
 				&&	this->positionZ == v.positionZ
+				&&	this->normalX == v.normalX
+				&&	this->normalY == v.normalY
+				&&	this->normalZ == v.normalZ
 				&&	this->colorR == v.colorR
 				&&	this->colorG == v.colorG
 				&&	this->colorB == v.colorB);
@@ -50,22 +61,5 @@ extern void initVBO();
 
 extern void registervertex(vertex input[], GLuint* arrayaddr, int length);
 
-/*
-std::vector <vertex> vertexBufferArray {
-	vertex(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f),
-	vertex(-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f),
-	vertex(-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f),
-	vertex(-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f),
-	vertex( 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f),
-	vertex( 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f),
-	vertex( 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f),
-	vertex( 0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-	vertex(-100.0f, 0.0f, -100.0f, 0.0f, 0.0f, 1.0f),
-	vertex(-100.0f, 0.0f,  100.0f, 0.0f, 1.0f, 0.0f),
-	vertex( 100.0f, 0.0f, -100.0f, 1.0f, 0.0f, 0.0f),
-	vertex( 100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f)
-};
-*/
 
 #endif
