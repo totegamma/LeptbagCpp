@@ -40,6 +40,7 @@ GLint midWindowY = windowHeight / 2;
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
+GLuint uniform_lightPosition;
 GLuint uniform_viewMatrix;
 GLuint uniform_projectionMatrix;
 
@@ -287,6 +288,7 @@ int main(){
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	// Get a handle for our "MVP" uniform
+//	uniform_lightPosition = glGetUniformLocation(programID, "LightPosition_worldspace");
 	uniform_viewMatrix = glGetUniformLocation(programID, "V");
 	uniform_projectionMatrix = glGetUniformLocation(programID, "P");
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
@@ -405,9 +407,8 @@ int main(){
 		//OpenGL描画
 		glUseProgram(programID);
 
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(uniform_viewMatrix, 1, GL_FALSE, &ViewMatrix[0][0]);
+//		glUniformMatrix4fv(uniform_lightPosition,    1, GL_FALSE, &lightPosition[0]);
+		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
 		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
