@@ -101,16 +101,16 @@ class dog{
 	void spawn(float x, float y, float z){
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
-		chest			= cubeshape_create(     x,     y,     z,		  2,   1,   1,		1, 0, 0, 0,		   2);
-		head			= cubeshape_create( x+1.4,     y,     z,		0.8, 0.8, 0.8,		1, 0, 0, 0,		 0.5);
-		muzzle			= cubeshape_create( x+2.1, y-0.2,     z,		0.6, 0.4, 0.4,		1, 0, 0, 0,		 0.1);
-		earLeft			= cubeshape_create( x+1.4, y+0.5, z-0.2,		0.2, 0.2, 0.2,		1, 0, 0, 0,		0.05);
-		earRight		= cubeshape_create( x+1.4, y+0.5, z+0.2,		0.2, 0.2, 0.2,		1, 0, 0, 0,		0.05);
-		legFrontLeft	= cubeshape_create( x+0.5,   y-1, z-0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legFrontRight	= cubeshape_create( x+0.5,   y-1, z+0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legBackLeft		= cubeshape_create( x-0.5,   y-1, z-0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legBackRight	= cubeshape_create( x-0.5,   y-1, z+0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		tail			= cubeshape_create( x-1.5, y+0.4,     z,		  1, 0.2, 0.2,		1, 0, 0, 0,		 0.2);
+		chest			= cubeshape_create(     x,     y,     z,		  1, 0.5, 0.5,		1, 0, 0, 0,		   2);
+		head			= cubeshape_create( x+1.4,     y,     z,		0.4, 0.4, 0.4,		1, 0, 0, 0,		 0.5);
+		muzzle			= cubeshape_create( x+2.1, y-0.2,     z,		0.3, 0.2, 0.2,		1, 0, 0, 0,		 0.1);
+		earLeft			= cubeshape_create( x+1.4, y+0.5, z-0.2,		0.1, 0.1, 0.1,		1, 0, 0, 0,		0.05);
+		earRight		= cubeshape_create( x+1.4, y+0.5, z+0.2,		0.1, 0.1, 0.1,		1, 0, 0, 0,		0.05);
+		legFrontLeft	= cubeshape_create( x+0.5,   y-1, z-0.4,		0.1, 0.5, 0.1,		1, 0, 0, 0,		 0.3);
+		legFrontRight	= cubeshape_create( x+0.5,   y-1, z+0.4,		0.1, 0.5, 0.1,		1, 0, 0, 0,		 0.3);
+		legBackLeft		= cubeshape_create( x-0.5,   y-1, z-0.4,		0.1, 0.5, 0.1,		1, 0, 0, 0,		 0.3);
+		legBackRight	= cubeshape_create( x-0.5,   y-1, z+0.4,		0.1, 0.5, 0.1,		1, 0, 0, 0,		 0.3);
+		tail			= cubeshape_create( x-1.5, y+0.4,     z,		0.5, 0.1, 0.1,		1, 0, 0, 0,		 0.2);
 
 
 		hinge_body_head			= hingeConstraint_create(chest   , head         ,    1,    0,    0, -0.4,   0,    0, 0, 0, 1);
