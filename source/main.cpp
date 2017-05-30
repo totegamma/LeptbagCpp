@@ -40,7 +40,8 @@ GLint midWindowY = windowHeight / 2;
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
-GLuint MatrixID;
+GLuint uniform_viewMatrix;
+GLuint uniform_projectionMatrix;
 
 
 btDiscreteDynamicsWorld* dynamicsWorld;
@@ -49,6 +50,8 @@ btDiscreteDynamicsWorld* dynamicsWorld;
 typedef void (*pluginfunc_t)();
 std::vector<pluginfunc_t> pluginInitVector;
 std::vector<pluginfunc_t> pluginTickVector;
+
+glm::vec3 lightPosition = glm::vec3(0, 20, 0);
 
 
 //カメラの位置など
@@ -284,7 +287,8 @@ int main(){
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	// Get a handle for our "MVP" uniform
-	MatrixID = glGetUniformLocation(programID, "MVP");
+	uniform_viewMatrix = glGetUniformLocation(programID, "V");
+	uniform_projectionMatrix = glGetUniformLocation(programID, "P");
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
@@ -403,7 +407,8 @@ int main(){
 
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(uniform_viewMatrix, 1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);

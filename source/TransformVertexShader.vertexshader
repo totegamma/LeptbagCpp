@@ -9,12 +9,14 @@ layout(location = 3) in mat4 instanceMatrix;
 // Output data ; will be interpolated for each fragment.
 out vec3 fragmentColor;
 // Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 V;
+uniform mat4 P;
+
 
 void main(){	
 
 	// Output position of the vertex, in clip space : MVP * position
-	gl_Position =  MVP * instanceMatrix * vec4(vertexPosition,1);
+	gl_Position =  P * V * instanceMatrix * vec4(vertexPosition,1);
 
 	// The color of each vertex will be interpolated
 	// to produce the color of each fragment
