@@ -42,7 +42,7 @@ namespace cubeshape{
 	extern GLuint indexBufferObject;
 	extern GLuint instanceMatrixBuffer;
 
-	extern GLuint indexBufferArray[14];
+	extern GLuint indexBufferArray[36];
 
 	extern std::vector<glm::mat4> instanceMatrixArray;
 

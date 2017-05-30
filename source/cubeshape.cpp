@@ -64,26 +64,49 @@ namespace cubeshape{
 
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
-	GLuint indexBufferArray[14];
+	GLuint indexBufferArray[36];
 
-	int numOfObject = 0;;
+	int numOfObject = 0;
 
-	vertex objectData[14] = {
+	vertex objectData[36] = {
 
-		vertex(-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f),
-		vertex( 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 1.0f),
-		vertex(-1.0f,  1.0f,  1.0f, 0.0f, 1.0f, 1.0f),
-		vertex( 1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f),
-		vertex( 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f),
-		vertex( 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 1.0f),
-		vertex( 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f),
-		vertex(-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f),
-		vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f),
-		vertex(-1.0f,  1.0f,  1.0f, 0.0f, 1.0f, 1.0f),
-		vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.0f),
-		vertex( 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f),
-		vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f),
-		vertex( 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f)
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex(-1.0f, -1.0f,  1.0f, 0.0f,  0.0f,  1.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f,  1.0f,  1.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  0.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex(-1.0f,  1.0f, -1.0f, 0.0f,  1.0f,  0.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f,  0.0f,  1.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f,  0.0f,  0.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  0.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f,  0.0f,  0.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f,  1.0f,  1.0f),
+		vertex(-1.0f,  1.0f, -1.0f, 0.0f,  1.0f,  0.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f,  0.0f,  1.0f),
+		vertex(-1.0f, -1.0f,  1.0f, 0.0f,  0.0f,  1.0f),
+		vertex(-1.0f, -1.0f, -1.0f, 0.0f,  0.0f,  0.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f,  1.0f,  1.0f),
+		vertex(-1.0f, -1.0f,  1.0f, 0.0f,  0.0f,  1.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f,  0.0f,  1.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f,  0.0f,  0.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  0.0f),
+		vertex( 1.0f, -1.0f, -1.0f, 1.0f,  0.0f,  0.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f,  0.0f,  1.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f),
+		vertex( 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  0.0f),
+		vertex(-1.0f,  1.0f, -1.0f, 0.0f,  1.0f,  0.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f),
+		vertex(-1.0f,  1.0f, -1.0f, 0.0f,  1.0f,  0.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f,  1.0f,  1.0f),
+		vertex( 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f),
+		vertex(-1.0f,  1.0f,  1.0f, 0.0f,  1.0f,  1.0f),
+		vertex( 1.0f, -1.0f,  1.0f, 1.0f,  0.0f,  1.0f)
+
 	};
 
 	std::vector<glm::mat4> instanceMatrixArray;
@@ -92,7 +115,7 @@ namespace cubeshape{
 
 	void init(){
 
-		registervertex(objectData, indexBufferArray, 14);
+		registervertex(objectData, indexBufferArray, 36);
 
 		glGenBuffers(1, &indexBufferObject);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
@@ -165,7 +188,7 @@ namespace cubeshape{
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, (void*)0, numOfObject);
+		glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0, numOfObject);
 	}
 
 
