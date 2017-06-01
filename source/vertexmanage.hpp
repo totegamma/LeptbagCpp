@@ -59,7 +59,7 @@ extern std::vector <vertex> vertexBufferArray;
 
 extern void initVBO();
 
-extern void registervertex(vertex input[], GLuint* arrayaddr, int length);
+extern void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr);
 
 
 #endif

@@ -64,11 +64,11 @@ namespace cubeshape{
 
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
-	GLuint indexBufferArray[36];
+	std::vector<GLuint> indexBufferArray;
 
 	int numOfObject = 0;
 
-	vertex objectData[36] = {
+	std::vector<vertex> objectData = {
 
 		vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
 		vertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f),
@@ -131,11 +131,11 @@ namespace cubeshape{
 
 	void init(){
 
-		registervertex(objectData, indexBufferArray, 36);
+		registervertex(&objectData, &indexBufferArray);
 
 		glGenBuffers(1, &indexBufferObject);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexBufferArray), indexBufferArray, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferArray.size() * sizeof(GLuint), &indexBufferArray[0], GL_STATIC_DRAW);
 
 
 		glGenBuffers(1, &instanceMatrixBuffer);

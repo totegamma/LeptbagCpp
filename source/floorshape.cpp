@@ -15,11 +15,11 @@ namespace floorshape{
 
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
-	GLuint indexBufferArray[4];
+	std::vector<GLuint> indexBufferArray;
 
 	int numOfObject = 0;;
 
-	vertex objectData[4] = {
+	std::vector<vertex> objectData = {
 		vertex(-1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
 		vertex(-1000.0f,  0.0f,  1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
 		vertex( 1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
@@ -32,11 +32,11 @@ namespace floorshape{
 
 	void init(){
 
-		registervertex(objectData, indexBufferArray, 4);
+		registervertex(&objectData, &indexBufferArray);
 
 		glGenBuffers(1, &indexBufferObject);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexBufferArray), indexBufferArray, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferArray.size() * sizeof(GLuint), &indexBufferArray[0], GL_STATIC_DRAW);
 
 
 		glGenBuffers(1, &instanceMatrixBuffer);

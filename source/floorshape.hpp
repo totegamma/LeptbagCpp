@@ -27,7 +27,8 @@ namespace floorshape{
 	};
 	*/
 
-	extern glm::mat4 floor_instanceMatrixArray[1];
+	//TODO 長さ
+	extern std::vector<glm::mat4> floor_instanceMatrixArray;
 
 
 
