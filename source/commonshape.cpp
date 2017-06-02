@@ -1,5 +1,9 @@
 #include "commonshape.hpp"
 
+commonshapeObject* createCommonShapeObject(){
+	return new commonshapeObject();
+}
+
 std::vector<commonshapeObject*> commonshapeList;
 
 commonshapeObject::commonshapeObject(){
@@ -10,7 +14,8 @@ commonshapeObject::~commonshapeObject(){
 }
 
 
-void commonshapeObject::addVertex(vertex newvertex){
+void commonshapeObject::addVertex(vertex &newvertex){
+	printf("added %f, %f, %f\n", newvertex.positionX, newvertex.positionY, newvertex.positionZ);
 	objectData.push_back(newvertex);
 }
 
@@ -29,11 +34,12 @@ shapePointerObject* commonshapeObject::create(){
 	return new shapePointerObject();
 }
 
-shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size, glm::quat quat){
-	return new shapePointerObject(this, false, NULL, position, size, quat);
+shapePointerObject* commonshapeObject::create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz){
+	return new shapePointerObject(this, false, NULL, glm::vec3(posx, posy, posz), glm::vec3(sizx, sizy, sizz), glm::quat(quatw, quatx, quaty, quatz));
 }
 
-shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld){
+
+shapePointerObject* commonshapeObject::create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass){
 
 		std::vector<btVector3> convexHullShapePoints;
 
@@ -41,7 +47,7 @@ shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size
 			btVector3 co = btVector3(elem.positionX, elem.positionY, elem.positionZ);
 			auto itr = std::find(convexHullShapePoints.begin(), convexHullShapePoints.end(), co);
 			if( itr == convexHullShapePoints.end() ){
-				glm::vec4 target = glm::scale(glm::mat4(1.0f), size) * glm::vec4(co.x(), co.y(), co.z(), 1);
+				glm::vec4 target = glm::scale(glm::mat4(1.0f), glm::vec3(sizx, sizy, sizz)) * glm::vec4(co.x(), co.y(), co.z(), 1);
 				convexHullShapePoints.push_back(
 							btVector3(target.x, target.y, target.z)
 						);
@@ -50,14 +56,14 @@ shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size
 
 		btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));
 
-		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quatx, quaty, quatz, quatw), btVector3(posx, posy, posz)));
 		btVector3 inertia(0, 0, 0);
 		shape->calculateLocalInertia(mass, inertia);
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
 		btRigidBody* body = new btRigidBody(bodyCI);
 		dynamicsWorld->addRigidBody(body);
 
-		objects.push_back(new shapePointerObject(this, true, body, position, size, quat));
+		objects.push_back(new shapePointerObject(this, true, body, glm::vec3(posx, posy, posz), glm::vec3(sizx, sizy, sizz), glm::quat(quatw, quatx, quaty, quatz)));
 
 
 		return objects.back();

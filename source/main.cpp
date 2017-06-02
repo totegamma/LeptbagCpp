@@ -384,7 +384,7 @@ int main(){
 	std::uniform_int_distribution<int> range(-30,30);
 
 	for(int i = 0; i < 100; i++){
-		cubeList[cubeSelector(mt)].create(glm::vec3(range(mt), range(mt)+40, range(mt)), glm::vec3(1, 1, 1), glm::quat(0, 0, 0, 1), 1, dynamicsWorld);
+		cubeList[cubeSelector(mt)].create(range(mt), range(mt)+40, range(mt), 1, 1, 1, 0, 0, 0, 1, 1);
 	}
 	*/
 
