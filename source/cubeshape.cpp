@@ -1,6 +1,5 @@
 #include "cubeshape.hpp"
 
-#include <iostream>
 
 cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld){
 	this->id = id;
