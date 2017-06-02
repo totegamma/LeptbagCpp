@@ -14,58 +14,52 @@
 
 #include "vertexmanage.hpp"
 
-extern btDiscreteDynamicsWorld *dynamicsWorld;
+//TODO 別ファイルにする
+class shapePointerObject;
 
 class commonshapeObject{
+	GLuint indexBufferObject;
+	GLuint instanceMatrixBuffer;
 
-	private:
+	std::vector<GLuint> indexBufferArray;
+	//std::vector<glm::mat4> instanceMatrixArray;
 
-	static GLuint indexBufferObject;
-	static GLuint instanceMatrixBuffer;
-	static std::vector<GLuint> indexBufferArray;
+	std::vector<vertex> objectData;
 
-	static std::vector<glm::mat4> instanceMatrixArray;
-	static std::vector<commonshapeObject*> objects;
-
-	static std::vector<vertex> objectData;
-
+	std::vector<shapePointerObject*> objects;
 
 	public:
 
-	static int numOfObject;
+	commonshapeObject();
+	~commonshapeObject();
 
-	int id;
-	btDiscreteDynamicsWorld *dynamicsWorld;
-	btRigidBody* body;
-	glm::vec3 size;
-
-	commonshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
-	virtual void  destroy();
-	virtual float getXpos();
-	virtual float getYpos();
-	virtual float getZpos();
-
-	void changeID(int newID);
-	void loadMotionState();
-
-	static void init();
-	static commonshapeObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
-	static void destroy(int id);
-	static void render();
-
+	void addVertex(vertex newvertex);
+	void registerToSystem();
+	shapePointerObject* create();
+	shapePointerObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat);
+	shapePointerObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
+	void destroy(int id);
+	void render();
 
 };
 
-GLuint commonshapeObject::indexBufferObject;
-GLuint commonshapeObject::instanceMatrixBuffer;
-std::vector<GLuint> commonshapeObject::indexBufferArray;
-std::vector<glm::mat4> commonshapeObject::instanceMatrixArray;
-std::vector<commonshapeObject*> commonshapeObject::objects;
-std::vector<vertex> commonshapeObject::objectData;
-int commonshapeObject::numOfObject;
+extern std::vector<commonshapeObject*> commonshapeList;
 
 
-extern commonshapeObject* commonshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
+class shapePointerObject{
+	bool isPhysicalBody;
+	commonshapeObject* parent;
+	btRigidBody* body;
+	glm::vec3 initialPosition;
+	glm::vec3 initialSize;
+	glm::quat initialQuat;
+
+	public:
+
+	shapePointerObject();
+	shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, glm::vec3 posi, glm::vec3 size, glm::quat quat);
+	glm::mat4 loadMatrix();
+};
 
 #endif
 
