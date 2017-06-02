@@ -15,7 +15,6 @@ commonshapeObject::~commonshapeObject(){
 
 
 void commonshapeObject::addVertex(vertex &newvertex){
-	printf("added %f, %f, %f\n", newvertex.positionX, newvertex.positionY, newvertex.positionZ);
 	objectData.push_back(newvertex);
 }
 
