@@ -322,6 +322,8 @@ int main(){
 	//床を作る
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 
+	/*
+
 	commonshapeObject cubeList[8];
 
 	int itr = 0;
@@ -384,6 +386,7 @@ int main(){
 	for(int i = 0; i < 100; i++){
 		cubeList[cubeSelector(mt)].create(glm::vec3(range(mt), range(mt)+40, range(mt)), glm::vec3(1, 1, 1), glm::quat(0, 0, 0, 1), 1, dynamicsWorld);
 	}
+	*/
 
 
 
