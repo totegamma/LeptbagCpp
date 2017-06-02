@@ -2,6 +2,7 @@ import core.runtime;
 import std.stdio;
 import std.math;
 import std.json;
+import std.random;
 
 //Library-----------------------------------
 
@@ -55,11 +56,34 @@ extern (C) {
 
 //------------------------------------------
 
-tree mytree;
+Random rnd;
 
+commonshapeObject leaf;
+commonshapeObject trunk;
+
+float leafXpos;
+float leafYpos;
+float leafZpos;
+float leafWquat;
+float leafXquat;
+float leafYquat;
+float leafZquat;
+float leafXscl;
+float leafYscl;
+float leafZscl;
+
+float trunkXpos;
+float trunkYpos;
+float trunkZpos;
+float trunkWquat;
+float trunkXquat;
+float trunkYquat;
+float trunkZquat;
+float trunkXscl;
+float trunkYscl;
+float trunkZscl;
 
 class tree{
-
 
 	this(float x, float y, float z) {
 		spawn(x, y, z);
@@ -68,21 +92,8 @@ class tree{
 
 
 	void spawn(float x, float y, float z){
-
-		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-		auto jsonString = import("lowPolyTree.fpm");
-
-		JSONValue model = parseJSON(jsonString);
-
-		foreach(elem; model.array){
-			if(elem["objectType"].str == "MESH"){
-				if(elem["name"].str == "leaf"){
-					foreach(vertex; elem["vertex"].array){
-					}
-				}else if(elem["name"].str == "trunk"){
-				}
-			}
-		}
+		leaf.create(leafXpos + x, leafYpos + y, leafZpos + z, leafXscl, leafYscl, leafZscl, leafWquat, leafXquat, leafYquat, leafZquat, 0);
+		trunk.create(trunkXpos + x, trunkYpos + y, trunkZpos + z, trunkXscl, trunkYscl, trunkZscl, trunkWquat, trunkXquat, trunkYquat, trunkZquat, 0);
 	}
 }
 
@@ -90,56 +101,77 @@ class tree{
 //ApplicationInterface----------------------
 
 extern (C) void init(){
+	try{
 	rt_init();
+	Random(unpredictableSeed);
 	writeln("lowPolyTree.d loaded");
 
-	float r = 1;
-	float g = 0;
-	float b = 0;
+	leaf = createCommonShapeObject();
+	trunk = createCommonShapeObject();
 
-	commonshapeObject myshape = createCommonShapeObject();
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
-	myshape.registerToSystem();
+	//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
+	auto jsonString = import("lowPolyTree.fpm");
 
-	myshape.create(0, 10, 0, 0.1, 0.1, 0.1, 0, 0, 0, 1, 1);
+	JSONValue model = parseJSON(jsonString);
+
+	foreach(elem; model.array){
+		if(elem["objectType"].str == "MESH"){
+			if(elem["name"].str == "leaf"){
 
 
-	//mytree = new tree(0, 1.5, -5);
+				leafXpos  = elem["xpos"].floating;
+				leafYpos  = elem["ypos"].floating;
+				leafZpos  = elem["zpos"].floating;
+				leafWquat = elem["wqat"].floating;
+				leafXquat = elem["xqat"].floating;
+				leafYquat = elem["yqat"].floating;
+				leafZquat = elem["zqat"].floating;
+				leafXscl  = elem["xscl"].floating;
+				leafYscl  = elem["yscl"].floating;
+				leafZscl  = elem["zscl"].floating;
+
+				foreach(objvertex; elem["vertex"].array){
+					leaf.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+												objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
+												objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
+				}
+				leaf.registerToSystem();
+			}else if(elem["name"].str == "trunk"){
+
+				trunkXpos  = elem["xpos"].floating;
+				trunkYpos  = elem["ypos"].floating;
+				trunkZpos  = elem["zpos"].floating;
+				trunkWquat = elem["wqat"].floating;
+				trunkXquat = elem["xqat"].floating;
+				trunkYquat = elem["yqat"].floating;
+				trunkZquat = elem["zqat"].floating;
+				trunkXscl  = elem["xscl"].floating;
+				trunkYscl  = elem["yscl"].floating;
+				trunkZscl  = elem["zscl"].floating;
+
+				foreach(objvertex; elem["vertex"].array){
+					trunk.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+													objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
+													objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
+				}
+				trunk.registerToSystem();
+			}
+		}
+	}
+
+
+	for (int i = 0; i < 100; i++){
+		new tree(uniform(-30, 30, rnd), 0, uniform(-30, 30, rnd));
+	}
+
+	
+	}
+	catch (Exception ex){
+		writeln(ex.toString);
+	}
+
+
+
 }
 
 
