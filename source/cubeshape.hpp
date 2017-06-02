@@ -42,7 +42,8 @@ namespace cubeshape{
 	extern GLuint indexBufferObject;
 	extern GLuint instanceMatrixBuffer;
 
-	extern GLuint indexBufferArray[36];
+	//TODO 長さ36を初期値に設定したい
+	extern std::vector<GLuint> indexBufferArray;
 
 	extern std::vector<glm::mat4> instanceMatrixArray;
 

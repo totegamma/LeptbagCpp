@@ -13,7 +13,10 @@
 #include <btBulletDynamicsCommon.h>
 
 
-struct vertex{
+class vertex{
+
+	public:
+
 	GLfloat positionX;
 	GLfloat positionY;
 	GLfloat positionZ;
@@ -59,7 +62,9 @@ extern std::vector <vertex> vertexBufferArray;
 
 extern void initVBO();
 
-extern void registervertex(vertex input[], GLuint* arrayaddr, int length);
+extern void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr);
+
+extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 
 
 #endif

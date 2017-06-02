@@ -25,6 +25,7 @@
 #include "cubeshape.hpp"
 #include "floorshape.hpp"
 #include "constraints.hpp"
+#include "commonshape.hpp"
 
 GLFWwindow* window;
 
@@ -322,9 +323,6 @@ int main(){
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 
 
-
-
-
 	void *lh;
 	const char* path = "./friends/";
 	DIR *dp;       // ディレクトリへのポインタ
@@ -418,6 +416,10 @@ int main(){
 
 		cubeshape::render();
 		floorshape::render();
+
+		for(auto elem: commonshapeList){
+			elem->render();
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
