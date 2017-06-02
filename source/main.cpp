@@ -25,6 +25,7 @@
 #include "cubeshape.hpp"
 #include "floorshape.hpp"
 #include "constraints.hpp"
+#include "commonshape.hpp"
 
 GLFWwindow* window;
 
@@ -321,6 +322,69 @@ int main(){
 	//床を作る
 	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
 
+	commonshapeObject cubeList[8];
+
+	int itr = 0;
+
+	for(int r = 0; r < 2; r++){
+		for(int g = 0; g < 2; g++){
+			for(int b = 0; b < 2; b++){
+
+				cubeList[itr] = commonshapeObject();
+
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+				cubeList[itr].addVertex(vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+
+				cubeList[itr].registerToSystem();
+
+				itr ++;
+			}
+		}
+	}
+
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_int_distribution<int> cubeSelector(0,7);
+	std::uniform_int_distribution<int> range(-30,30);
+
+	for(int i = 0; i < 100; i++){
+		cubeList[cubeSelector(mt)].create(glm::vec3(range(mt), range(mt)+40, range(mt)), glm::vec3(1, 1, 1), glm::quat(0, 0, 0, 1), 1, dynamicsWorld);
+	}
+
 
 
 
@@ -418,6 +482,10 @@ int main(){
 
 		cubeshape::render();
 		floorshape::render();
+
+		for(auto elem: commonshapeList){
+			elem->render();
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

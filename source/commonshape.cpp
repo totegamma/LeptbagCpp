@@ -1,127 +1,83 @@
 #include "commonshape.hpp"
 
-#include <iostream>
+std::vector<commonshapeObject*> commonshapeList;
 
-commonshapeObject::commonshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld){
-	this->id = id;
-	this->body = body;
-	this->size = size;
-	this->dynamicsWorld = dynamicsWorld;
+commonshapeObject::commonshapeObject(){
+	commonshapeList.push_back(this);
+}
+
+commonshapeObject::~commonshapeObject(){
 }
 
 
-void commonshapeObject::loadMotionState(){
-
-	btTransform transform;
-	body->getMotionState()->getWorldTransform(transform);
-
-	btVector3 pos = transform.getOrigin();
-	btQuaternion quaternion = transform.getRotation();
-
-	commonshapeObject::instanceMatrixArray[id] = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
-		* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
-		* glm::scale(glm::mat4(1.0f), size);
-
+void commonshapeObject::addVertex(vertex newvertex){
+	objectData.push_back(newvertex);
 }
 
-void commonshapeObject::destroy(){
-	destroy(id);
+void commonshapeObject::registerToSystem(){
+		registervertex(&objectData, &indexBufferArray);
 
-	dynamicsWorld->removeRigidBody(body);
-	delete body->getMotionState();
-	delete body;
+		glGenBuffers(1, &indexBufferObject);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferArray.size() * sizeof(GLuint), &indexBufferArray[0], GL_STATIC_DRAW);
 
+
+		glGenBuffers(1, &instanceMatrixBuffer);
 }
 
-float commonshapeObject::getXpos(){
-	btTransform transform;
-	body->getMotionState()->getWorldTransform(transform);
-	btVector3 pos = transform.getOrigin();
-	return pos.getX();
+shapePointerObject* commonshapeObject::create(){
+	return new shapePointerObject();
 }
 
-float commonshapeObject::getYpos(){
-	btTransform transform;
-	body->getMotionState()->getWorldTransform(transform);
-	btVector3 pos = transform.getOrigin();
-	return pos.getY();
+shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size, glm::quat quat){
+	return new shapePointerObject(this, false, NULL, position, size, quat);
 }
 
-float commonshapeObject::getZpos(){
-	btTransform transform;
-	body->getMotionState()->getWorldTransform(transform);
-	btVector3 pos = transform.getOrigin();
-	return pos.getZ();
-}
+shapePointerObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld){
+
+		std::vector<btVector3> convexHullShapePoints;
+
+		for(auto elem: objectData){
+			btVector3 co = btVector3(elem.positionX, elem.positionY, elem.positionZ);
+			auto itr = std::find(convexHullShapePoints.begin(), convexHullShapePoints.end(), co);
+			if( itr == convexHullShapePoints.end() ){
+				glm::vec4 target = glm::scale(glm::mat4(1.0f), size) * glm::vec4(co.x(), co.y(), co.z(), 1);
+				convexHullShapePoints.push_back(
+							btVector3(target.x, target.y, target.z)
+						);
+			}
+		}
+
+		btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));
+
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
+		btVector3 inertia(0, 0, 0);
+		shape->calculateLocalInertia(mass, inertia);
+		btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
+		btRigidBody* body = new btRigidBody(bodyCI);
+		dynamicsWorld->addRigidBody(body);
+
+		objects.push_back(new shapePointerObject(this, true, body, position, size, quat));
 
 
-void commonshapeObject::changeID(int newID){
-	id = newID;
-}
+		return objects.back();
 
 
-
-void commonshapeObject::init(){
-
-	registervertex(&objectData, &indexBufferArray);
-
-	glGenBuffers(1, &indexBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexBufferArray), &indexBufferArray[0], GL_STATIC_DRAW);
-
-
-	glGenBuffers(1, &instanceMatrixBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, instanceMatrixArray.size() * sizeof(glm::mat4), &instanceMatrixArray[0], GL_DYNAMIC_DRAW);
-}
-
-
-commonshapeObject* commonshapeObject::create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld){
-
-
-	instanceMatrixArray.push_back(
-			glm::translate(glm::mat4(1.0f), position) 
-			* glm::toMat4(quat)
-			* glm::scale(glm::mat4(1.0f), size)
-			);
-
-
-	btCollisionShape* shape = new btBoxShape(btVector3(size.x, size.y, size.z));
-
-	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
-	btVector3 inertia(0, 0, 0);
-	shape->calculateLocalInertia(mass, inertia);
-	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
-	btRigidBody* body = new btRigidBody(bodyCI);
-	dynamicsWorld->addRigidBody(body);
-
-	objects.push_back(new commonshapeObject(numOfObject, body, size, dynamicsWorld));
-
-
-	numOfObject++;
-
-	return objects.back();
 }
 
 void commonshapeObject::destroy(int id){
-	objects[id] = objects.back();
-	objects[id]->changeID(id);
-	objects.pop_back();
-
-	instanceMatrixArray[id] = instanceMatrixArray.back();
-	instanceMatrixArray.pop_back();
-	numOfObject--;
 }
 
 void commonshapeObject::render(){
 
-	for (auto elem: objects){
-		elem->loadMotionState();
+	glm::mat4 instanceMatrixArray[objects.size()];
+
+	for(int i = 0; i < objects.size(); i++){
+		instanceMatrixArray[i] = objects[i]->loadMatrix();
 	}
 
-
 	glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, instanceMatrixArray.size() * sizeof(glm::mat4), &instanceMatrixArray[0], GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, objects.size() * sizeof(glm::mat4), instanceMatrixArray, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*0));
@@ -136,11 +92,42 @@ void commonshapeObject::render(){
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0, numOfObject);
+	glDrawElementsInstanced(GL_TRIANGLES, objectData.size(), GL_UNSIGNED_INT, (void*)0, objects.size());
+
+}
+
+shapePointerObject::shapePointerObject(){
+}
+shapePointerObject::shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, glm::vec3 posi, glm::vec3 size, glm::quat quat){
+	this->parent = parent;
+	isPhysicalBody = isPhysical;
+	initialPosition = posi;
+	initialSize = size;
+	initialQuat = quat;
+	if(isPhysical == true){
+		this->body = body;
+	}
+}
+
+glm::mat4 shapePointerObject::loadMatrix(){
+	if(isPhysicalBody == true){
+		btTransform transform;
+		body->getMotionState()->getWorldTransform(transform);
+
+		btVector3 pos = transform.getOrigin();
+		btQuaternion quaternion = transform.getRotation();
+
+		return glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
+			* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
+			* glm::scale(glm::mat4(1.0f), initialSize);
+
+	}else{
+		return glm::translate(glm::mat4(1.0f), initialPosition) 
+						* glm::toMat4(initialQuat)
+						* glm::scale(glm::mat4(1.0f), initialSize);
+	}
 }
 
 
-commonshapeObject* commonshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g){
-	return commonshapeObject::create(glm::vec3(x, y, z), glm::vec3(w, h, d), glm::quat(qw, qx, qy, qz), g, dynamicsWorld);
-}
+
 
