@@ -2,6 +2,7 @@
 #define COMMONSHAPE_HPP
 
 #include <vector>
+#include <stdio.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,6 +15,8 @@
 
 #include "vertexmanage.hpp"
 
+extern btDiscreteDynamicsWorld *dynamicsWorld;
+
 //TODO 別ファイルにする
 class shapePointerObject;
 
@@ -22,7 +25,6 @@ class commonshapeObject{
 	GLuint instanceMatrixBuffer;
 
 	std::vector<GLuint> indexBufferArray;
-	//std::vector<glm::mat4> instanceMatrixArray;
 
 	std::vector<vertex> objectData;
 
@@ -33,15 +35,17 @@ class commonshapeObject{
 	commonshapeObject();
 	~commonshapeObject();
 
-	void addVertex(vertex newvertex);
-	void registerToSystem();
-	shapePointerObject* create();
-	shapePointerObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat);
-	shapePointerObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
+	virtual void addVertex(vertex &newvertex);
+	virtual void registerToSystem();
+	virtual shapePointerObject* create();
+	virtual shapePointerObject* create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz);
+	virtual shapePointerObject* create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass);
 	void destroy(int id);
 	void render();
 
 };
+
+extern "C" commonshapeObject* createCommonShapeObject();
 
 extern std::vector<commonshapeObject*> commonshapeList;
 

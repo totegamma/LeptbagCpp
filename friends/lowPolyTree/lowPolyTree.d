@@ -27,19 +27,38 @@ extern (C++) {
 	}
 }
 
+extern (C++){
+	interface vertex{
+	}
+}
+
+extern (C++){
+	interface shapePointerObject{
+	}
+}
+
+extern (C++){
+	interface commonshapeObject{
+		void addVertex(vertex newvertex);
+		void registerToSystem();
+		shapePointerObject create();
+		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz);
+		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass);
+	}
+}
+
 extern (C) {
 	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+	vertex createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
+	commonshapeObject createCommonShapeObject();
 }
 
 //------------------------------------------
 
-wolf mywolf;
+tree mytree;
 
 
-class wolf{
-
-	cubeshapeObject[string] cubeDict;
-	hingeConstraint[string] hingeDict;
+class tree{
 
 
 	this(float x, float y, float z) {
@@ -49,53 +68,21 @@ class wolf{
 
 
 	void spawn(float x, float y, float z){
-		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 
-		//HACK コンパイル時にjsonStringにsimpleWolf.fpmの内容が代入される(要-Jオプション)
-		auto jsonString = import("simpleWolf.fpm");
+		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
+		auto jsonString = import("lowPolyTree.fpm");
 
 		JSONValue model = parseJSON(jsonString);
 
 		foreach(elem; model.array){
 			if(elem["objectType"].str == "MESH"){
-				if(elem["rigidBodyShape"].str == "BOX"){
-					cubeDict[elem["name"].str] = cubeshape_create(
-													elem["xpos"].floating + x, elem["ypos"].floating + y, elem["zpos"].floating + z, 
-													elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating, 
-													elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating, 
-													elem["mass"].floating);
+				if(elem["name"].str == "leaf"){
+					foreach(vertex; elem["vertex"].array){
+					}
+				}else if(elem["name"].str == "trunk"){
 				}
 			}
 		}
-
-		foreach(elem; model.array){
-			if(elem["objectType"].str == "constraint"){
-				float xrot = elem["xrot"].floating;
-				float yrot = elem["yrot"].floating;
-				float zrot = elem["zrot"].floating;
-				hingeDict[elem["name"].str] = hingeConstraint_create(cubeDict[elem["object1"].str], cubeDict[elem["object2"].str],
-																		elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating,
-																		elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating,
-																		-sin(xrot)*sin(zrot) + cos(xrot)*cos(yrot)*cos(zrot),// デフォルトではy軸方向ヒンジ
-																		-sin(yrot)*cos(zrot),                                // ベクトルの回転でどの向きになるか
-																		cos(xrot)*sin(zrot) + sin(xrot)*cos(yrot)*cos(zrot));// 計算する。
-				if(elem["useLimit"].str == "True"){
-					hingeDict[elem["name"].str].setLimit(elem["limitLower"].floating, elem["limitUpper"].floating);
-				}
-			}
-		}
-
-
-
-	}
-
-	void move(int sequence){
-
-	}
-
-
-	void despawn(){
-
 	}
 }
 
@@ -104,8 +91,55 @@ class wolf{
 
 extern (C) void init(){
 	rt_init();
+	writeln("lowPolyTree.d loaded");
 
-	mywolf = new wolf(0, 1.5, -5);
+	float r = 1;
+	float g = 0;
+	float b = 0;
+
+	commonshapeObject myshape = createCommonShapeObject();
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
+	myshape.registerToSystem();
+
+	myshape.create(0, 10, 0, 0.1, 0.1, 0.1, 0, 0, 0, 1, 1);
+
+
+	//mytree = new tree(0, 1.5, -5);
 }
 
 
