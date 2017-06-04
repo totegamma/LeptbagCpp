@@ -29,7 +29,7 @@ class vec3{
 
 extern "C" createVec3(float x, float y, float z);
 
-class quarternion{
+class quat{
 
 	public:
 
@@ -38,11 +38,11 @@ class quarternion{
 	float y;
 	float z;
 
-	quarternion(){
+	quat(){
 		w = x = y = z = 0;
 	}
 
-	quarternion(float w, float x, float y, float z){
+	quat(float w, float x, float y, float z){
 		this->w = w;
 		this->x = x;
 		this->y = y;
