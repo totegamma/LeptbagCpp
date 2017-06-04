@@ -1,7 +1,7 @@
 #include "cubeshape.hpp"
 
 
-cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld){
+cubeshapeObject::cubeshapeObject(int id, btRigidBody* body, vec3 size, btDiscreteDynamicsWorld *dynamicsWorld){
 	this->id = id;
 	this->body = body;
 	this->size = size;
@@ -19,7 +19,7 @@ void cubeshapeObject::loadMotionState(){
 
 	cubeshape::instanceMatrixArray[id] = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
 		* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
-		* glm::scale(glm::mat4(1.0f), size);
+		* glm::scale(glm::mat4(1.0f), size.toGlm());
 
 }
 
@@ -143,19 +143,19 @@ namespace cubeshape{
 	}
 
 
-	cubeshapeObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld){
+	cubeshapeObject* create(vec3 position, vec3 size, quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld){
 
 
 		instanceMatrixArray.push_back(
-				glm::translate(glm::mat4(1.0f), position) 
-				* glm::toMat4(quat)
-				* glm::scale(glm::mat4(1.0f), size)
+				glm::translate(glm::mat4(1.0f), position.toGlm()) 
+				* glm::toMat4(quat.toGlm())
+				* glm::scale(glm::mat4(1.0f), size.toGlm())
 				);
 
 
-		btCollisionShape* shape = new btBoxShape(btVector3(size.x, size.y, size.z));
+		btCollisionShape* shape = new btBoxShape(size.toBullet());
 
-		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(quat.toBullet(), position.toBullet()));
 		btVector3 inertia(0, 0, 0);
 		shape->calculateLocalInertia(mass, inertia);
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
@@ -211,5 +211,5 @@ namespace cubeshape{
 
 
 cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g){
-	return cubeshape::create(glm::vec3(x, y, z), glm::vec3(w, h, d), glm::quat(qw, qx, qy, qz), g, dynamicsWorld);
+	return cubeshape::create(vec3(x, y, z), vec3(w, h, d), quat(qw, qx, qy, qz), g, dynamicsWorld);
 }

@@ -25,6 +25,14 @@ class vec3{
 	vec3(float x, float y, float z);
 	btVector3 toBullet();
 	glm::vec3 toGlm();
+
+	vec3& operator= (const vec3& R){
+		//return vec3(R.x, R.y, R.z);
+		this->x = R.x;
+		this->y = R.y;
+		this->z = R.z;
+		return *this;
+	}
 };
 
 extern "C" vec3* createVec3(float x, float y, float z);
