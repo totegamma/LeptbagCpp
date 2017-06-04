@@ -33,9 +33,9 @@ quat::quat(float w, float x, float y, float z){
 
 
 btQuaternion quat::toBullet(){
-	return btQuaternion(w, x, y, z);
+	return btQuaternion(x, y, z, w);
 }
 
 glm::quat quat::toGlm(){
-	return glm::quat(x, y, z, w);
+	return glm::quat(w, x, y, z);
 }
