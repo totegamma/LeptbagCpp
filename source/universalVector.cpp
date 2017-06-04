@@ -19,12 +19,12 @@ glm::vec3 vec3::toGlm(){
 }
 
 
-quat::quarternion(){
+quat::quat(){
 	w = 1;
 	x = y = z = 0;
 }
 
-quat::quarternion(float w, float x, float y, float z){
+quat::quat(float w, float x, float y, float z){
 	this->w = w;
 	this->x = x;
 	this->y = y;
