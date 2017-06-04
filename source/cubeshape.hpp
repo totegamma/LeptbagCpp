@@ -13,6 +13,7 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "vertexmanage.hpp"
+#include "universalVector.hpp"
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;
 
@@ -22,9 +23,10 @@ class cubeshapeObject{
 	int id;
 	btDiscreteDynamicsWorld *dynamicsWorld;
 	btRigidBody* body;
-	glm::vec3 size;
+	vec3 size;
 
-	cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
+	//cubeshapeObject(int id, btRigidBody* body, glm::vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
+	cubeshapeObject(int id, btRigidBody* body, vec3 size, btDiscreteDynamicsWorld *dynamicsWorld);
 	virtual void destroy();
 	virtual float getXpos();
 	virtual float getYpos();
@@ -49,7 +51,8 @@ namespace cubeshape{
 
 
 	extern void init();
-	extern cubeshapeObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
+	//extern cubeshapeObject* create(glm::vec3 position, glm::vec3 size, glm::quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
+	extern cubeshapeObject* create(vec3 position, vec3 size, quat quat, btScalar mass, btDiscreteDynamicsWorld *dynamicsWorld);
 	extern void destroy(int id);
 	extern void render();
 }
