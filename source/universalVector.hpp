@@ -27,7 +27,7 @@ class vec3{
 	glm::vec3 toGlm();
 };
 
-extern "C" createVec3(float x, float y, float z);
+extern "C" vec3* createVec3(float x, float y, float z);
 
 class quat{
 
@@ -38,29 +38,14 @@ class quat{
 	float y;
 	float z;
 
-	quat(){
-		w = x = y = z = 0;
-	}
-
-	quat(float w, float x, float y, float z){
-		this->w = w;
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
+	quat();
+	quat(float w, float x, float y, float z);
+	btQuaternion toBullet();
+	glm::quat toGlm();
+};
 
 
-	btQuaternion toBullet(){
-		return btQuaternion(w, x, y, z);
-	}
-
-	glm::quat toGlm(){
-		return glm::quat(x, y, z, w);
-	}
-}
-
-
-extern "C" createQuat(float w, float x, float y, float z);
+extern "C" quat* createQuat(float w, float x, float y, float z);
 
 
 #endif
