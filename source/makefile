@@ -26,4 +26,4 @@ shader.o: shader.cpp shader.hpp
 	g++ --std=c++11 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c shader.cpp
 
 clean:
-	rm -f main.o cubeshape.o floorshape.o vertexmanage.o shader.o
+	rm -f main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o

@@ -57,6 +57,6 @@ namespace cubeshape{
 	extern void render();
 }
 
-extern cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
+extern "C" cubeshapeObject* cubeshape_create(vec3 &position, vec3 &size, quat &rotation, float weight);
 
 #endif
