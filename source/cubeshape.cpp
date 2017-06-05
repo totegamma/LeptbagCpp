@@ -210,6 +210,6 @@ namespace cubeshape{
 }
 
 
-cubeshapeObject* cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g){
-	return cubeshape::create(vec3(x, y, z), vec3(w, h, d), quat(qw, qx, qy, qz), g, dynamicsWorld);
+cubeshapeObject* cubeshape_create(vec3 &position, vec3 &size, quat &rotation, float weight){
+	return cubeshape::create(position, size, rotation, weight, dynamicsWorld);
 }
