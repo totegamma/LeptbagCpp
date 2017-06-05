@@ -18,6 +18,9 @@ glm::vec3 vec3::toGlm(){
 	return glm::vec3(x, y, z);
 }
 
+vec3* createVec3(float x, float y, float z){
+	return new vec3(x, y, z);
+}
 
 quat::quat(){
 	w = 1;
@@ -38,4 +41,8 @@ btQuaternion quat::toBullet(){
 
 glm::quat quat::toGlm(){
 	return glm::quat(w, x, y, z);
+}
+
+quat* createQuat(float w, float x, float y, float z){
+	return new quat(w, x, y, z);
 }
