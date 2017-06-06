@@ -6,6 +6,18 @@ import std.json;
 //Library-----------------------------------
 
 extern (C++) {
+	interface vec3{
+	}
+	interface quat{
+	}
+}
+
+extern (C) {
+	vec3 createVec3(float x, float y, float z);
+	quat createQuat(float w, float x, float y, float z);
+}
+
+extern (C++) {
 	interface cubeshapeObject{
 		void destroy();
 		float getXpos();
@@ -13,8 +25,11 @@ extern (C++) {
 		float getZpos();
 	}
 
-	cubeshapeObject cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
 
+}
+
+extern (C) {
+	cubeshapeObject cubeshape_create(vec3 position, vec3 size, quat rotation, float weight);
 }
 
 extern (C++) {
@@ -28,7 +43,7 @@ extern (C++) {
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, vec3 positionA, vec3 positionB, vec3 axis);
 }
 
 //------------------------------------------
@@ -60,9 +75,9 @@ class wolf{
 			if(elem["objectType"].str == "MESH"){
 				if(elem["rigidBodyShape"].str == "BOX"){
 					cubeDict[elem["name"].str] = cubeshape_create(
-													elem["xpos"].floating + x, elem["ypos"].floating + y, elem["zpos"].floating + z, 
-													elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating, 
-													elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating, 
+													createVec3(elem["xpos"].floating + x, elem["ypos"].floating + y, elem["zpos"].floating + z),
+													createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating),
+													createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating),
 													elem["mass"].floating);
 				}
 			}
@@ -74,11 +89,11 @@ class wolf{
 				float yrot = elem["yrot"].floating;
 				float zrot = elem["zrot"].floating;
 				hingeDict[elem["name"].str] = hingeConstraint_create(cubeDict[elem["object1"].str], cubeDict[elem["object2"].str],
-																		elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating,
-																		elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating,
-																		-sin(xrot)*sin(zrot) + cos(xrot)*cos(yrot)*cos(zrot),// デフォルトではy軸方向ヒンジ
-																		-sin(yrot)*cos(zrot),                                // ベクトルの回転でどの向きになるか
-																		cos(xrot)*sin(zrot) + sin(xrot)*cos(yrot)*cos(zrot));// 計算する。
+																		createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating),
+																		createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating),
+																		createVec3(	-sin(xrot)*sin(zrot) + cos(xrot)*cos(yrot)*cos(zrot),// デフォルトではy軸方向ヒンジ
+																					-sin(yrot)*cos(zrot),                                // ベクトルの回転でどの向きになるか
+																					cos(xrot)*sin(zrot) + sin(xrot)*cos(yrot)*cos(zrot)));// 計算する。
 				if(elem["useLimit"].str == "True"){
 					hingeDict[elem["name"].str].setLimit(elem["limitLower"].floating, elem["limitUpper"].floating);
 				}
