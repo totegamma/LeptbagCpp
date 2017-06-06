@@ -247,10 +247,22 @@ class qNetwork{
 			//std::cout<<this->gradTanh( prePara[0], this->gradtan * this->weight[1].back().transpose() )<<std::endl<<std::endl;
 
 
+			/*Eigen::MatrixXf backGrad = this->grad[5];
+			this->numericalGradient(w, b, inputData, dout);
+			std::cout<<(this->grad[5]-backGrad)<<std::endl<<std::endl;*/
+
+
+
 			this->qout.pop_back();
 			this->input.pop_back();
 			for(int w=0; w<3; w++) this->weight[w].pop_back();
 			for(int b=0; b<3; b++) this->bias[b].pop_back();
+
+		}
+
+
+		void testGrad(Eigen::MatrixXf input){
+
 
 		}
 
