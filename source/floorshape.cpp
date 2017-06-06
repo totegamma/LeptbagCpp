@@ -1,15 +1,14 @@
 #include "floorshape.hpp"
 
-class floorshapeObject{
-	int id;
-	btRigidBody* body;
+floorshapeObject::floorshapeObject(int id, btRigidBody* body, btDiscreteDynamicsWorld *dynamicsWorld){
+	this->id = id;
+	this->body = body;
+	this->dynamicsWorld = dynamicsWorld;
+}
 
-	public:
-	floorshapeObject(int id, btRigidBody* body){
-		this->id = id;
-		this->body = body;
-	}
-};
+void floorshapeObject::changeID(int newID){
+	id = newID;
+}
 
 namespace floorshape{
 
@@ -20,10 +19,10 @@ namespace floorshape{
 	int numOfObject = 0;;
 
 	std::vector<vertex> objectData = {
-		vertex(-1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-		vertex(-1000.0f,  0.0f,  1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
-		vertex( 1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
-		vertex( 1000.0f,  0.0f,  1000.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f)
+		vertex(-1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.5f, 0.3f),
+		vertex(-1000.0f,  0.0f,  1000.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.6f, 0.3f),
+		vertex( 1000.0f,  0.0f, -1000.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.6f, 0.3f),
+		vertex( 1000.0f,  0.0f,  1000.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.6f, 0.3f)
 	};
 
 	std::vector<glm::mat4> instanceMatrixArray;
@@ -46,11 +45,11 @@ namespace floorshape{
 
 	}
 
-	floorshapeObject* create(vec3 position, vec3 face, quat rotate, btDiscreteDynamicsWorld *dynamicsWorld){
+	floorshapeObject* create(vec3 position, vec3 face, quat rotation, btDiscreteDynamicsWorld *dynamicsWorld){
 
 		instanceMatrixArray.push_back(
 				glm::translate(glm::mat4(1.0f), position.toGlm()) 
-				* glm::toMat4(rotate.toGlm())
+				* glm::toMat4(rotation.toGlm())
 			);
 
 		glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
@@ -58,7 +57,7 @@ namespace floorshape{
 
 		btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
 
-		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotate.toBullet(), position.toBullet()));
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(0, motionState, shape, btVector3(0, 0, 0));
 		btRigidBody* body = new btRigidBody(bodyCI);
 
@@ -69,13 +68,22 @@ namespace floorshape{
 
 
 
-		objects.push_back(new floorshapeObject(numOfObject++, body));
+		objects.push_back(new floorshapeObject(numOfObject++, body, dynamicsWorld));
+
+		numOfObject++;
 
 		return objects.back();
 
 	}
 
-	void destroy(){
+	void destroy(int id){
+		objects[id] = objects.back();
+		objects[id]->changeID(id);
+		objects.pop_back();
+
+		instanceMatrixArray[id] = instanceMatrixArray.back();
+		instanceMatrixArray.pop_back();
+		numOfObject--;
 	}
 
 	void render(){
@@ -97,4 +105,8 @@ namespace floorshape{
 		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void*)0, numOfObject);
 	}
 
+}
+
+floorshapeObject* floorshape_create(vec3 &position, vec3 &face, quat &rotation){
+	return floorshape::create(position, face, rotation, dynamicsWorld);
 }
