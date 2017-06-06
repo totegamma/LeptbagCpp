@@ -319,9 +319,6 @@ int main(){
 	cubeshape::init();
 	floorshape::init();
 
-	//床を作る
-	floorshape::create(vec3(0, 0, 0), vec3(0, 1, 0), quat(1, 0, 0, 0), dynamicsWorld);
-
 
 	void *lh;
 	const char* path = "./friends/";
