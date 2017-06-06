@@ -320,7 +320,7 @@ int main(){
 	floorshape::init();
 
 	//床を作る
-	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
+	floorshape::create(vec3(0, 0, 0), vec3(0, 1, 0), quat(1, 0, 0, 0), dynamicsWorld);
 
 
 	void *lh;

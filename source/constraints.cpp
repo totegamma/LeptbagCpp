@@ -4,9 +4,9 @@
 hingeConstraint::hingeConstraint(){
 }
 
-hingeConstraint::hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz){
+hingeConstraint::hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 positionA, vec3 positionB, vec3 axis){
 
-	hinge = new btHingeConstraint(*(cubeA->body), *(cubeB->body), btVector3(ax, ay, az), btVector3(bx, by, bz), btVector3(vx, vy, vz), btVector3(vx, vy, vz));
+	hinge = new btHingeConstraint(*(cubeA->body), *(cubeB->body), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
 
 }
@@ -31,6 +31,6 @@ void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
 }
 
-hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz){
-	return new hingeConstraint(cubeA, cubeB, ax, ay, az, bx, by, bz, vx, vy, vz);
+hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 &positionA, vec3 &positionB, vec3 &axis){
+	return new hingeConstraint(cubeA, cubeB, positionA, positionB, axis);
 }

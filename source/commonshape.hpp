@@ -13,6 +13,8 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "vertexmanage.hpp"
+#include "universalVector.hpp"
+
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;
 
@@ -37,8 +39,8 @@ class commonshapeObject{
 	virtual void addVertex(vertex &newvertex);
 	virtual void registerToSystem();
 	virtual shapePointerObject* create();
-	virtual shapePointerObject* create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz);
-	virtual shapePointerObject* create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass);
+	virtual shapePointerObject* create(vec3 &position, vec3 &size, quat &rotate);
+	virtual shapePointerObject* create(vec3 &position, vec3 &size, quat &rotate, float mass);
 	void destroy(int id);
 	void render();
 
@@ -53,14 +55,14 @@ class shapePointerObject{
 	bool isPhysicalBody;
 	commonshapeObject* parent;
 	btRigidBody* body;
-	glm::vec3 initialPosition;
-	glm::vec3 initialSize;
-	glm::quat initialQuat;
+	vec3 initialPosition;
+	vec3 initialSize;
+	quat initialQuat;
 
 	public:
 
 	shapePointerObject();
-	shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, glm::vec3 posi, glm::vec3 size, glm::quat quat);
+	shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, vec3 posi, vec3 size, quat );
 	glm::mat4 loadMatrix();
 };
 
