@@ -16,6 +16,9 @@
 class vec3{
 
 	public:
+	virtual float getx();
+	virtual float gety();
+	virtual float getz();
 
 	float x;
 	float y;
@@ -23,6 +26,7 @@ class vec3{
 
 	vec3();
 	vec3(float x, float y, float z);
+
 	btVector3 toBullet();
 	glm::vec3 toGlm();
 
@@ -47,6 +51,10 @@ class quat{
 
 	quat();
 	quat(float w, float x, float y, float z);
+	virtual float getw();
+	virtual float getx();
+	virtual float gety();
+	virtual float getz();
 	btQuaternion toBullet();
 	glm::quat toGlm();
 };
