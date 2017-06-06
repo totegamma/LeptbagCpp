@@ -8,10 +8,23 @@ import std.random;
 
 extern (C++) {
 	interface vec3{
+		float getx();
+		float gety();
+		float getz();
 	}
 	interface quat{
+		float getw();
+		float getx();
+		float gety();
+		float getz();
 	}
 }
+
+vec3 addVec(vec3 A, vec3 B){
+	return createVec3(A.getx() + B.getx(), A.gety() + B.gety(), A.getz() + B.getz());
+}
+
+
 
 extern (C) {
 	vec3 createVec3(float x, float y, float z);
@@ -62,14 +75,14 @@ quat trunkRotation;
 class tree{
 
 	this(float x, float y, float z) {
-		spawn(x, y, z);
+		spawn(createVec3(x, y, z));
 	}
 
 
 
-	void spawn(float x, float y, float z){
-		leaf.create(leafPosition, leafScale, leafRotation, 0);
-		trunk.create(trunkPosition, trunkScale, trunkRotation, 0);
+	void spawn(vec3 position){
+		leaf.create(addVec(leafPosition, position), leafScale, leafRotation, 0);
+		trunk.create(addVec(trunkPosition, position), trunkScale, trunkRotation, 0);
 	}
 }
 
