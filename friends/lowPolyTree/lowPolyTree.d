@@ -43,6 +43,7 @@ extern (C) {
 	commonshapeObject createCommonShapeObject();
 }
 
+
 //------------------------------------------
 
 Random rnd;
@@ -50,27 +51,13 @@ Random rnd;
 commonshapeObject leaf;
 commonshapeObject trunk;
 
-float leafXpos;
-float leafYpos;
-float leafZpos;
-float leafWquat;
-float leafXquat;
-float leafYquat;
-float leafZquat;
-float leafXscl;
-float leafYscl;
-float leafZscl;
+vec3 leafPosition;
+vec3 leafScale;
+quat leafRotation;
 
-float trunkXpos;
-float trunkYpos;
-float trunkZpos;
-float trunkWquat;
-float trunkXquat;
-float trunkYquat;
-float trunkZquat;
-float trunkXscl;
-float trunkYscl;
-float trunkZscl;
+vec3 trunkPosition;
+vec3 trunkScale;
+quat trunkRotation;
 
 class tree{
 
@@ -81,8 +68,8 @@ class tree{
 
 
 	void spawn(float x, float y, float z){
-		leaf.create(leafXpos + x, leafYpos + y, leafZpos + z, leafXscl, leafYscl, leafZscl, leafWquat, leafXquat, leafYquat, leafZquat, 0);
-		trunk.create(trunkXpos + x, trunkYpos + y, trunkZpos + z, trunkXscl, trunkYscl, trunkZscl, trunkWquat, trunkXquat, trunkYquat, trunkZquat, 0);
+		leaf.create(leafPosition, leafScale, leafRotation, 0);
+		trunk.create(trunkPosition, trunkScale, trunkRotation, 0);
 	}
 }
 
@@ -108,16 +95,9 @@ extern (C) void init(){
 			if(elem["name"].str == "leaf"){
 
 
-				leafXpos  = elem["xpos"].floating;
-				leafYpos  = elem["ypos"].floating;
-				leafZpos  = elem["zpos"].floating;
-				leafWquat = elem["wqat"].floating;
-				leafXquat = elem["xqat"].floating;
-				leafYquat = elem["yqat"].floating;
-				leafZquat = elem["zqat"].floating;
-				leafXscl  = elem["xscl"].floating;
-				leafYscl  = elem["yscl"].floating;
-				leafZscl  = elem["zscl"].floating;
+				leafPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				leafScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				leafRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					leaf.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
@@ -127,16 +107,9 @@ extern (C) void init(){
 				leaf.registerToSystem();
 			}else if(elem["name"].str == "trunk"){
 
-				trunkXpos  = elem["xpos"].floating;
-				trunkYpos  = elem["ypos"].floating;
-				trunkZpos  = elem["zpos"].floating;
-				trunkWquat = elem["wqat"].floating;
-				trunkXquat = elem["xqat"].floating;
-				trunkYquat = elem["yqat"].floating;
-				trunkZquat = elem["zqat"].floating;
-				trunkXscl  = elem["xscl"].floating;
-				trunkYscl  = elem["yscl"].floating;
-				trunkZscl  = elem["zscl"].floating;
+				trunkPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				trunkScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				trunkRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					trunk.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
