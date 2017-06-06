@@ -33,20 +33,20 @@ shapePointerObject* commonshapeObject::create(){
 	return new shapePointerObject();
 }
 
-shapePointerObject* commonshapeObject::create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz){
-	return new shapePointerObject(this, false, NULL, glm::vec3(posx, posy, posz), glm::vec3(sizx, sizy, sizz), glm::quat(quatw, quatx, quaty, quatz));
+shapePointerObject* commonshapeObject::create(vec3 &position, vec3 &size, quat &rotate){
+	return new shapePointerObject(this, false, NULL, position, size, rotate);
 }
 
 
-shapePointerObject* commonshapeObject::create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass){
+shapePointerObject* commonshapeObject::create(vec3 &position, vec3 &size, quat &rotate, float mass){
 
 		std::vector<btVector3> convexHullShapePoints;
 
 		for(auto elem: objectData){
-			btVector3 co = btVector3(elem.positionX, elem.positionY, elem.positionZ);
+			btVector3 co = position.toBullet();
 			auto itr = std::find(convexHullShapePoints.begin(), convexHullShapePoints.end(), co);
 			if( itr == convexHullShapePoints.end() ){
-				glm::vec4 target = glm::scale(glm::mat4(1.0f), glm::vec3(sizx, sizy, sizz)) * glm::vec4(co.x(), co.y(), co.z(), 1);
+				glm::vec4 target = glm::scale(glm::mat4(1.0f), size.toGlm()) * glm::vec4(co.x(), co.y(), co.z(), 1);
 				convexHullShapePoints.push_back(
 							btVector3(target.x, target.y, target.z)
 						);
@@ -55,14 +55,14 @@ shapePointerObject* commonshapeObject::create(float posx, float posy, float posz
 
 		btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));
 
-		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quatx, quaty, quatz, quatw), btVector3(posx, posy, posz)));
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotate.toBullet(), position.toBullet()));
 		btVector3 inertia(0, 0, 0);
 		shape->calculateLocalInertia(mass, inertia);
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
 		btRigidBody* body = new btRigidBody(bodyCI);
 		dynamicsWorld->addRigidBody(body);
 
-		objects.push_back(new shapePointerObject(this, true, body, glm::vec3(posx, posy, posz), glm::vec3(sizx, sizy, sizz), glm::quat(quatw, quatx, quaty, quatz)));
+		objects.push_back(new shapePointerObject(this, true, body, position, size, rotate));
 
 
 		return objects.back();
@@ -103,12 +103,12 @@ void commonshapeObject::render(){
 
 shapePointerObject::shapePointerObject(){
 }
-shapePointerObject::shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, glm::vec3 posi, glm::vec3 size, glm::quat quat){
+shapePointerObject::shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, vec3 posi, vec3 size, quat rotate){
 	this->parent = parent;
 	isPhysicalBody = isPhysical;
 	initialPosition = posi;
 	initialSize = size;
-	initialQuat = quat;
+	initialQuat = rotate;
 	if(isPhysical == true){
 		this->body = body;
 	}
@@ -124,12 +124,12 @@ glm::mat4 shapePointerObject::loadMatrix(){
 
 		return glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
 			* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
-			* glm::scale(glm::mat4(1.0f), initialSize);
+			* glm::scale(glm::mat4(1.0f), initialSize.toGlm());
 
 	}else{
-		return glm::translate(glm::mat4(1.0f), initialPosition) 
-						* glm::toMat4(initialQuat)
-						* glm::scale(glm::mat4(1.0f), initialSize);
+		return glm::translate(glm::mat4(1.0f), initialPosition.toGlm()) 
+						* glm::toMat4(initialQuat.toGlm())
+						* glm::scale(glm::mat4(1.0f), initialSize.toGlm());
 	}
 }
 

@@ -13,6 +13,7 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "vertexmanage.hpp"
+#include "universalVector.hpp"
 
 class floorshapeObject;
 
@@ -33,7 +34,7 @@ namespace floorshape{
 
 
 	extern void init();
-	extern floorshapeObject* create(glm::vec3 position, glm::vec3 face, glm::quat quat, btDiscreteDynamicsWorld *dynamicsWorld);
+	extern floorshapeObject* create(vec3 position, vec3 face, quat rotate, btDiscreteDynamicsWorld *dynamicsWorld);
 	extern void destroy(int id);
 	extern void render();
 

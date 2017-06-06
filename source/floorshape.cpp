@@ -46,20 +46,19 @@ namespace floorshape{
 
 	}
 
-	floorshapeObject* create(glm::vec3 position, glm::vec3 face, glm::quat quat, btDiscreteDynamicsWorld *dynamicsWorld){
-
+	floorshapeObject* create(vec3 position, vec3 face, quat rotate, btDiscreteDynamicsWorld *dynamicsWorld){
 
 		instanceMatrixArray.push_back(
-				glm::translate(glm::mat4(1.0f), position) 
-				* glm::toMat4(quat)
+				glm::translate(glm::mat4(1.0f), position.toGlm()) 
+				* glm::toMat4(rotate.toGlm())
 			);
 
 		glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
 		glBufferData(GL_ARRAY_BUFFER, instanceMatrixArray.size() * sizeof(glm::mat4), &instanceMatrixArray[0], GL_DYNAMIC_DRAW);
 
-		btCollisionShape* shape = new btStaticPlaneShape(btVector3(face.x, face.y, face.z), 0);
+		btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
 
-		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(quat.x, quat.y, quat.z, quat.w), btVector3(position.x, position.y, position.z)));
+		btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotate.toBullet(), position.toBullet()));
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(0, motionState, shape, btVector3(0, 0, 0));
 		btRigidBody* body = new btRigidBody(bodyCI);
 

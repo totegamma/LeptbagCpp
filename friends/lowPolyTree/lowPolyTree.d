@@ -7,25 +7,15 @@ import std.random;
 //Library-----------------------------------
 
 extern (C++) {
-	interface cubeshapeObject{
-		void destroy();
-		float getXpos();
-		float getYpos();
-		float getZpos();
+	interface vec3{
 	}
-
-	cubeshapeObject cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
-
+	interface quat{
+	}
 }
 
-extern (C++) {
-	interface hingeConstraint{
-		void enableMotor(bool flag);
-		void setLimit(float lower, float upper);
-		void setMaxMotorImpulse(float power);
-		void setMotorTarget(float angle, float duration);
-		void destroy();	
-	}
+extern (C) {
+	vec3 createVec3(float x, float y, float z);
+	quat createQuat(float w, float x, float y, float z);
 }
 
 extern (C++){
@@ -43,16 +33,16 @@ extern (C++){
 		void addVertex(vertex newvertex);
 		void registerToSystem();
 		shapePointerObject create();
-		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz);
-		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass);
+		shapePointerObject create(vec3 position, vec3 size, quat rotation);
+		shapePointerObject create(vec3 position, vec3 size, quat rotation, float mass);
 	}
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
 	vertex createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 	commonshapeObject createCommonShapeObject();
 }
+
 
 //------------------------------------------
 
@@ -61,27 +51,13 @@ Random rnd;
 commonshapeObject leaf;
 commonshapeObject trunk;
 
-float leafXpos;
-float leafYpos;
-float leafZpos;
-float leafWquat;
-float leafXquat;
-float leafYquat;
-float leafZquat;
-float leafXscl;
-float leafYscl;
-float leafZscl;
+vec3 leafPosition;
+vec3 leafScale;
+quat leafRotation;
 
-float trunkXpos;
-float trunkYpos;
-float trunkZpos;
-float trunkWquat;
-float trunkXquat;
-float trunkYquat;
-float trunkZquat;
-float trunkXscl;
-float trunkYscl;
-float trunkZscl;
+vec3 trunkPosition;
+vec3 trunkScale;
+quat trunkRotation;
 
 class tree{
 
@@ -92,8 +68,8 @@ class tree{
 
 
 	void spawn(float x, float y, float z){
-		leaf.create(leafXpos + x, leafYpos + y, leafZpos + z, leafXscl, leafYscl, leafZscl, leafWquat, leafXquat, leafYquat, leafZquat, 0);
-		trunk.create(trunkXpos + x, trunkYpos + y, trunkZpos + z, trunkXscl, trunkYscl, trunkZscl, trunkWquat, trunkXquat, trunkYquat, trunkZquat, 0);
+		leaf.create(leafPosition, leafScale, leafRotation, 0);
+		trunk.create(trunkPosition, trunkScale, trunkRotation, 0);
 	}
 }
 
@@ -119,16 +95,9 @@ extern (C) void init(){
 			if(elem["name"].str == "leaf"){
 
 
-				leafXpos  = elem["xpos"].floating;
-				leafYpos  = elem["ypos"].floating;
-				leafZpos  = elem["zpos"].floating;
-				leafWquat = elem["wqat"].floating;
-				leafXquat = elem["xqat"].floating;
-				leafYquat = elem["yqat"].floating;
-				leafZquat = elem["zqat"].floating;
-				leafXscl  = elem["xscl"].floating;
-				leafYscl  = elem["yscl"].floating;
-				leafZscl  = elem["zscl"].floating;
+				leafPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				leafScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				leafRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					leaf.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
@@ -138,16 +107,9 @@ extern (C) void init(){
 				leaf.registerToSystem();
 			}else if(elem["name"].str == "trunk"){
 
-				trunkXpos  = elem["xpos"].floating;
-				trunkYpos  = elem["ypos"].floating;
-				trunkZpos  = elem["zpos"].floating;
-				trunkWquat = elem["wqat"].floating;
-				trunkXquat = elem["xqat"].floating;
-				trunkYquat = elem["yqat"].floating;
-				trunkZquat = elem["zqat"].floating;
-				trunkXscl  = elem["xscl"].floating;
-				trunkYscl  = elem["yscl"].floating;
-				trunkZscl  = elem["zscl"].floating;
+				trunkPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				trunkScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				trunkRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					trunk.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,

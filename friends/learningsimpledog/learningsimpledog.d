@@ -8,6 +8,18 @@ import std.algorithm;
 //Library-----------------------------------
 
 extern (C++) {
+	interface vec3{
+	}
+	interface quat{
+	}
+}
+
+extern (C) {
+	vec3 createVec3(float x, float y, float z);
+	quat createQuat(float w, float x, float y, float z);
+}
+
+extern (C++) {
 	interface cubeshapeObject{
 		void destroy();
 		float getXpos();
@@ -15,8 +27,11 @@ extern (C++) {
 		float getZpos();
 	}
 
-	cubeshapeObject cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
 
+}
+
+extern (C) {
+	cubeshapeObject cubeshape_create(vec3 position, vec3 size, quat rotation, float weight);
 }
 
 extern (C++) {
@@ -30,7 +45,7 @@ extern (C++) {
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, vec3 positionA, vec3 positionB, vec3 axis);
 }
 
 //------------------------------------------
@@ -89,27 +104,28 @@ class dog{
 	void spawn(float x, float y, float z){
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
-		chest			= cubeshape_create(     x,     y,     z,		  2,   1,   1,		1, 0, 0, 0,		   2);
-		head			= cubeshape_create( x+1.4,     y,     z,		0.8, 0.8, 0.8,		1, 0, 0, 0,		 0.5);
-		muzzle			= cubeshape_create( x+2.1, y-0.2,     z,		0.6, 0.4, 0.4,		1, 0, 0, 0,		 0.1);
-		earLeft			= cubeshape_create( x+1.4, y+0.5, z-0.2,		0.2, 0.2, 0.2,		1, 0, 0, 0,		0.05);
-		earRight		= cubeshape_create( x+1.4, y+0.5, z+0.2,		0.2, 0.2, 0.2,		1, 0, 0, 0,		0.05);
-		legFrontLeft	= cubeshape_create( x+0.5,   y-1, z-0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legFrontRight	= cubeshape_create( x+0.5,   y-1, z+0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legBackLeft		= cubeshape_create( x-0.5,   y-1, z-0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		legBackRight	= cubeshape_create( x-0.5,   y-1, z+0.4,		0.2,   1, 0.2,		1, 0, 0, 0,		 0.3);
-		tail			= cubeshape_create( x-1.5, y+0.4,     z,		  1, 0.2, 0.2,		1, 0, 0, 0,		 0.2);
+
+		chest			= cubeshape_create(createVec3(    x,     y,     z),	createVec3(  1, 0.5, 0.5),	createQuat(1, 0, 0, 0),	   2);
+		head			= cubeshape_create(createVec3(x+1.4,     y,     z),	createVec3(0.4, 0.4, 0.4),	createQuat(1, 0, 0, 0),	 0.5);
+		muzzle			= cubeshape_create(createVec3(x+2.1, y-0.2,     z),	createVec3(0.3, 0.2, 0.2),	createQuat(1, 0, 0, 0),	 0.1);
+		earLeft			= cubeshape_create(createVec3(x+1.4, y+0.5, z-0.2),	createVec3(0.1, 0.1, 0.1),	createQuat(1, 0, 0, 0),	0.05);
+		earRight		= cubeshape_create(createVec3(x+1.4, y+0.5, z+0.2),	createVec3(0.1, 0.1, 0.1),	createQuat(1, 0, 0, 0),	0.05);
+		legFrontLeft	= cubeshape_create(createVec3(x+0.5,   y-1, z-0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
+		legFrontRight	= cubeshape_create(createVec3(x+0.5,   y-1, z+0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
+		legBackLeft		= cubeshape_create(createVec3(x-0.5,   y-1, z-0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
+		legBackRight	= cubeshape_create(createVec3(x-0.5,   y-1, z+0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
+		tail			= cubeshape_create(createVec3(x-1.5, y+0.4,     z),	createVec3(0.5, 0.1, 0.1),	createQuat(1, 0, 0, 0),	 0.2);
 
 
-		hinge_body_head			= hingeConstraint_create(chest   , head         ,    1,    0,    0, -0.4,   0,    0, 0, 0, 1);
-		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       ,  0.4, -0.2,    0, -0.3,   0,    0, 0, 0, 1);
-		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         ,    0, -0.1,    0,    0, 0.4, -0.2, 0, 0, 1);
-		hinge_earRight_head		= hingeConstraint_create(earRight, head         ,    0, -0.1,    0,    0, 0.4,  0.2, 0, 0, 1);
-		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft ,  0.5, -0.5, -0.4,    0, 0.5,  0.0, 0, 0, 1);
-		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight,  0.5, -0.5,  0.4,    0, 0.5,  0.0, 0, 0, 1);
-		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , -0.5, -0.5, -0.4,    0, 0.5,  0.0, 0, 0, 1);
-		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , -0.5, -0.5,  0.4,    0, 0.5,  0.0, 0, 0, 1);
-		hinge_body_tail			= hingeConstraint_create(chest   , tail         ,   -1,  0.4,    0,  0.5,   0,  0.0, 0, 0, 1);
+		hinge_body_head			= hingeConstraint_create(chest   , head         , createVec3(   1,    0,    0), createVec3(-0.4,   0,    0), createVec3(0, 0, 1));
+		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       , createVec3( 0.4, -0.2,    0), createVec3(-0.3,   0,    0), createVec3(0, 0, 1));
+		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4, -0.2), createVec3(0, 0, 1));
+		hinge_earRight_head		= hingeConstraint_create(earRight, head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4,  0.2), createVec3(0, 0, 1));
+		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft , createVec3( 0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
+		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight, createVec3( 0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
+		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , createVec3(-0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
+		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , createVec3(-0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
+		hinge_body_tail			= hingeConstraint_create(chest   , tail         , createVec3(  -1,  0.4,    0), createVec3( 0.5,   0,  0.0), createVec3(0, 0, 1));
 
 		hinge_body_head.setLimit(-PI/6, PI/6);
 		hinge_head_muzzle.setLimit(0, 0);
