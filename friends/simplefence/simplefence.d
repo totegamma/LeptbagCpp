@@ -8,6 +8,18 @@ import std.algorithm;
 //Library-----------------------------------
 
 extern (C++) {
+	interface vec3{
+	}
+	interface quat{
+	}
+}
+
+extern (C) {
+	vec3 createVec3(float x, float y, float z);
+	quat createQuat(float w, float x, float y, float z);
+}
+
+extern (C++) {
 	interface cubeshapeObject{
 		void destroy();
 		float getXpos();
@@ -15,8 +27,11 @@ extern (C++) {
 		float getZpos();
 	}
 
-	cubeshapeObject cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
 
+}
+
+extern (C) {
+	cubeshapeObject cubeshape_create(vec3 position, vec3 size, quat rotation, float weight);
 }
 
 extern (C++) {
@@ -30,7 +45,7 @@ extern (C++) {
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, vec3 positionA, vec3 positionB, vec3 axis);
 }
 
 //------------------------------------------
@@ -44,15 +59,15 @@ extern (C) {
 extern (C) void init(){
 	rt_init();
 
-	cubeshape_create(  50.25, 0.25,      0,    0.5, 0.5, 100,    1, 0, 0, 0,    100);
-	cubeshape_create( -50.25, 0.25,      0,    0.5, 0.5, 100,    1, 0, 0, 0,    100);
-	cubeshape_create(      0, 0.25,  50.25,    100, 0.5, 0.5,    1, 0, 0, 0,    100);
-	cubeshape_create(      0, 0.25, -50.25,    100, 0.5, 0.5,    1, 0, 0, 0,    100);
+	cubeshape_create(createVec3( 50.25, 0.25,      0), createVec3(0.25, 0.25,   50), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3(-50.25, 0.25,      0), createVec3(0.25, 0.25,   50), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3(     0, 0.25,  50.25), createVec3(  50, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3(     0, 0.25, -50.25), createVec3(  50, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
 
-	cubeshape_create(  50.25, 0.25,  50.25,    0.5, 0.5, 0.5,    1, 0, 0, 0,    100);
-	cubeshape_create(  50.25, 0.25, -50.25,    0.5, 0.5, 0.5,    1, 0, 0, 0,    100);
-	cubeshape_create( -50.25, 0.25,  50.25,    0.5, 0.5, 0.5,    1, 0, 0, 0,    100);
-	cubeshape_create( -50.25, 0.25, -50.25,    0.5, 0.5, 0.5,    1, 0, 0, 0,    100);
+	cubeshape_create(createVec3( 50.25, 0.25,  50.25), createVec3(0.25, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3( 50.25, 0.25, -50.25), createVec3(0.25, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3(-50.25, 0.25,  50.25), createVec3(0.25, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
+	cubeshape_create(createVec3(-50.25, 0.25, -50.25), createVec3(0.25, 0.25, 0.25), createQuat(1, 0, 0, 0),  100);
 
 }
 
