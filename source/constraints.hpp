@@ -4,6 +4,7 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "cubeshape.hpp"
+#include "universalVector.hpp"
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;
 
@@ -12,7 +13,7 @@ class hingeConstraint{
 	btHingeConstraint* hinge;
 	public:
 	hingeConstraint();
-	hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+	hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 positionA, vec3 positionB, vec3 axis);
 	virtual void enableMotor(bool flag);
 	virtual void setLimit(float lower, float upper);
 	virtual void setMaxMotorImpulse(float power);
@@ -20,7 +21,7 @@ class hingeConstraint{
 	virtual void destroy();
 };
 
-extern "C" hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
+extern "C" hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 &positionA, vec3 &positionB, vec3 &axis);
 
 
 
