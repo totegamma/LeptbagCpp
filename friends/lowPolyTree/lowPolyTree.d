@@ -7,25 +7,15 @@ import std.random;
 //Library-----------------------------------
 
 extern (C++) {
-	interface cubeshapeObject{
-		void destroy();
-		float getXpos();
-		float getYpos();
-		float getZpos();
+	interface vec3{
 	}
-
-	cubeshapeObject cubeshape_create(float x, float y, float z, float w, float h, float d, float qw, float qx, float qy, float qz, float g);
-
+	interface quat{
+	}
 }
 
-extern (C++) {
-	interface hingeConstraint{
-		void enableMotor(bool flag);
-		void setLimit(float lower, float upper);
-		void setMaxMotorImpulse(float power);
-		void setMotorTarget(float angle, float duration);
-		void destroy();	
-	}
+extern (C) {
+	vec3 createVec3(float x, float y, float z);
+	quat createQuat(float w, float x, float y, float z);
 }
 
 extern (C++){
@@ -43,13 +33,12 @@ extern (C++){
 		void addVertex(vertex newvertex);
 		void registerToSystem();
 		shapePointerObject create();
-		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz);
-		shapePointerObject create(float posx, float posy, float posz, float sizx, float sizy, float sizz, float quatw, float quatx, float quaty, float quatz, float mass);
+		shapePointerObject create(vec3 position, vec3 size, quat rotation);
+		shapePointerObject create(vec3 position, vec3 size, quat rotation, float mass);
 	}
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, float ax, float ay, float az, float bx, float by, float bz, float vx, float vy, float vz);
 	vertex createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 	commonshapeObject createCommonShapeObject();
 }
