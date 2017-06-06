@@ -10,6 +10,10 @@ vec3::vec3(float x, float y, float z){
 	this->z = z;
 }
 
+float vec3::getx(){return x;};
+float vec3::gety(){return y;};
+float vec3::getz(){return z;};
+
 btVector3 vec3::toBullet(){
 	return btVector3(x, y, z);
 }
@@ -33,6 +37,11 @@ quat::quat(float w, float x, float y, float z){
 	this->y = y;
 	this->z = z;
 }
+
+float quat::getw(){return w;};
+float quat::getx(){return x;};
+float quat::gety(){return y;};
+float quat::getz(){return z;};
 
 
 btQuaternion quat::toBullet(){
