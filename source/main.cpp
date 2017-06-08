@@ -41,9 +41,11 @@ GLint midWindowY = windowHeight / 2;
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
-GLuint uniform_lightPosition;
 GLuint uniform_viewMatrix;
 GLuint uniform_projectionMatrix;
+GLuint uniform_LightColor;
+GLuint uniform_LightPower;
+GLuint uniform_LightDirection;
 
 
 btDiscreteDynamicsWorld* dynamicsWorld;
@@ -52,8 +54,6 @@ btDiscreteDynamicsWorld* dynamicsWorld;
 typedef void (*pluginfunc_t)();
 std::vector<pluginfunc_t> pluginInitVector;
 std::vector<pluginfunc_t> pluginTickVector;
-
-glm::vec3 lightPosition = glm::vec3(0, 20, 0);
 
 
 //カメラの位置など
@@ -65,6 +65,10 @@ float initialFoV = 45.0f;
 
 float speed = 0.1f;
 float mouseSpeed = 0.001f;
+
+glm::vec3 lightColor = glm::vec3(1, 1, 1);
+float lightPower = 1.0f;
+glm::vec3 lightDirection = glm::vec3(-1, 1, 0);
 
 
 
@@ -289,9 +293,11 @@ int main(){
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	// Get a handle for our "MVP" uniform
-//	uniform_lightPosition = glGetUniformLocation(programID, "LightPosition_worldspace");
 	uniform_viewMatrix = glGetUniformLocation(programID, "V");
 	uniform_projectionMatrix = glGetUniformLocation(programID, "P");
+	uniform_LightColor = glGetUniformLocation(programID, "LightColor");
+	uniform_LightPower = glGetUniformLocation(programID, "LightPower");
+	uniform_LightDirection = glGetUniformLocation(programID, "LightDirection");
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
@@ -402,9 +408,11 @@ int main(){
 		//OpenGL描画
 		glUseProgram(programID);
 
-//		glUniformMatrix4fv(uniform_lightPosition,    1, GL_FALSE, &lightPosition[0]);
 		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
 		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+		glUniform3fv(uniform_LightColor, 1, &lightColor[0]);
+		glUniform1fv(uniform_LightPower, 1, &lightPower);
+		glUniform3fv(uniform_LightDirection, 1, &lightDirection[0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
