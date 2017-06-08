@@ -2,6 +2,7 @@
 #define COMMONSHAPE_HPP
 
 #include <vector>
+#include <math.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
