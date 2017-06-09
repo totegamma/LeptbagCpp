@@ -56,6 +56,21 @@ extern (C) {
 	commonshapeObject createCommonShapeObject();
 }
 
+extern (C++) {
+	interface cubeshapeObject{
+		void destroy();
+		float getXpos();
+		float getYpos();
+		float getZpos();
+	}
+
+
+}
+
+extern (C) {
+	cubeshapeObject cubeshape_create(vec3 position, vec3 size, quat rotation, float weight);
+}
+
 
 //------------------------------------------
 
@@ -116,7 +131,18 @@ extern (C) void init(){
 
 	plank.registerToSystem();
 
-	plank.create(createVec3(0, 10, 0), createVec3(1, 1, 1), createQuat(1, 0, 0, 0), 1);
+
+	for(int x = 0; x < 4; x++){
+		for(int z = 0; z < 4; z++){
+			for(int y = 0; y < 20; y++){
+				plank.create(createVec3(0.1 + 2*x, 0.2 + 0.8*y, 1 + 2*z), createVec3(0.1, 0.2, 1), createQuat(1, 0, 0, 0), 0.5);
+				plank.create(createVec3(1.9 + 2*x, 0.2 + 0.8*y, 1 + 2*z), createVec3(0.1, 0.2, 1), createQuat(1, 0, 0, 0), 0.5);
+				plank.create(createVec3(1 + 2*x, 0.6 + 0.8*y, 0.1 + 2*z), createVec3(1, 0.2, 0.1), createQuat(1, 0, 0, 0), 0.5);
+				plank.create(createVec3(1 + 2*x, 0.6 + 0.8*y, 1.9 + 2*z), createVec3(1, 0.2, 0.1), createQuat(1, 0, 0, 0), 0.5);
+			}
+		}
+	}
+
 
 	}
 	catch (Exception ex){
