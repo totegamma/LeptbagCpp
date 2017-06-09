@@ -183,6 +183,7 @@ class dog{
 //ApplicationInterface----------------------
 
 extern (C) void init(){
+try{
 	rt_init();
 	Random(unpredictableSeed);
 
@@ -191,6 +192,10 @@ extern (C) void init(){
 	foreach(int i, ref elem; doglist){
 		elem = new dog(0, 1.5, -5*i, true);
 	}
+}
+catch (Exception ex){
+	writeln(ex.toString);
+}
 }
 
 
