@@ -136,7 +136,7 @@ void computeMatricesFromInputs(){
 	float FoV = initialFoV;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	ProjectionMatrix = glm::perspective(FoV, 4.0f / 3.0f, 0.1f, 300.0f);
+	ProjectionMatrix = glm::perspective(FoV, (float)windowWidth/(float)windowHeight, 0.1f, 300.0f);
 
 	// Camera matrix
 	ViewMatrix = glm::lookAt(
@@ -146,6 +146,8 @@ void computeMatricesFromInputs(){
 			);
 
 }
+
+
 
 void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 
@@ -170,6 +172,7 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 	//マウスを強制的に真ん中に戻す
 	glfwSetCursorPos(window, midWindowX, midWindowY);
 }
+
 
 void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
 
@@ -197,6 +200,13 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 			case GLFW_KEY_SPACE:
 				holdingSpace = true;
+				break;
+
+			case GLFW_KEY_ESCAPE:
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				glfwSetCursorPosCallback(window, NULL);
+				glfwSetKeyCallback(window, NULL);
+				glfwSetCursorPos(window, midWindowX, midWindowY);
 				break;
 
 			default:
@@ -233,6 +243,25 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 		}
 
 	}
+}
+
+void handleMouseButton(GLFWwindow* window, int button, int action, int mods){
+	if(action == GLFW_PRESS){
+		switch(button){
+			case GLFW_MOUSE_BUTTON_1:
+				glfwSetCursorPosCallback(window, handleMouseMove);
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetKeyCallback(window, handleKeypress);
+				break;
+		}
+	}
+}
+
+void handleWindowResize(GLFWwindow* window, int width, int height){
+	windowWidth  = width;
+	windowHeight = height;
+	midWindowX = windowWidth  / 2;
+	midWindowY = windowHeight / 2;
 }
 
 
@@ -305,8 +334,10 @@ int main(){
 	//入力のコールバック・カーソルタイプの設定
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	glfwSetKeyCallback(window, handleKeypress);
+	glfwSetMouseButtonCallback(window, handleMouseButton);
 	glfwSetCursorPosCallback(window, handleMouseMove);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowSizeCallback(window, handleWindowResize);
 
 
 	//物理ワールドの生成
@@ -389,7 +420,7 @@ int main(){
 
 
 	//毎フレームごとにこの中が実装される。
-	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
+	while (glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//カメラ位置等を計算する
