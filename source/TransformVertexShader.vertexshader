@@ -19,7 +19,7 @@ void main(){
 	gl_Position =  P * V * M * vec4(vertexPosition_modelspace ,1);
 	fragmentColor = vertexColor;
 
-	Normal = vertexNormal_modelspace;
+	Normal = normalize(M * vec4(vertexNormal_modelspace,0)).xyz;
 
 }
 
