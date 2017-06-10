@@ -203,10 +203,10 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				break;
 
 			case GLFW_KEY_ESCAPE:
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				glfwSetCursorPosCallback(window, NULL);
 				glfwSetKeyCallback(window, NULL);
 				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
 
 			default:
@@ -249,8 +249,9 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods){
 	if(action == GLFW_PRESS){
 		switch(button){
 			case GLFW_MOUSE_BUTTON_1:
-				glfwSetCursorPosCallback(window, handleMouseMove);
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetCursorPosCallback(window, handleMouseMove);
 				glfwSetKeyCallback(window, handleKeypress);
 				break;
 		}
