@@ -1,0 +1,5 @@
+#ifndef BODYGENERATOR_HPP
+#define BODYGENERATOR_HPP
+
+
+#endif
