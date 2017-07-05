@@ -19,9 +19,6 @@
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;
 
-//TODO 別ファイルにする
-class shapePointerObject;
-
 class commonshapeObject{
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
@@ -52,20 +49,7 @@ extern "C" commonshapeObject* createCommonShapeObject();
 extern std::vector<commonshapeObject*> commonshapeList;
 
 
-class shapePointerObject{
-	bool isPhysicalBody;
-	commonshapeObject* parent;
-	btRigidBody* body;
-	vec3 initialPosition;
-	vec3 initialSize;
-	quat initialQuat;
 
-	public:
-
-	shapePointerObject();
-	shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, vec3 posi, vec3 size, quat );
-	glm::mat4 loadMatrix();
-};
 
 #endif
 
