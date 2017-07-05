@@ -1,18 +1,22 @@
 #ifndef ELEMENTNODE_HPP
 #define ELEMENTNODE_HPP
 
+#include "elementCreator.hpp"
+#include "universalVector.hpp"
+
 class elementNode{
-	bool isPhysicalBody;
 	elementCreator* parent;
 	btRigidBody* body;
 	vec3 initialPosition;
-	vec3 initialSize;
-	quat initialQuat;
+	vec3 initialScale;
+	quat initialRotation;
 
 	public:
+	elementNode();
+	~elementNode();
 
 	shapePointerObject();
-	shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, vec3 posi, vec3 size, quat );
+	shapePointerObject(commonshapeObject* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	glm::mat4 loadMatrix();
 };
 
