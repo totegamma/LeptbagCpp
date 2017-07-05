@@ -102,38 +102,4 @@ void commonshapeObject::render(){
 
 }
 
-shapePointerObject::shapePointerObject(){
-}
-shapePointerObject::shapePointerObject(commonshapeObject* parent, bool isPhysical, btRigidBody* body, vec3 posi, vec3 size, quat rotate){
-	this->parent = parent;
-	isPhysicalBody = isPhysical;
-	initialPosition = posi;
-	initialSize = size;
-	initialQuat = rotate;
-	if(isPhysical == true){
-		this->body = body;
-	}
-}
-
-glm::mat4 shapePointerObject::loadMatrix(){
-	if(isPhysicalBody == true){
-		btTransform transform;
-		body->getMotionState()->getWorldTransform(transform);
-
-		btVector3 pos = transform.getOrigin();
-		btQuaternion quaternion = transform.getRotation();
-
-		return glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
-			* glm::toMat4(glm::quat(quaternion.getW(), quaternion.getX(), quaternion.getY(), quaternion.getZ()))
-			* glm::scale(glm::mat4(1.0f), initialSize.toGlm());
-
-	}else{
-		return glm::translate(glm::mat4(1.0f), initialPosition.toGlm()) 
-						* glm::toMat4(initialQuat.toGlm())
-						* glm::scale(glm::mat4(1.0f), initialSize.toGlm());
-	}
-}
-
-
-
 
