@@ -1,7 +1,7 @@
 #include "bodyGenerator.hpp"
 
 
-btRigidBody* createBoxBody(){
+btRigidBody* createBoxBody(vec3 position, vec3 scale, quat rotation, btScalar mass){
 	btCollisionShape* shape = new btBoxShape(size.toBullet());
 
 	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(quat.toBullet(), position.toBullet()));
@@ -13,7 +13,7 @@ btRigidBody* createBoxBody(){
 	return body;
 }
 
-btRigidBody* createPlaneBody(){
+btRigidBody* createPlaneBody(vec3 position, vec3 scale, quat rotation, btScalar mass){
 	btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
 
 	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
@@ -26,7 +26,7 @@ btRigidBody* createPlaneBody(){
 	return body;
 }
 
-btRigidBody* createConvexHullShapeBody(){
+btRigidBody* createConvexHullShapeBody(vec3 position, vec3 scale, quat rotation, btScalar mass){
 	std::vector<btVector3> convexHullShapePoints;
 
 	for(auto elem: objectData){
@@ -37,10 +37,10 @@ btRigidBody* createConvexHullShapeBody(){
 
 			convexHullShapePoints.push_back(
 					//NOTE: bulletは物体に0.04のマージンを加えるので、その分だけ小さいオブジェクトを作成する。
-						btVector3(
-									target.x - (0.04*(-1*((signbit(target.x)*2)-1))), 
-									target.y - (0.04*(-1*((signbit(target.y)*2)-1))), 
-									target.z - (0.04*(-1*((signbit(target.z)*2)-1))))
+					btVector3(
+						target.x - (0.04*(-1*((signbit(target.x)*2)-1))), 
+						target.y - (0.04*(-1*((signbit(target.y)*2)-1))), 
+						target.z - (0.04*(-1*((signbit(target.z)*2)-1))))
 					);
 		}
 	}
