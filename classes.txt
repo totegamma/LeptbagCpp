@@ -4,9 +4,9 @@ rigidBody createPlaneBody
 rigidBody  createConvexHullShapeBody
 
 
-elementCreator -> elementNode
+ObjectCreator -> ObjectNode
 
-elementCreator{
+ObjectCreator{
 	physicalBody
 	vertices
 }
