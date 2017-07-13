@@ -25,7 +25,7 @@ struct getArgumentType{
 };
 
 template <typename Char, Char... CS>
-auto operator"" _argunwrap(){
+auto operator"" _unarg(){
 	return getArgumentType<Char, CS...>();
 }
 
