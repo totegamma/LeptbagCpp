@@ -4,7 +4,7 @@
 elementNode::elementNode(){
 }
 
-elementNode::elementNode(elementGenerator* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation){
+elementNode::elementNode(elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation){
 	this->parent = parent;
 	this->body = body;
 

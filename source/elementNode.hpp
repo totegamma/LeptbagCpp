@@ -3,11 +3,11 @@
 
 class elementNode;
 
-#include "elementGenerator.hpp"
+#include "elementManager.hpp"
 #include "universalVector.hpp"
 
 class elementNode{
-	elementGenerator* parent;
+	elementManager* parent;
 	btRigidBody* body;
 	vec3 initialPosition;
 	vec3 initialScale;
@@ -15,7 +15,7 @@ class elementNode{
 
 	public:
 	elementNode();
-	elementNode(elementGenerator* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
+	elementNode(elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	~elementNode();
 
 	glm::mat4 loadMatrix();

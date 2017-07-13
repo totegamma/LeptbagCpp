@@ -1,25 +1,25 @@
-#include "elementGenerator.hpp"
+#include "elementManager.hpp"
 
 
-std::vector<elementGenerator*> elementGenerator::elementGeneratorList;
+std::vector<elementManager*> elementManager::elementManagerList;
 
-elementGenerator* generateElementGenerator(){
-	return new elementGenerator();
+elementManager* generateElementManager(){
+	return new elementManager();
 }
 
-elementGenerator::elementGenerator(){
-	elementGeneratorList.push_back(this);
+elementManager::elementManager(){
+	elementManagerList.push_back(this);
 }
 
-elementGenerator::~elementGenerator(){
+elementManager::~elementManager(){
 }
 
 
-void elementGenerator::addVertex(vertex &newvertex){
+void elementManager::addVertex(vertex &newvertex){
 	elementData.push_back(newvertex);
 }
 
-void elementGenerator::registerToSystem(){
+void elementManager::registerToSystem(){
 		registervertex(&elementData, &indexBufferArray);
 
 		glGenBuffers(1, &indexBufferObject);
@@ -30,24 +30,24 @@ void elementGenerator::registerToSystem(){
 		glGenBuffers(1, &instanceMatrixBuffer);
 }
 
-elementNode* elementGenerator::generate(){
+elementNode* elementManager::generate(){
 	return new elementNode();
 }
 
-elementNode* elementGenerator::generate(vec3 &position, vec3 &scale, quat &rotation){
+elementNode* elementManager::generate(vec3 &position, vec3 &scale, quat &rotation){
 	//return new elementNode(this, false, NULL, position, scale, rotation);
 	return nullptr;
 }
 
-elementNode* elementGenerator::generate(vec3 &position, vec3 &scale, quat &rotation, float mass){
+elementNode* elementManager::generate(vec3 &position, vec3 &scale, quat &rotation, float mass){
 	return nullptr;
 
 }
 
-void elementGenerator::destroy(int id){
+void elementManager::destroy(int id){
 }
 
-void elementGenerator::render(){
+void elementManager::render(){
 
 	glm::mat4 instanceMatrixArray[elements.size()];
 
