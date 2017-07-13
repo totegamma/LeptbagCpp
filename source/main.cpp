@@ -284,18 +284,7 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 	return btQuaternion(x, y, z, w);
 }
 
-template <typename ...ARGS>
-void testFunc(ARGS... args){
-
-	std::cout << getArg<int>("apple"_unarg, args...) << std::endl;
-	std::cout << getArg<char>("banana"_unarg, args...) << std::endl;
-	std::cout << getArg<std::string>("momo"_unarg, args...) << std::endl;
-}
-
-
 int main(){
-
-	testFunc("apple"_arg = 1, "banana"_arg = 'b', "momo"_arg = std::string("oishi"));
 
 	if (!glfwInit()){
 		std::cout << "glfw init failed...." << std::endl;
