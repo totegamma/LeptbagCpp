@@ -1,20 +1,20 @@
-japari_park: main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
-	g++ -rdynamic --std=c++14 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
+japari_park: main.o universalVector.o elementNode.o elementGenerator.o bodyGenerator.o  constraints.o vertexmanage.o shader.o
+	g++ -rdynamic --std=c++14 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementGenerator.o bodyGenerator.o constraints.o vertexmanage.o shader.o
 
-main.o: main.cpp
+main.o: main.cpp namedArg.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
 
 universalVector.o: universalVector.cpp universalVector.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c universalVector.cpp
 
-commonshape.o: commonshape.cpp commonshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c commonshape.cpp
+elementNode.o: elementNode.cpp elementNode.hpp
+	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementNode.cpp
 
-cubeshape.o: cubeshape.cpp cubeshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c cubeshape.cpp
+elementGenerator.o: elementGenerator.cpp elementGenerator.hpp elementNode.hpp
+	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementGenerator.cpp
 
-floorshape.o: floorshape.cpp floorshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c floorshape.cpp
+bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp namedArg.hpp
+	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c bodyGenerator.cpp
 
 constraints.o: constraints.cpp constraints.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c constraints.cpp
