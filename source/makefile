@@ -1,5 +1,5 @@
-japari_park: main.o universalVector.o elementNode.o elementGenerator.o bodyGenerator.o  constraints.o vertexmanage.o shader.o
-	g++ -rdynamic --std=c++14 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementGenerator.o bodyGenerator.o constraints.o vertexmanage.o shader.o
+japari_park: main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanage.o shader.o
+	g++ -rdynamic --std=c++14 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanage.o shader.o
 
 main.o: main.cpp namedArg.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
@@ -10,8 +10,8 @@ universalVector.o: universalVector.cpp universalVector.hpp
 elementNode.o: elementNode.cpp elementNode.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementNode.cpp
 
-elementGenerator.o: elementGenerator.cpp elementGenerator.hpp elementNode.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementGenerator.cpp
+elementManager.o: elementManager.cpp elementManager.hpp elementNode.hpp
+	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementManager.cpp
 
 bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp namedArg.hpp
 	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c bodyGenerator.cpp

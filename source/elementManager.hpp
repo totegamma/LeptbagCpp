@@ -1,13 +1,13 @@
-#ifndef ELEMENTGENERATOR_HPP
-#define ELEMENTGENERATOR_HPP
+#ifndef ELEMENTMANAGER_HPP
+#define ELEMENTMANAGER_HPP
 
-class elementGenerator;
+class elementManager;
 
 #include "universalVector.hpp"
 #include "vertexmanage.hpp"
 #include "elementNode.hpp"
 
-class elementGenerator{
+class elementManager{
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
 
@@ -15,12 +15,12 @@ class elementGenerator{
 	std::vector<vertex> elementData;
 	std::vector<elementNode*> elements;
 
-	static std::vector<elementGenerator*> elementGeneratorList;
+	static std::vector<elementManager*> elementManagerList;
 
 	public:
 
-	elementGenerator();
-	~elementGenerator();
+	elementManager();
+	~elementManager();
 
 	virtual void addVertex(vertex &newvertex);
 	virtual void registerToSystem();
