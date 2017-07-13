@@ -22,10 +22,7 @@
 
 #include "vertexmanage.hpp"
 #include "shader.hpp"
-#include "cubeshape.hpp"
-#include "floorshape.hpp"
 #include "constraints.hpp"
-#include "commonshape.hpp"
 #include "namedArg.hpp"
 
 GLFWwindow* window;
@@ -354,8 +351,10 @@ int main(){
 	initVBO();
 
 	//使う図形についてinit
+	/*
 	cubeshape::init();
 	floorshape::init();
+	*/
 
 
 	void *lh;
@@ -451,12 +450,14 @@ int main(){
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
-		cubeshape::render();
-		floorshape::render();
+		//cubeshape::render();
+		//floorshape::render();
 
+		/*
 		for(auto elem: commonshapeList){
 			elem->render();
 		}
+		*/
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
