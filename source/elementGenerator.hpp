@@ -1,7 +1,11 @@
 #ifndef ELEMENTGENERATOR_HPP
 #define ELEMENTGENERATOR_HPP
 
+class elementGenerator;
+
 #include "universalVector.hpp"
+#include "vertexmanage.hpp"
+#include "elementNode.hpp"
 
 class elementGenerator{
 	GLuint indexBufferObject;
@@ -11,7 +15,7 @@ class elementGenerator{
 	std::vector<vertex> elementData;
 	std::vector<elementNode*> elements;
 
-	static elementGeneratorList;
+	static std::vector<elementGenerator*> elementGeneratorList;
 
 	public:
 
