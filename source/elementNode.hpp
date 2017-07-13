@@ -1,11 +1,13 @@
 #ifndef ELEMENTNODE_HPP
 #define ELEMENTNODE_HPP
 
-#include "elementCreator.hpp"
+class elementNode;
+
+#include "elementGenerator.hpp"
 #include "universalVector.hpp"
 
 class elementNode{
-	elementCreator* parent;
+	elementGenerator* parent;
 	btRigidBody* body;
 	vec3 initialPosition;
 	vec3 initialScale;
@@ -13,10 +15,9 @@ class elementNode{
 
 	public:
 	elementNode();
+	elementNode(elementGenerator* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	~elementNode();
 
-	shapePointerObject();
-	shapePointerObject(commonshapeObject* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	glm::mat4 loadMatrix();
 };
 
