@@ -8,6 +8,23 @@ elementManager* generateElementManager(){
 }
 
 elementManager::elementManager(){
+}
+
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody (*bodyGenerator)()){
+
+	this->elementData = elementData;
+	this->bodyGenerator = bodyGenerator;
+
+	registervertex(&elementData, &indexBufferArray);
+
+	glGenBuffers(1, &indexBufferObject);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferArray.size() * sizeof(GLuint), &indexBufferArray[0], GL_STATIC_DRAW);
+
+
+	glGenBuffers(1, &instanceMatrixBuffer);
+
+
 	elementManagerList.push_back(this);
 }
 
@@ -15,34 +32,25 @@ elementManager::~elementManager(){
 }
 
 
+/*
 void elementManager::addVertex(vertex &newvertex){
 	elementData.push_back(newvertex);
 }
 
 void elementManager::registerToSystem(){
-		registervertex(&elementData, &indexBufferArray);
-
-		glGenBuffers(1, &indexBufferObject);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferArray.size() * sizeof(GLuint), &indexBufferArray[0], GL_STATIC_DRAW);
-
-
-		glGenBuffers(1, &instanceMatrixBuffer);
 }
+*/
 
 elementNode* elementManager::generate(){
 	return new elementNode();
 }
 
-elementNode* elementManager::generate(vec3 &position, vec3 &scale, quat &rotation){
-	//return new elementNode(this, false, NULL, position, scale, rotation);
-	return nullptr;
-}
-
-elementNode* elementManager::generate(vec3 &position, vec3 &scale, quat &rotation, float mass){
-	return nullptr;
+template<typename... Args>
+elementNode* elementManager::generate(vec3 position, vec3 scale, quat rotation, Args... args){
+	return new elementNode(this, bodyGenerator(args...), position, scale, rotation);
 
 }
+
 
 void elementManager::destroy(int id){
 }
