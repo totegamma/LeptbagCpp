@@ -15,18 +15,21 @@ class elementManager{
 	std::vector<vertex> elementData;
 	std::vector<elementNode*> elements;
 
+	btRigidBody (*bodyGenerator)();
+
 	static std::vector<elementManager*> elementManagerList;
 
 	public:
 
 	elementManager();
+	elementManager(std::vector<vertex> elementData, btRigidBody (*bodyGenerator)());
 	~elementManager();
 
-	virtual void addVertex(vertex &newvertex);
-	virtual void registerToSystem();
+	//virtual void addVertex(vertex &newvertex);
+	//virtual void registerToSystem();
 	virtual elementNode* generate();
-	virtual elementNode* generate(vec3 &position, vec3 &scale, quat &rotation);
-	virtual elementNode* generate(vec3 &position, vec3 &scale, quat &rotation, float mass);
+	template<typename... Args>
+	elementNode* generate(vec3 position, vec3 scale, quat rotation, Args... args);
 	void destroy(int id);
 	void render();
 };
