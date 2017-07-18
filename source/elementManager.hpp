@@ -6,6 +6,7 @@ class elementManager;
 #include "universalVector.hpp"
 #include "vertexmanage.hpp"
 #include "elementNode.hpp"
+#include <tuple>
 
 class elementManager{
 	GLuint indexBufferObject;
@@ -25,11 +26,9 @@ class elementManager{
 	elementManager(std::vector<vertex> elementData, btRigidBody (*bodyGenerator)());
 	~elementManager();
 
-	//virtual void addVertex(vertex &newvertex);
-	//virtual void registerToSystem();
 	virtual elementNode* generate();
 	template<typename... Args>
-	elementNode* generate(vec3 position, vec3 scale, quat rotation, Args... args);
+	elementNode* generate(Args... args);
 	void destroy(int id);
 	void render();
 };

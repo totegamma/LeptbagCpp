@@ -1,13 +1,10 @@
 #include "bodyGenerator.hpp"
 
 template<typename... Args>
-btRigidBody* createBoxBody(vec3 position, vec3 scale, quat rotation, Args... args){
-//btRigidBody* createBoxBody(vec3 position, vec3 scale, quat rotation, btScalar mass){
-	/*
+btRigidBody* createBoxBody(Args... args){
 	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
 	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
 	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	*/
 	btScalar mass = ::getArg("mass"_arg,     args..., default_(btScalar(0)));
 
 
@@ -24,14 +21,10 @@ btRigidBody* createBoxBody(vec3 position, vec3 scale, quat rotation, Args... arg
 }
 
 template<typename... Args>
-btRigidBody* createPlaneBody(vec3 position, vec3 face, quat rotation, Args... args){
-//btRigidBody* createPlaneBody(vec3 position, vec3 scale, quat rotation, btScalar mass){
-
-	/*
+btRigidBody* createPlaneBody(Args... args){
 	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
 	vec3 face     = ::getArg("face"_arg,    args..., default_(vec3(0, 0, 0)));
 	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	*/
 	btScalar mass = ::getArg("mass"_arg,     args..., default_(btScalar(0)));
 
 
@@ -49,13 +42,10 @@ btRigidBody* createPlaneBody(vec3 position, vec3 face, quat rotation, Args... ar
 }
 
 template<typename... Args>
-btRigidBody* createConvexHullShapeBody(vec3 position, vec3 scale, quat rotation, Args... args){
-
-	/*
+btRigidBody* createConvexHullShapeBody(Args... args){
 	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
 	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
 	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	*/
 	btScalar mass = ::getArg("mass"_arg,     args..., default_(btScalar(0)));
 	std::vector<vertex> objectData = ::getArg("objectData"_arg,     args..., default_(btScalar(0)));
 
