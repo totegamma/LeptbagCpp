@@ -12,7 +12,7 @@
 #include <GLFW/glfw3.h>
 #include <btBulletDynamicsCommon.h>
 
-#include "vertexmanage.hpp"
+#include "vertexmanager.hpp"
 #include "universalVector.hpp"
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;

@@ -4,7 +4,7 @@
 class elementManager;
 
 #include "universalVector.hpp"
-#include "vertexmanage.hpp"
+#include "vertexmanager.hpp"
 #include "elementNode.hpp"
 #include "utilities/utilities.hpp"
 #include <tuple>

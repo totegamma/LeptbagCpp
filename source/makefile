@@ -1,5 +1,5 @@
-japari_park: main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanage.o shader.o
-	g++-7 -rdynamic --std=c++17 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanage.o shader.o
+japari_park: main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanager.o shader.o
+	g++-7 -rdynamic --std=c++17 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanager.o shader.o
 
 main.o: main.cpp utilities/namedArg.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
@@ -19,11 +19,11 @@ bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp utilities/namedArg.hpp
 constraints.o: constraints.cpp constraints.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c constraints.cpp
 
-vertexmanage.o: vertexmanage.cpp vertexmanage.hpp
-	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c vertexmanage.cpp
+vertexmanager.o: vertexmanager.cpp vertexmanager.hpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c vertexmanager.cpp
 
 shader.o: shader.cpp shader.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c shader.cpp
 
 clean:
-	rm -f main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
+	rm -f *.o
