@@ -2,8 +2,9 @@
 #define BODYGENERATOR_HPP
 
 #include "universalVector.hpp"
-#include "namedArg.hpp"
 #include "vertexmanage.hpp"
+#include "utilities/utilities.hpp"
+#include <algorithm>
 
 template<typename... Args>
 btRigidBody* createBoxBody(Args... args);

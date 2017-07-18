@@ -6,6 +6,7 @@ class elementManager;
 #include "universalVector.hpp"
 #include "vertexmanage.hpp"
 #include "elementNode.hpp"
+#include "utilities/utilities.hpp"
 #include <tuple>
 
 class elementManager{
