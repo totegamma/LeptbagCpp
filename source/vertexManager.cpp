@@ -1,4 +1,4 @@
-#include "vertexmanage.hpp"
+#include "vertexManager.hpp"
 
 
 GLuint vertexBufferObject;

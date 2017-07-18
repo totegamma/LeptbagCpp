@@ -1,5 +1,5 @@
-#ifndef VERTEXMANAGE_HPP
-#define VERTEXMANAGE_HPP
+#ifndef VERTEXMANAGER_HPP
+#define VERTEXMANAGER_HPP
 
 #include <vector>
 #include <algorithm>

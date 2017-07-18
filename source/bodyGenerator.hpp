@@ -2,7 +2,7 @@
 #define BODYGENERATOR_HPP
 
 #include "universalVector.hpp"
-#include "vertexmanage.hpp"
+#include "vertexmanager.hpp"
 #include "utilities/utilities.hpp"
 #include <algorithm>
 
