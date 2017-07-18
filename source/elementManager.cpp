@@ -32,27 +32,25 @@ elementManager::~elementManager(){
 }
 
 
-/*
-void elementManager::addVertex(vertex &newvertex){
-	elementData.push_back(newvertex);
-}
-
-void elementManager::registerToSystem(){
-}
-*/
-
 elementNode* elementManager::generate(){
 	return new elementNode();
 }
 
 template<typename... Args>
-elementNode* elementManager::generate(vec3 position, vec3 scale, quat rotation, Args... args){
-	return new elementNode(this, bodyGenerator(args...), position, scale, rotation);
+elementNode* elementManager::generate(Args... args){
+	std::tuple<ARGS...> param = std::make_tuple(args...);
+	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
+	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
+	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
+
+	btRigidBody newbody = bodyGenerator(std::forward<Args>(args)...);
+	return new elementNode(this, newbody, position, scale, rotation);
 
 }
 
 
 void elementManager::destroy(int id){
+	//TODO あとで実装する
 }
 
 void elementManager::render(){
