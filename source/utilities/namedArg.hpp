@@ -1,3 +1,6 @@
+#ifndef NAMEDARG_HPP
+#define NAMEDARG_HPP
+
 #include <tuple>
 
 template<typename Char, Char... CS>
@@ -66,3 +69,5 @@ template<
 auto getArg(Name, Args... args){
     return std::get<Result>(std::make_tuple(args...)).value;
 }
+
+#endif
