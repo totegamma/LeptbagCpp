@@ -14,7 +14,6 @@ btRigidBody* createBoxBody(parameterPack* input){
 	btScalar mass = btScalar(input->search("mass")->getInt());
 
 
-
 	btCollisionShape* shape = new btBoxShape(scale.toBullet());
 
 	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
@@ -22,6 +21,8 @@ btRigidBody* createBoxBody(parameterPack* input){
 	shape->calculateLocalInertia(mass, inertia);
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
 	btRigidBody* body = new btRigidBody(bodyCI);
+
+	dynamicsWorld->addRigidBody(body);
 
 	return body;
 }

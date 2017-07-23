@@ -424,6 +424,9 @@ int main(){
 
 	elementManager *myElemManager = new elementManager(cubeShapeVertices, createBoxBody);
 
+	myElemManager->generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 5, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
+	myElemManager->generate(paramWrap(param("position",vec3(1, 1, 1)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
+
 
 
 
@@ -538,6 +541,10 @@ int main(){
 			elem->render();
 		}
 		*/
+
+		for(auto elem: elementManager::elementManagerList){
+			elem->render();
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

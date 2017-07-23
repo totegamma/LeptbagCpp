@@ -56,7 +56,11 @@ paramWrapper* param(std::string tag, std::string value);
 paramWrapper* param(std::string tag, vec3 value);
 paramWrapper* param(std::string tag, quat value);
 
+
 template <typename... ARGS>
-parameterPack* paramWrap(ARGS... args);
+parameterPack* paramWrap(ARGS... args){
+	return createParameterPack(sizeof... (ARGS), args...);
+}
+
 
 #endif
