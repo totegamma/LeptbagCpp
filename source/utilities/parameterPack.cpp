@@ -25,6 +25,11 @@ paramWrapper::paramWrapper(univStr tag, quat quatValue){
 	this->quatValue = quatValue;
 }
 
+paramWrapper::paramWrapper(univStr tag, vertexManager modelValue){
+	this->tag = tag;
+	this->modelValue = modelValue;
+}
+
 //-------------------------------------------------------------------
 
 
@@ -32,18 +37,24 @@ int paramWrapper::getInt(){
 	return intValue;
 }
 
-
 float paramWrapper::getFloat(){
 	return floatValue;
 }
+
 univStr paramWrapper::getString(){
 	return stringValue;
 }
+
 vec3 paramWrapper::getVec3(){
 	return vec3Value;
 }
+
 quat paramWrapper::getQuat(){
 	return quatValue;
+}
+
+vertexManager paramWrapper::getModel(){
+	return modelValue;
 }
 
 
@@ -72,6 +83,11 @@ paramWrapper* createVec3Param(univStr *tag, vec3 *value){
 
 extern "C"
 paramWrapper* createQuatParam(univStr *tag, quat *value){
+	return new paramWrapper(*tag, *value);
+}
+
+extern "C"
+paramWrapper* createModelParam(univStr *tag, vertexManager *value){
 	return new paramWrapper(*tag, *value);
 }
 
@@ -141,6 +157,9 @@ paramWrapper* param(std::string tag, quat value){
 	return new paramWrapper(makeUnivStr(tag), value);
 }
 
+paramWrapper* param(std::string tag, vertexManager value){
+	return new paramWrapper(makeUnivStr(tag), value);
+}
 
 //-------------------------------------------------------------------
 
