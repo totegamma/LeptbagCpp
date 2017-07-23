@@ -1,7 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <math.h>
+#include <string>
+#include <sstream>
+#include <cstdlib>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+#include <dirent.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,10 +24,9 @@
 #include "shader.hpp"
 #include "cubeshape.hpp"
 #include "floorshape.hpp"
-
-#include </usr/local/include/eigen3/Eigen/Core>
-#include "dog.cpp"
-//#include "driveNetwork.cpp"
+#include "constraints.hpp"
+#include "commonshape.hpp"
+#include "namedArg.hpp"
 
 GLFWwindow* window;
 
@@ -36,9 +42,19 @@ GLint midWindowY = windowHeight / 2;
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
-GLuint MatrixID;
+GLuint uniform_viewMatrix;
+GLuint uniform_projectionMatrix;
+GLuint uniform_LightColor;
+GLuint uniform_LightPower;
+GLuint uniform_LightDirection;
 
 
+btDiscreteDynamicsWorld* dynamicsWorld;
+
+
+typedef void (*pluginfunc_t)();
+std::vector<pluginfunc_t> pluginInitVector;
+std::vector<pluginfunc_t> pluginTickVector;
 
 
 //カメラの位置など
@@ -51,6 +67,10 @@ float initialFoV = 45.0f;
 float speed = 0.1f;
 float mouseSpeed = 0.001f;
 
+glm::vec3 lightColor = glm::vec3(1, 1, 1);
+float lightPower = 1.0f;
+glm::vec3 lightDirection = glm::vec3(-1, 1, 0);
+
 
 
 // Hoding any keys down?
@@ -61,6 +81,16 @@ bool holdingRightStrafe = false;
 
 bool holdingSneek = false;
 bool holdingSpace = false;
+
+std::vector<std::string> split(const std::string &str, char sep){
+	std::vector<std::string> v;
+	std::stringstream ss(str);
+	std::string buffer;
+	while( std::getline(ss, buffer, sep) ) {
+		v.push_back(buffer);
+	}
+	return v;
+}
 
 
 void computeMatricesFromInputs(){
@@ -107,7 +137,7 @@ void computeMatricesFromInputs(){
 	float FoV = initialFoV;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	ProjectionMatrix = glm::perspective(FoV, 4.0f / 3.0f, 0.1f, 300.0f);
+	ProjectionMatrix = glm::perspective(FoV, (float)windowWidth/(float)windowHeight, 0.1f, 300.0f);
 
 	// Camera matrix
 	ViewMatrix = glm::lookAt(
@@ -117,6 +147,8 @@ void computeMatricesFromInputs(){
 			);
 
 }
+
+
 
 void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 
@@ -141,6 +173,7 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 	//マウスを強制的に真ん中に戻す
 	glfwSetCursorPos(window, midWindowX, midWindowY);
 }
+
 
 void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
 
@@ -168,6 +201,13 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 
 			case GLFW_KEY_SPACE:
 				holdingSpace = true;
+				break;
+
+			case GLFW_KEY_ESCAPE:
+				glfwSetCursorPosCallback(window, NULL);
+				glfwSetKeyCallback(window, NULL);
+				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
 
 			default:
@@ -206,6 +246,26 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 	}
 }
 
+void handleMouseButton(GLFWwindow* window, int button, int action, int mods){
+	if(action == GLFW_PRESS){
+		switch(button){
+			case GLFW_MOUSE_BUTTON_1:
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetCursorPosCallback(window, handleMouseMove);
+				glfwSetKeyCallback(window, handleKeypress);
+				break;
+		}
+	}
+}
+
+void handleWindowResize(GLFWwindow* window, int width, int height){
+	windowWidth  = width;
+	windowHeight = height;
+	midWindowX = windowWidth  / 2;
+	midWindowY = windowHeight / 2;
+}
+
 
 //オイラー角から４次元数を計算する。opengl-math用とbullet用で2つある。
 glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
@@ -224,12 +284,7 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 	return btQuaternion(x, y, z, w);
 }
 
-
 int main(){
-
-	Eigen::MatrixXf neko = Eigen::MatrixXf::Random(3, 3);
-
-
 
 	if (!glfwInit()){
 		std::cout << "glfw init failed...." << std::endl;
@@ -240,7 +295,7 @@ int main(){
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(windowWidth, windowHeight, "My Title", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "Japari", NULL, NULL);
 	if (!window){
 		std::cout << "cannot open OpenGL window" << std::endl;
 	}
@@ -268,7 +323,11 @@ int main(){
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	// Get a handle for our "MVP" uniform
-	MatrixID = glGetUniformLocation(programID, "MVP");
+	uniform_viewMatrix = glGetUniformLocation(programID, "V");
+	uniform_projectionMatrix = glGetUniformLocation(programID, "P");
+	uniform_LightColor = glGetUniformLocation(programID, "LightColor");
+	uniform_LightPower = glGetUniformLocation(programID, "LightPower");
+	uniform_LightDirection = glGetUniformLocation(programID, "LightDirection");
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
@@ -276,12 +335,13 @@ int main(){
 	//入力のコールバック・カーソルタイプの設定
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	glfwSetKeyCallback(window, handleKeypress);
+	glfwSetMouseButtonCallback(window, handleMouseButton);
 	glfwSetCursorPosCallback(window, handleMouseMove);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowSizeCallback(window, handleWindowResize);
 
 
 	//物理ワールドの生成
-	btDiscreteDynamicsWorld* dynamicsWorld;
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -297,8 +357,56 @@ int main(){
 	cubeshape::init();
 	floorshape::init();
 
-	//床を作る
-	floorshape::create(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::quat(1, 0, 0, 0), dynamicsWorld);
+
+	void *lh;
+	const char* path = "./friends/";
+	DIR *dp;       // ディレクトリへのポインタ
+	dirent* entry; // readdir() で返されるエントリーポイント
+
+	std::string hoge;
+
+	dp = opendir(path);
+	if (dp==NULL) exit(1);
+	entry = readdir(dp);
+	while (entry != NULL){
+		std::string filename(entry->d_name);
+		if(split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends"){
+
+			lh = dlopen((path + filename).c_str(), RTLD_LAZY);
+			if (!lh) {
+				fprintf(stderr, "dlopen error: %s\n", dlerror());
+				exit(1);
+			}
+
+			void (*pluginInit)() = (void (*)())dlsym(lh, "init");
+			char *error = dlerror();
+			if (error) {
+				fprintf(stderr, "dlsym error: %s\n", error);
+				exit(1);
+			}
+			pluginInitVector.push_back(*pluginInit);
+
+			void (*pluginTick)() = (void (*)())dlsym(lh, "tick");
+			error = dlerror();
+			if (error) {
+				fprintf(stderr, "dlsym error: %s\n", error);
+				exit(1);
+			}
+			pluginTickVector.push_back(*pluginTick);
+
+
+
+		}
+
+		entry = readdir(dp);
+	}
+
+
+	for(auto elem: pluginInitVector){
+		(elem)();
+	}
+
+
 
 
 
@@ -308,198 +416,47 @@ int main(){
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
 	glEnableVertexAttribArray(5);
+	glEnableVertexAttribArray(6);
 
 
 
-	float topRecord = 0;
-
-	int timerDivisor = 0;
-	int time = 0; //0.1秒ごとに増えるんじゃない？知らんけど。
-	int generation = 0;
-	int sequence = 0;
-
-	std::vector<dog*> doglist;
-
-	//0世代目の犬。全部ランダム。
-	for(int i = 0; i < 100; i++){
-		doglist.push_back(new dog(dynamicsWorld, 0, 1.5, -5*i));
-	}
-
-
-	//犬の交配計算に使う乱数生成器
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	std::uniform_int_distribution<int> coin(0,1);
-	std::uniform_int_distribution<int> RNDnumOfAttack(0,10);
-	std::uniform_int_distribution<int> RNDnumOfRow(0,7);
-	std::uniform_int_distribution<int> RNDnumOfColumn(0,19);
-	std::uniform_real_distribution<double> score(-1.57, 1.57);
-	std::uniform_real_distribution<double> scoreLower(0.0, 1.50);
-
-
-	//毎フレームごとにこの中が実行される。
-	while (glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == GL_FALSE){
+	//毎フレームごとにこの中が実装される。
+	while (glfwWindowShouldClose(window) == GL_FALSE){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//カメラ位置等を計算する
 		computeMatricesFromInputs();
 
-		//物理演算1ステップ進める
-		dynamicsWorld->stepSimulation(1 / 180.f, 10);
-
-		//時間
-		//if(timerDivisor++ == 6){
-			sequence = (sequence+1)%20; //犬のポーズを変更する
-			timerDivisor = 0;
-
-			//犬を動かす
-			if(sequence%10==0){
-			for(auto elem: doglist){
-				elem->cpgMove();
-			}
-			}
-			/*
-			std::cout<<doglist[0]->Aup*cos(doglist[0]->thetaPre[0])<<" : "<<
-							0.5*sin(doglist[0]->hinge_bodyFront_legUpperFrontRight->getHingeAngle())<<
-								std::endl;
-								*/
-
-
-			time ++;
-		//}
-		/*
-		double neko = fabs( doglist[0]->hinge_bodyFront_legUpperFrontLeft->getHingeAngle() - doglist[0]->omega[0]);
-		if( neko >= 0.05) std::cout<<neko<<" : "<<doglist[0]->hinge_bodyFront_legUpperFrontLeft->getHingeAngle()<<" : "<<doglist[0]->omega[0]<<std::endl;
-		doglist[0]->omega[0] = doglist[0]->hinge_bodyFront_legUpperFrontLeft->getHingeAngle();
-		*/
-
-
-
-
-
-		//世代終わり
-		if(false){//time == 50 + generation*3){
-
-			//まずは優良個体を調べる
-			float firstdna[20][8];
-			float seconddna[20][8];
-
-			float current1stMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
-			float current2ndMax = -128; //まぁ-128も後退することはないだろうなという気持ち(これが最低値だろう)
-
-
-			driveNetwork first, second;
-			for(auto elem: doglist){
-				btTransform transform;
-				elem->muzzle->body->getMotionState()->getWorldTransform(transform);
-				btVector3 pos = transform.getOrigin();
-
-				//std::cout << pos.getX() << std::endl;
-
-				//1番と2番を求める
-				if(pos.getX() > current1stMax){
-					current2ndMax = current1stMax;
-					current1stMax = pos.getX();
-					first = elem->cpg;
-					//memcpy(seconddna, firstdna, sizeof(float)*20*8);
-					//memcpy(firstdna, elem->dna, sizeof(float)*20*8);
-				}else if(pos.getX() > current2ndMax){
-					current2ndMax = pos.getX();
-					second = elem->cpg;
-					//memcpy(seconddna, elem->dna, sizeof(float)*20*8);
-				}
-			}
-
-			if(current1stMax > topRecord){
-				topRecord = current1stMax;
-				std::cout << "New Record! " << topRecord << "m" << std::endl;
-				std::cout << std::endl;
-				/*
-				std::cout << "---DNA DATA--------------------" << std::endl;
-				for(int a = 0; a < 20; a++){
-					for(int b = 0; b < 8; b++){
-						std::cout << firstdna[a][b] << ", ";
-					}
-					std::cout << std::endl;
-				}
-				std::cout << "-------------------------------" << std::endl;
-				std::cout << std::endl;
-				*/
-			}
-
-
-			//今の犬を削除
-			while(doglist.size() > 0){
-				doglist.back()->destroy();
-				doglist.pop_back();
-			}
-
-
-			//新しく犬をつくる
-
-			dog* newdog;
-
-			//1番の犬
-			newdog = new dog(dynamicsWorld, 0, 1.5, -5*0);
-			//memcpy(newdog->dna, firstdna, sizeof(float)*20*8);
-			newdog->cpg = first;
-			doglist.push_back(newdog);
-
-			//2番の犬
-			newdog = new dog(dynamicsWorld, 0, 1.5, -5*1);
-			//memcpy(newdog->dna, seconddna, sizeof(float)*20*8);
-			newdog->cpg = second;
-			doglist.push_back(newdog);
-
-			//残りの犬
-			for(int i = 2; i < 100; i++){
-				newdog = new dog(dynamicsWorld, 0, 1.5, -5*i);
-
-				/*
-				//交叉
-				for(int dnaIndex = 0; dnaIndex < 20; dnaIndex++){
-					if(coin(mt) == 0){
-						memcpy(newdog->dna[dnaIndex], firstdna[dnaIndex], sizeof(float)*8);
-					}else{
-						memcpy(newdog->dna[dnaIndex], seconddna[dnaIndex], sizeof(float)*8);
-					}
-				}
-				*/
-
-				//newdog->cpg.cross(first, second);
-
-				//突然変異の回数
-				int numOfAttack = RNDnumOfAttack(mt);
-				
-				for(int j = 0; j < numOfAttack; j++){
-					//newdog->dna[RNDnumOfColumn(mt)][RNDnumOfRow(mt)] = score(mt);
-					//newdog->cpg.mutate(RNDnumOfAttack);
-				}
-
-				doglist.push_back(newdog);
-			}
-
-			time = 0;
-			generation++;
-			std::cout << "generation" << generation << " begin" << std::endl;
+		for(auto elem: pluginTickVector){
+			(elem)();
 		}
 
 
+
+		//物理演算1ステップ進める
+		dynamicsWorld->stepSimulation(1 / 60.f, 10);
 
 
 		//OpenGL描画
 		glUseProgram(programID);
 
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+		glUniform3fv(uniform_LightColor, 1, &lightColor[0]);
+		glUniform1fv(uniform_LightPower, 1, &lightPower);
+		glUniform3fv(uniform_LightDirection, 1, &lightDirection[0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
 		cubeshape::render();
 		floorshape::render();
+
+		for(auto elem: commonshapeList){
+			elem->render();
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -511,6 +468,10 @@ int main(){
 	glDisableVertexAttribArray(3);
 	glDisableVertexAttribArray(4);
 	glDisableVertexAttribArray(5);
+	glDisableVertexAttribArray(6);
+
+	printf("unloading libdll.so\n");
+	dlclose(lh);
 
 
 	glDeleteVertexArrays(1, &VertexArrayID);
