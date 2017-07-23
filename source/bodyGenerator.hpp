@@ -10,6 +10,6 @@ extern btDiscreteDynamicsWorld* dynamicsWorld;
 
 btRigidBody* createBoxBody(parameterPack* input);
 btRigidBody* createPlaneBody(parameterPack* input);
-//btRigidBody* createConvexHullShapeBody(parameterPack* input);
+btRigidBody* createConvexHullShapeBody(parameterPack* input);
 
 #endif

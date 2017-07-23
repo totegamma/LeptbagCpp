@@ -1,12 +1,6 @@
 #include "bodyGenerator.hpp"
 
 btRigidBody* createBoxBody(parameterPack* input){
-	/*
-	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
-	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
-	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	btScalar mass = ::getArg("mass"_arg,     args..., default_(btScalar(0)));
-	*/
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -28,12 +22,6 @@ btRigidBody* createBoxBody(parameterPack* input){
 }
 
 btRigidBody* createPlaneBody(parameterPack* input){
-	/*
-	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
-	vec3 face     = ::getArg("face"_arg,    args..., default_(vec3(0, 0, 0)));
-	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	btScalar mass = ::getArg("mass"_arg,     args..., default_(btScalar(0)));
-	*/
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 face = input->search("face")->getVec3();
@@ -53,15 +41,13 @@ btRigidBody* createPlaneBody(parameterPack* input){
 	return body;
 }
 
-/*
 btRigidBody* createConvexHullShapeBody(parameterPack* input){
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
 	btScalar mass = btScalar(input->search("mass")->getInt());
-	//std::vector<vertex> objectData = btScalar(input->search("objectData")->getVertices());
-	std::vector<vertex> objectData = nullptr;
+	std::vector<vertex> objectData = input->search("model")->getModel().getList();
 
 	std::vector<btVector3> convexHullShapePoints;
 
@@ -91,4 +77,3 @@ btRigidBody* createConvexHullShapeBody(parameterPack* input){
 
 	return body;
 }
-*/
