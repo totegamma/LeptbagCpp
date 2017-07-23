@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET="plankTower"
+TARGET="chorodog"
 
 cp $TARGET".friends" "../../source/friends/"
 cd ../../source
