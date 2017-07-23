@@ -3,11 +3,10 @@
 
 class elementManager;
 
-#include "universalVector.hpp"
 #include "vertexmanager.hpp"
 #include "elementNode.hpp"
 #include "utilities/utilities.hpp"
-#include <tuple>
+#include "bodyGenerator.hpp"
 
 class elementManager{
 	GLuint indexBufferObject;
@@ -17,19 +16,18 @@ class elementManager{
 	std::vector<vertex> elementData;
 	std::vector<elementNode*> elements;
 
-	btRigidBody (*bodyGenerator)();
+	btRigidBody* (*bodyGenerator)(parameterPack*);
 
 	static std::vector<elementManager*> elementManagerList;
 
 	public:
 
 	elementManager();
-	elementManager(std::vector<vertex> elementData, btRigidBody (*bodyGenerator)());
+	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*));
 	~elementManager();
 
 	virtual elementNode* generate();
-	template<typename... Args>
-	elementNode* generate(Args... args);
+	elementNode* generate(parameterPack* input);
 	void destroy(int id);
 	void render();
 };

@@ -3,11 +3,11 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include "cubeshape.hpp"
-#include "universalVector.hpp"
+#include "utilities/utilities.hpp"
 
 extern btDiscreteDynamicsWorld *dynamicsWorld;
 
+/*
 //TODO 名前これでええんか？？？？
 class hingeConstraint{
 	btHingeConstraint* hinge;
@@ -22,6 +22,7 @@ class hingeConstraint{
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 &positionA, vec3 &positionB, vec3 &axis);
+*/
 
 
 

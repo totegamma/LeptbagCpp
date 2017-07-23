@@ -1,11 +1,8 @@
-japari_park: main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanager.o shader.o
-	g++-7 -rdynamic --std=c++17 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanager.o shader.o
+japari_park: main.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanager.o shader.o universalVector.o parameterPack.o universalString.o
+	g++-7 -rdynamic --std=c++17 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanager.o shader.o universalVector.o parameterPack.o universalString.o
 
-main.o: main.cpp utilities/namedArg.hpp
+main.o: main.cpp 
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
-
-universalVector.o: universalVector.cpp universalVector.hpp
-	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c universalVector.cpp
 
 elementNode.o: elementNode.cpp elementNode.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementNode.cpp
@@ -13,7 +10,7 @@ elementNode.o: elementNode.cpp elementNode.hpp
 elementManager.o: elementManager.cpp elementManager.hpp elementNode.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementManager.cpp
 
-bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp utilities/namedArg.hpp
+bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp 
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c bodyGenerator.cpp
 
 constraints.o: constraints.cpp constraints.hpp
@@ -24,6 +21,15 @@ vertexmanager.o: vertexmanager.cpp vertexmanager.hpp
 
 shader.o: shader.cpp shader.hpp
 	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c shader.cpp
+
+universalVector.o: utilities/universalVector.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/universalVector.cpp
+
+parameterPack.o: utilities/parameterPack.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/parameterPack.cpp
+
+universalString.o: utilities/universalString.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/universalString.cpp
 
 clean:
 	rm -f *.o
