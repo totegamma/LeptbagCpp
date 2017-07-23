@@ -69,8 +69,8 @@ extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float co
 
 
 class vertexManager{
+	public:
 	std::vector<vertex> vertexList;
-
 	void addVertex(vertex input);
 	std::vector<vertex> getList();
 };
