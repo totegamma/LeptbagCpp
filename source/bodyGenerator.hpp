@@ -1,18 +1,12 @@
 #ifndef BODYGENERATOR_HPP
 #define BODYGENERATOR_HPP
 
-#include "universalVector.hpp"
 #include "vertexmanager.hpp"
 #include "utilities/utilities.hpp"
 #include <algorithm>
 
-template<typename... Args>
-btRigidBody* createBoxBody(Args... args);
-
-template<typename... Args>
-btRigidBody* createPlaneBody(Args... args);
-
-template<typename... Args>
-btRigidBody* createConvexHullShapeBody(Args... args);
+btRigidBody* createBoxBody(parameterPack* input);
+btRigidBody* createPlaneBody(parameterPack* input);
+//btRigidBody* createConvexHullShapeBody(parameterPack* input);
 
 #endif

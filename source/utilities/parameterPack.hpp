@@ -1,120 +1,62 @@
 #ifndef PARAMETERPACK_HPP
 #define PARAMETERPACK_HPP
 
-#include "univStr.hpp"
+#include "universalString.hpp"
+#include "universalVector.hpp"
 
 class paramWrapper{
 
 	public:
 	univStr tag;
-	union value_t{
-		int intValue;
-		float floatValue;
-		univStr stringValue;
-	} value;
-
+	int intValue;
+	float floatValue;
+	univStr stringValue;
+	vec3 vec3Value;
+	quat quatValue;
 
 	paramWrapper() = default;
-	paramWrapper(univStr tag, int intValue){
-		this->tag = tag;
-		this->value.intValue = intValue;
-	}
+	paramWrapper(univStr tag, int intValue);
+	paramWrapper(univStr tag, float floatValue);
+	paramWrapper(univStr tag, univStr stringValue);
+	paramWrapper(univStr tag, vec3 vec3Value);
+	paramWrapper(univStr tag, quat quatValue);
 
-	paramWrapper(univStr tag, float floatValue){
-		this->tag = tag;
-		this->value.floatValue = floatValue;
-	}
-
-	paramWrapper(univStr tag, univStr stringValue){
-		this->tag = tag;
-		this->value.stringValue = stringValue;
-	}
-
-	int getInt(){
-		return value.intValue;
-	}
-	float getFloat(){
-		return value.floatValue;
-	}
-	univStr getString(){
-		return value.stringValue;
-	}
-
+	int getInt();
+	float getFloat();
+	univStr getString();
+	vec3 getVec3();
+	quat getQuat();
 };
 
-extern "C"
-paramWrapper* createIntParam(univStr *tag, int value){
-	return new paramWrapper(*tag, value);
-}
-
-extern "C"
-paramWrapper* createFloatParam(univStr *tag, float value){
-	return new paramWrapper(*tag, value);
-}
-
-extern "C"
-paramWrapper* createStringParam(univStr *tag, univStr *value){
-	return new paramWrapper(*tag, *value);
-}
+extern "C" paramWrapper* createIntParam(univStr *tag, int value);
+extern "C" paramWrapper* createFloatParam(univStr *tag, float value);
+extern "C" paramWrapper* createStringParam(univStr *tag, univStr *value);
+extern "C" paramWrapper* createVec3Param(univStr *tag, vec3 *value);
+extern "C" paramWrapper* createQuatParam(univStr *tag, quat *value);
 
 
 class parameterPack{
 	paramWrapper **paramList;
 	int length;
+
 	public:
 	parameterPack() = default;
-	parameterPack(int count, va_list arguments){
-
-
-		paramList = new paramWrapper*[count];
-		length = count;
-
-		for(int i = 0; i < count; i++){
-			paramList[i] = va_arg(arguments, paramWrapper*);
-		}
-		va_end(arguments);
-	}
-	~parameterPack(){
-		for(int i = 0; i < length; i++){
-			delete paramList[i];
-		}
-		delete[] paramList;
-	}
-
-	paramWrapper* search(univStr in){
-		for(int i = 0; i < length; i++){
-			if(paramList[i]->tag == in){
-				return paramList[i];
-			}
-		}
-		return nullptr;
-	}
+	parameterPack(int count, va_list arguments);
+	~parameterPack();
+	paramWrapper* search(std::string input);
 
 
 };
 
-extern "C"
-parameterPack* createParameterPack(int count, ...){
-	va_list arguments;
-	va_start(arguments, count);
-	return new parameterPack(count, arguments);
-}
+extern "C" parameterPack* createParameterPack(int count, ...);
 
-paramWrapper* param(std::string tag, int value){
-	return new paramWrapper(makeUnivStr(tag), value);
-}
-
-paramWrapper* param(std::string tag, float value){
-	return new paramWrapper(makeUnivStr(tag), value);
-}
-
-paramWrapper* param(std::string tag, std::string value){
-	return new paramWrapper(makeUnivStr(tag), makeUnivStr(value));
-}
+paramWrapper* param(std::string tag, int value);
+paramWrapper* param(std::string tag, float value);
+paramWrapper* param(std::string tag, std::string value);
+paramWrapper* param(std::string tag, vec3 value);
+paramWrapper* param(std::string tag, quat value);
 
 template <typename... ARGS>
-parameterPack* paramWrap(ARGS... args){
-	return createParameterPack(sizeof... (ARGS), args...);
-}
+parameterPack* paramWrap(ARGS... args);
 
 #endif

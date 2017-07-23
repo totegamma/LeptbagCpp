@@ -10,7 +10,7 @@ elementManager* generateElementManager(){
 elementManager::elementManager(){
 }
 
-elementManager::elementManager(std::vector<vertex> elementData, btRigidBody (*bodyGenerator)()){
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*)){
 
 	this->elementData = elementData;
 	this->bodyGenerator = bodyGenerator;
@@ -36,14 +36,18 @@ elementNode* elementManager::generate(){
 	return new elementNode();
 }
 
-template<typename... Args>
-elementNode* elementManager::generate(Args... args){
-	std::tuple<Args...> param = std::make_tuple(args...);
+elementNode* elementManager::generate(parameterPack* input){
+	/*
 	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
 	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
 	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
+	*/
 
-	btRigidBody *newbody = bodyGenerator(std::forward<Args>(args)...);
+	vec3 position = input->search("position")->getVec3();
+	vec3 scale = input->search("scale")->getVec3();
+	quat rotation = input->search("rotation")->getQuat();
+
+	btRigidBody *newbody = bodyGenerator(input);
 	elementNode *newNode = new elementNode(this, newbody, position, scale, rotation);
 	elements.push_back(newNode);
 

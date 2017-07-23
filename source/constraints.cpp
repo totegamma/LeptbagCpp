@@ -1,5 +1,6 @@
 #include "constraints.hpp"
 #include <iostream>
+/*
 
 hingeConstraint::hingeConstraint(){
 }
@@ -34,3 +35,4 @@ void hingeConstraint::destroy(){
 hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 &positionA, vec3 &positionB, vec3 &axis){
 	return new hingeConstraint(cubeA, cubeB, positionA, positionB, axis);
 }
+*/
