@@ -1,6 +1,5 @@
 #include "elementNode.hpp"
 
-
 elementNode::elementNode(){
 }
 

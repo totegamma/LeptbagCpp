@@ -18,9 +18,10 @@ class elementManager{
 
 	btRigidBody* (*bodyGenerator)(parameterPack*);
 
-	static std::vector<elementManager*> elementManagerList;
 
 	public:
+
+	static std::vector<elementManager*> elementManagerList;
 
 	elementManager();
 	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*));

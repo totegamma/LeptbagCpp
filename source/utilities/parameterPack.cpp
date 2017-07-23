@@ -145,10 +145,6 @@ paramWrapper* param(std::string tag, quat value){
 //-------------------------------------------------------------------
 
 
-template <typename... ARGS>
-parameterPack* paramWrap(ARGS... args){
-	return createParameterPack(sizeof... (ARGS), args...);
-}
 
 
 
