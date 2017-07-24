@@ -27,6 +27,8 @@
 #include "elementNode.hpp"
 #include "elementManager.hpp"
 #include "bodyGenerator.hpp"
+#include "primitiveShape.hpp"
+
 
 GLFWwindow* window;
 
@@ -353,86 +355,12 @@ int main(){
 	//頂点バッファオブジェクトを作る
 	initVBO();
 
-	//使う図形についてinit
-	/*
-	cubeshape::init();
-	floorshape::init();
-	*/
-
-
-
 
 	//<Test Code>
 
 
-	std::vector<vertex> cubeShapeVertices = {
-
-		vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-		vertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f),
-		vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
-
-		vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-		vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
-		vertex(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-
-
-		vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-		vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-		vertex( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-
-		vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-		vertex(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f),
-		vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-
-
-		vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
-		vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
-		vertex(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f),
-
-		vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
-		vertex( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f),
-		vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
-
-
-		vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-		vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-		vertex( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f),
-
-		vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-		vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-		vertex( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-
-
-		vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-		vertex( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f),
-		vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-
-		vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-		vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-		vertex(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f),
-
-
-		vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
-		vertex(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f),
-		vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f),
-
-		vertex( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,  1.0f),
-		vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
-		vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f)
-
-	};
-
-	elementManager *myElemManager = new elementManager(cubeShapeVertices, createBoxBody);
-
-	myElemManager->generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 5, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
-	myElemManager->generate(paramWrap(param("position",vec3(1, 1, 1)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
-
-
-
-
-
-
-
+	getCubeshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
+	getPlaneshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("face", vec3(0, 1, 0)), param("rotation", quat(1, 0, 0, 0)), param("mass", 0)));
 
 
 
