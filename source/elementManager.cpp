@@ -61,7 +61,7 @@ void elementManager::destroy(int id){
 
 void elementManager::render(){
 
-	glm::mat4 instanceMatrixArray[elements.size()];
+	glm::mat4* instanceMatrixArray = new glm::mat4[elements.size()];
 
 	for(int i = 0; i < elements.size(); i++){
 		instanceMatrixArray[i] = elements[i]->loadMatrix();
@@ -84,5 +84,7 @@ void elementManager::render(){
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
 	glDrawElementsInstanced(GL_TRIANGLES, elementData.size(), GL_UNSIGNED_INT, (void*)0, elements.size());
+
+	delete[] instanceMatrixArray;
 
 }

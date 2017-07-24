@@ -1,6 +1,9 @@
 #include "bodyGenerator.hpp"
+#include <iostream>
 
 btRigidBody* createBoxBody(parameterPack* input){
+
+	std::cout << "createBoxBody" << std::endl;
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -23,6 +26,8 @@ btRigidBody* createBoxBody(parameterPack* input){
 
 btRigidBody* createPlaneBody(parameterPack* input){
 
+	std::cout << "createPlaneBody" << std::endl;
+
 	vec3 position = input->search("position")->getVec3();
 	vec3 face = input->search("face")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
@@ -32,16 +37,20 @@ btRigidBody* createPlaneBody(parameterPack* input){
 	btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
 
 	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
-	btRigidBody::btRigidBodyConstructionInfo bodyCI(0, motionState, shape, btVector3(0, 0, 0));
+	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, btVector3(0, 0, 0));
 	btRigidBody* body = new btRigidBody(bodyCI);
 
 	btScalar friction = btScalar(0.7);
 	body->setFriction(friction);
 
+	dynamicsWorld->addRigidBody(body);
+
 	return body;
 }
 
 btRigidBody* createConvexHullShapeBody(parameterPack* input){
+
+	std::cout << "createConvexHullShapeBody" << std::endl;
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -74,6 +83,8 @@ btRigidBody* createConvexHullShapeBody(parameterPack* input){
 	shape->calculateLocalInertia(mass, inertia);
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
 	btRigidBody* body = new btRigidBody(bodyCI);
+
+	dynamicsWorld->addRigidBody(body);
 
 	return body;
 }

@@ -1,4 +1,5 @@
 #include "parameterPack.hpp"
+#include <iostream>
 
 paramWrapper::paramWrapper(univStr tag, int intValue){
 	this->tag = tag;
@@ -119,6 +120,7 @@ paramWrapper* parameterPack::search(std::string input){
 			return paramList[i];
 		}
 	}
+	std::cout << "404: " << input << std::endl;
 	return nullptr;
 }
 
