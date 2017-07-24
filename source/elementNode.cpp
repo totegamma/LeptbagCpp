@@ -25,5 +25,7 @@ glm::mat4 elementNode::loadMatrix(){
 }
 
 
-
+btRigidBody* elementNode::getBody(){
+	return body;
+}
 
