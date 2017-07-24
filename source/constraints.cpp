@@ -1,13 +1,12 @@
 #include "constraints.hpp"
 #include <iostream>
-/*
 
 hingeConstraint::hingeConstraint(){
 }
 
-hingeConstraint::hingeConstraint(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 positionA, vec3 positionB, vec3 axis){
+hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB, vec3 axis){
 
-	hinge = new btHingeConstraint(*(cubeA->body), *(cubeB->body), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
+	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
 
 }
@@ -32,7 +31,6 @@ void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
 }
 
-hingeConstraint* hingeConstraint_create(cubeshapeObject* cubeA, cubeshapeObject* cubeB, vec3 &positionA, vec3 &positionB, vec3 &axis){
-	return new hingeConstraint(cubeA, cubeB, positionA, positionB, axis);
+hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
+	return new hingeConstraint(elemA, elemB, positionA, positionB, axis);
 }
-*/

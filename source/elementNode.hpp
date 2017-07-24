@@ -19,6 +19,7 @@ class elementNode{
 	~elementNode();
 
 	glm::mat4 loadMatrix();
+	btRigidBody* getBody();
 };
 
 
