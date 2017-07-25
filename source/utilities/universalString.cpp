@@ -16,4 +16,10 @@ univStr makeUnivStr(std::string in){
 	return univStr(cstr, in.length());
 }
 
+//TODO 名前が最悪
+extern "C"
+univStr* createUnivStr(char *str, int length){
+	return new univStr(str, length);
+}
+
 
