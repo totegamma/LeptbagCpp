@@ -8,11 +8,21 @@ class elementManager;
 #include "utilities/utilities.hpp"
 #include "bodyGenerator.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <btBulletDynamicsCommon.h>
+
 class elementManager{
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
 
 	std::vector<GLuint> indexBufferArray;
+	std::vector<glm::mat4> instanceMatrixArray;
 	std::vector<vertex> elementData;
 	std::vector<elementNode*> elements;
 
