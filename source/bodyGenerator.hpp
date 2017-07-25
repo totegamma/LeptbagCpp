@@ -8,8 +8,8 @@
 
 extern btDiscreteDynamicsWorld* dynamicsWorld;
 
-btRigidBody* createBoxBody(parameterPack* input);
-btRigidBody* createPlaneBody(parameterPack* input);
-btRigidBody* createConvexHullShapeBody(parameterPack* input);
+extern "C" btRigidBody* createBoxBody(parameterPack* input);
+extern "C" btRigidBody* createPlaneBody(parameterPack* input);
+extern "C" btRigidBody* createConvexHullShapeBody(parameterPack* input);
 
 #endif

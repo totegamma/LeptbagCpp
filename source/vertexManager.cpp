@@ -32,11 +32,15 @@ vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z,
 }
 
 
-void vertexManager::addVertex(vertex input){
+void vertexManager::addVertex(vertex& input){
 	vertexList.push_back(input);
 }
 
 std::vector<vertex> vertexManager::getList(){
 	return vertexList;
+}
+
+extern "C" vertexManager* createVertexManager(){
+	return new vertexManager();
 }
 

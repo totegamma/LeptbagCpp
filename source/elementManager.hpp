@@ -32,4 +32,6 @@ class elementManager{
 	void render();
 };
 
+extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*));
+
 #endif

@@ -85,3 +85,8 @@ void elementManager::render(){
 	delete[] instanceMatrixArray;
 
 }
+
+extern "C"
+elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*)){
+	return new elementManager(vm.getList(), bodyGenerator);
+}
