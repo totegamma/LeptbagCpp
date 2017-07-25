@@ -61,6 +61,7 @@ extern (C){
 	paramWrapper createStringParam(univStr tag, univStr value);
 	paramWrapper createVec3Param(univStr tag, vec3 value);
 	paramWrapper createQuatParam(univStr tag, quat value);
+	paramWrapper createModelParam(univStr tag, vertexManager value);
 }
 
 paramWrapper param(string tag, int value){
@@ -81,6 +82,10 @@ paramWrapper param(string tag, vec3 value){
 
 paramWrapper param(string tag, quat value){
 	return createQuatParam(mksh(tag), value);
+}
+
+paramWrapper param(string tag, vertexManager value){
+	return createModelParam(mksh(tag), value);
 }
 
 

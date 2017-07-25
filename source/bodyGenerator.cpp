@@ -1,10 +1,7 @@
 #include "bodyGenerator.hpp"
-#include <iostream>
 
 extern "C"
 btRigidBody* createBoxBody(parameterPack* input){
-
-	std::cout << "createBoxBody" << std::endl;
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -28,8 +25,6 @@ btRigidBody* createBoxBody(parameterPack* input){
 extern "C"
 btRigidBody* createPlaneBody(parameterPack* input){
 
-	std::cout << "createPlaneBody" << std::endl;
-
 	vec3 position = input->search("position")->getVec3();
 	vec3 face = input->search("face")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
@@ -52,8 +47,6 @@ btRigidBody* createPlaneBody(parameterPack* input){
 
 extern "C"
 btRigidBody* createConvexHullShapeBody(parameterPack* input){
-
-	std::cout << "createConvexHullShapeBody" << std::endl;
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
