@@ -1,6 +1,7 @@
 #include "bodyGenerator.hpp"
 #include <iostream>
 
+extern "C"
 btRigidBody* createBoxBody(parameterPack* input){
 
 	std::cout << "createBoxBody" << std::endl;
@@ -8,7 +9,7 @@ btRigidBody* createBoxBody(parameterPack* input){
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getInt());
+	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
 	btCollisionShape* shape = new btBoxShape(scale.toBullet());
@@ -24,6 +25,7 @@ btRigidBody* createBoxBody(parameterPack* input){
 	return body;
 }
 
+extern "C"
 btRigidBody* createPlaneBody(parameterPack* input){
 
 	std::cout << "createPlaneBody" << std::endl;
@@ -31,7 +33,7 @@ btRigidBody* createPlaneBody(parameterPack* input){
 	vec3 position = input->search("position")->getVec3();
 	vec3 face = input->search("face")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getInt());
+	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
 	btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
@@ -48,6 +50,7 @@ btRigidBody* createPlaneBody(parameterPack* input){
 	return body;
 }
 
+extern "C"
 btRigidBody* createConvexHullShapeBody(parameterPack* input){
 
 	std::cout << "createConvexHullShapeBody" << std::endl;
@@ -55,7 +58,7 @@ btRigidBody* createConvexHullShapeBody(parameterPack* input){
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getInt());
+	btScalar mass = btScalar(input->search("mass")->getFloat());
 	std::vector<vertex> objectData = input->search("model")->getModel().getList();
 
 	std::vector<btVector3> convexHullShapePoints;
