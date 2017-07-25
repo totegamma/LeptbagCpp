@@ -32,9 +32,6 @@ elementManager::~elementManager(){
 }
 
 
-elementNode* elementManager::generate(){
-	return new elementNode();
-}
 
 elementNode* elementManager::generate(parameterPack* input){
 	/*

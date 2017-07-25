@@ -22,5 +22,6 @@ class univStr{
 
 
 univStr makeUnivStr(std::string in);
+extern "C" univStr* createUnivStr(char*str, int length);
 
 #endif
