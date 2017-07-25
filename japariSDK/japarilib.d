@@ -6,6 +6,7 @@ extern (C++) {
 		elementNode generate(parameterPack input);
 	}
 	interface elementNode{
+		void destroy();
 	}
 	interface btRigidBody{
 	}

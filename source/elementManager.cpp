@@ -34,18 +34,19 @@ elementManager::~elementManager(){
 
 
 elementNode* elementManager::generate(parameterPack* input){
-	/*
-	vec3 position = ::getArg("position"_arg, args..., default_(vec3(0, 0, 0)));
-	vec3 scale    = ::getArg("scale"_arg,    args..., default_(vec3(0, 0, 0)));
-	quat rotation = ::getArg("rotation"_arg, args..., default_(quat(0, 0, 0, 1)));
-	*/
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
 	quat rotation = input->search("rotation")->getQuat();
 
+	instanceMatrixArray.push_back(
+					glm::translate(glm::mat4(1.0f), position.toGlm())
+					* glm::toMat4(rotation.toGlm())
+					* glm::scale(glm::mat4(1.0f), scale.toGlm())
+					);
+
 	btRigidBody *newbody = bodyGenerator(input);
-	elementNode *newNode = new elementNode(this, newbody, position, scale, rotation);
+	elementNode *newNode = new elementNode(elements.size(), this, newbody, position, scale, rotation);
 	elements.push_back(newNode);
 
 	return newNode;
@@ -53,19 +54,24 @@ elementNode* elementManager::generate(parameterPack* input){
 
 
 void elementManager::destroy(int id){
-	//TODO あとで実装する
+	delete elements[id];
+	elements[id] = elements.back();
+	elements[id]->changeID(id);
+	elements.pop_back();
+
+	instanceMatrixArray[id] = instanceMatrixArray.back();
+	instanceMatrixArray.pop_back();
 }
+
 
 void elementManager::render(){
 
-	glm::mat4* instanceMatrixArray = new glm::mat4[elements.size()];
-
-	for(int i = 0; i < elements.size(); i++){
-		instanceMatrixArray[i] = elements[i]->loadMatrix();
+	for(auto elem: elements){
+		elem->loadMatrix(&instanceMatrixArray);
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
-	glBufferData(GL_ARRAY_BUFFER, elements.size() * sizeof(glm::mat4), instanceMatrixArray, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, elements.size() * sizeof(glm::mat4), &instanceMatrixArray[0], GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (GLvoid*)(sizeof(glm::vec4)*0));
@@ -82,7 +88,6 @@ void elementManager::render(){
 
 	glDrawElementsInstanced(GL_TRIANGLES, elementData.size(), GL_UNSIGNED_INT, (void*)0, elements.size());
 
-	delete[] instanceMatrixArray;
 
 }
 

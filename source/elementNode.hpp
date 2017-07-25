@@ -13,13 +13,18 @@ class elementNode{
 	vec3 initialScale;
 	quat initialRotation;
 
+	int id;
+
 	public:
 	elementNode();
-	elementNode(elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
+	elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	~elementNode();
+	virtual void destroy();
 
-	glm::mat4 loadMatrix();
+	void loadMatrix(std::vector<glm::mat4> *input);
 	btRigidBody* getBody();
+	int getID();
+	void changeID(int newID);
 };
 
 

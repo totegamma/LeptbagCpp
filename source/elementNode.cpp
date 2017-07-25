@@ -3,7 +3,8 @@
 elementNode::elementNode(){
 }
 
-elementNode::elementNode(elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation){
+elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation){
+	this->id = id;
 	this->parent = parent;
 	this->body = body;
 
@@ -12,20 +13,38 @@ elementNode::elementNode(elementManager* parent, btRigidBody* body, vec3 positio
 	this->initialRotation = rotation;
 }
 
-glm::mat4 elementNode::loadMatrix(){
+elementNode::~elementNode(){
+	dynamicsWorld->removeRigidBody(body);
+	delete body->getMotionState();
+	delete body;
+}
+
+void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
 
 	btVector3 pos = transform.getOrigin();
 	btQuaternion rotation = transform.getRotation();
 
-	return glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
+	input->at(id) = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
 		* glm::toMat4(glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ()))
 		* glm::scale(glm::mat4(1.0f), initialScale.toGlm());
+}
+
+void elementNode::destroy(){
+	parent->destroy(id);
 }
 
 
 btRigidBody* elementNode::getBody(){
 	return body;
+}
+
+int elementNode::getID(){
+	return id;
+}
+
+void elementNode::changeID(int newID){
+	id = newID;
 }
 
