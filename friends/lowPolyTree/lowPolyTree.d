@@ -4,65 +4,15 @@ import std.math;
 import std.json;
 import std.random;
 
-//Library-----------------------------------
-
-extern (C++) {
-	interface vec3{
-		float getx();
-		float gety();
-		float getz();
-	}
-	interface quat{
-		float getw();
-		float getx();
-		float gety();
-		float getz();
-	}
-}
-
-vec3 addVec(vec3 A, vec3 B){
-	return createVec3(A.getx() + B.getx(), A.gety() + B.gety(), A.getz() + B.getz());
-}
-
-
-
-extern (C) {
-	vec3 createVec3(float x, float y, float z);
-	quat createQuat(float w, float x, float y, float z);
-}
-
-extern (C++){
-	interface vertex{
-	}
-}
-
-extern (C++){
-	interface shapePointerObject{
-	}
-}
-
-extern (C++){
-	interface commonshapeObject{
-		void addVertex(vertex newvertex);
-		void registerToSystem();
-		shapePointerObject create();
-		shapePointerObject create(vec3 position, vec3 size, quat rotation);
-		shapePointerObject create(vec3 position, vec3 size, quat rotation, float mass);
-	}
-}
-
-extern (C) {
-	vertex createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
-	commonshapeObject createCommonShapeObject();
-}
-
-
-//------------------------------------------
+import japariSDK.japarilib;
 
 Random rnd;
 
-commonshapeObject leaf;
-commonshapeObject trunk;
+vertexManager leafVertices;
+vertexManager trunkVertices;
+
+elementManager leaf;
+elementManager trunk;
 
 vec3 leafPosition;
 vec3 leafScale;
@@ -78,11 +28,24 @@ class tree{
 		spawn(createVec3(x, y, z));
 	}
 
-
-
 	void spawn(vec3 position){
-		leaf.create(addVec(leafPosition, position), leafScale, leafRotation, 0);
-		trunk.create(addVec(trunkPosition, position), trunkScale, trunkRotation, 0);
+
+		leaf.generate(paramWrap(
+							param("position", addVec(leafPosition, position)),
+							param("scale",    leafScale),
+							param("face",     leafRotation),
+							param("rotation", createQuat(1, 0, 0, 0)),
+							param("model",    leafVertices),
+							param("mass",     0.0f)));
+
+		trunk.generate(paramWrap(
+							param("position", addVec(trunkPosition, position)),
+							param("scale",    trunkScale),
+							param("face",     trunkRotation),
+							param("rotation", createQuat(1, 0, 0, 0)),
+							param("model",    trunkVertices),
+							param("mass",     0.0f)));
+
 	}
 }
 
@@ -95,8 +58,9 @@ extern (C) void init(){
 	Random(unpredictableSeed);
 	writeln("lowPolyTree.d loaded");
 
-	leaf = createCommonShapeObject();
-	trunk = createCommonShapeObject();
+
+	leafVertices = createVertexManager();
+	trunkVertices = createVertexManager();
 
 	//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
 	auto jsonString = import("lowPolyTree.fpm");
@@ -107,17 +71,18 @@ extern (C) void init(){
 		if(elem["objectType"].str == "MESH"){
 			if(elem["name"].str == "leaf"){
 
-
 				leafPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
 				leafScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
 				leafRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
-					leaf.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+					leafVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
 												objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
 												objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
-				leaf.registerToSystem();
+
+				leaf = createElementManager(leafVertices, &createConvexHullShapeBody);
+
 			}else if(elem["name"].str == "trunk"){
 
 				trunkPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
@@ -125,11 +90,13 @@ extern (C) void init(){
 				trunkRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
-					trunk.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+					trunkVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
 													objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
 													objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
-				trunk.registerToSystem();
+				
+				trunk = createElementManager(trunkVertices, &createConvexHullShapeBody);
+
 			}
 		}
 	}
