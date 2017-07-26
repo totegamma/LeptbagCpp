@@ -1,29 +1,38 @@
-japari_park: main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
-	g++ -rdynamic --std=c++14 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
+japari_park: main.o elementNode.o elementManager.o bodyGenerator.o  constraints.o vertexmanager.o shader.o universalVector.o parameterPack.o universalString.o primitiveShape.o
+	g++-7 -rdynamic --std=c++17 -L /usr/local/lib/ -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL -o japari_park main.o elementNode.o elementManager.o bodyGenerator.o constraints.o vertexmanager.o shader.o universalVector.o parameterPack.o universalString.o primitiveShape.o
 
-main.o: main.cpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
+main.o: main.cpp 
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c main.cpp
 
-universalVector.o: universalVector.cpp universalVector.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c universalVector.cpp
+elementNode.o: elementNode.cpp elementNode.hpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementNode.cpp
 
-commonshape.o: commonshape.cpp commonshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c commonshape.cpp
+elementManager.o: elementManager.cpp elementManager.hpp elementNode.hpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c elementManager.cpp
 
-cubeshape.o: cubeshape.cpp cubeshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c cubeshape.cpp
-
-floorshape.o: floorshape.cpp floorshape.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c floorshape.cpp
+bodyGenerator.o: bodyGenerator.cpp bodyGenerator.hpp 
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c bodyGenerator.cpp
 
 constraints.o: constraints.cpp constraints.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c constraints.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c constraints.cpp
 
-vertexmanage.o: vertexmanage.cpp vertexmanage.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c vertexmanage.cpp
+vertexmanager.o: vertexmanager.cpp vertexmanager.hpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c vertexmanager.cpp
 
 shader.o: shader.cpp shader.hpp
-	g++ --std=c++14 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c shader.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c shader.cpp
+
+universalVector.o: utilities/universalVector.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/universalVector.cpp
+
+parameterPack.o: utilities/parameterPack.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/parameterPack.cpp
+
+universalString.o: utilities/universalString.cpp
+	g++-7 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c utilities/universalString.cpp
+
+primitiveShape.o: primitiveShape.cpp primitiveShape.hpp
+	g++-7 -g -O0 --std=c++17 -I /usr/local/include/ -I /usr/local/include/bullet/ -I /usr/local/Cellar/glm/0.9.8.4/include -c primitiveShape.cpp
 
 clean:
-	rm -f main.o universalVector.o commonshape.o cubeshape.o floorshape.o constraints.o vertexmanage.o shader.o
+	rm -f *.o

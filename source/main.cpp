@@ -20,13 +20,15 @@
 #include <btBulletDynamicsCommon.h>
 
 
-#include "vertexmanage.hpp"
+#include "vertexmanager.hpp"
 #include "shader.hpp"
-#include "cubeshape.hpp"
-#include "floorshape.hpp"
 #include "constraints.hpp"
-#include "commonshape.hpp"
-#include "namedArg.hpp"
+#include "utilities/utilities.hpp"
+#include "elementNode.hpp"
+#include "elementManager.hpp"
+#include "bodyGenerator.hpp"
+#include "primitiveShape.hpp"
+
 
 GLFWwindow* window;
 
@@ -353,9 +355,17 @@ int main(){
 	//頂点バッファオブジェクトを作る
 	initVBO();
 
-	//使う図形についてinit
-	cubeshape::init();
-	floorshape::init();
+
+	//<Test Code>
+
+
+	//getCubeshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
+	//getPlaneshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("face", vec3(0, 1, 0)), param("rotation", quat(1, 0, 0, 0)), param("mass", 0)));
+
+
+
+	//<\Test Code>
+
 
 
 	void *lh;
@@ -451,10 +461,16 @@ int main(){
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
-		cubeshape::render();
-		floorshape::render();
+		//cubeshape::render();
+		//floorshape::render();
 
+		/*
 		for(auto elem: commonshapeList){
+			elem->render();
+		}
+		*/
+
+		for(auto elem: elementManager::elementManagerList){
 			elem->render();
 		}
 

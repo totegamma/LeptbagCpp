@@ -1,7 +1,8 @@
-#ifndef VERTEXMANAGE_HPP
-#define VERTEXMANAGE_HPP
+#ifndef VERTEXMANAGER_HPP
+#define VERTEXMANAGER_HPP
 
 #include <vector>
+#include <algorithm>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -65,6 +66,16 @@ extern void initVBO();
 extern void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr);
 
 extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
+
+
+class vertexManager{
+	std::vector<vertex> vertexList;
+	public:
+	virtual void addVertex(vertex& input);
+	std::vector<vertex> getList();
+};
+
+extern "C" vertexManager* createVertexManager();
 
 
 #endif
