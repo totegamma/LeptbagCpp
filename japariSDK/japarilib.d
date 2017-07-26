@@ -113,10 +113,20 @@ extern (C++) {
 		void setLimit(float lower, float upper);
 		void setMaxMotorImpulse(float power);
 		void setMotorTarget(float angle, float duration);
-		void destroy();	
+		void destroy();
+	}
+
+	interface generic6DofConstraint{
+		void setAngularLowerLimit(vec3 angularLower);
+		void setAngularUpperLimit(vec3 angularUpper);
+		void setLinearLowerLimit(vec3 linearLower);
+		void setLinearUpperLimit(vec3 linearUpper);
+		void getRotationalLimitMotor(int index);
+		void destroy();
 	}
 }
 
 extern (C) {
 	hingeConstraint hingeConstraint_create(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axis);
+	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB);
 }
