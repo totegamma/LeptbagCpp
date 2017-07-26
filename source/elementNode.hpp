@@ -19,6 +19,9 @@ class elementNode{
 	elementNode();
 	elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	~elementNode();
+	virtual float getXpos();
+	virtual float getYpos();
+	virtual float getZpos();
 	virtual void destroy();
 
 	void loadMatrix(std::vector<glm::mat4> *input);

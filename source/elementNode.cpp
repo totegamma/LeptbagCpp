@@ -19,6 +19,27 @@ elementNode::~elementNode(){
 	delete body;
 }
 
+float elementNode::getXpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getX();
+}
+
+float elementNode::getYpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getY();
+}
+
+float elementNode::getZpos(){
+	btTransform transform;
+	body->getMotionState()->getWorldTransform(transform);
+	btVector3 pos = transform.getOrigin();
+	return pos.getZ();
+}
+
 void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
