@@ -4,51 +4,9 @@ import core.runtime;
 import std.random;
 import std.math;
 import std.algorithm;
+import std.conv;
 
-//Library-----------------------------------
-
-extern (C++) {
-	interface vec3{
-	}
-	interface quat{
-	}
-}
-
-extern (C) {
-	vec3 createVec3(float x, float y, float z);
-	quat createQuat(float w, float x, float y, float z);
-}
-
-extern (C++) {
-	interface cubeshapeObject{
-		void destroy();
-		float getXpos();
-		float getYpos();
-		float getZpos();
-	}
-
-
-}
-
-extern (C) {
-	cubeshapeObject cubeshape_create(vec3 position, vec3 size, quat rotation, float weight);
-}
-
-extern (C++) {
-	interface hingeConstraint{
-		void enableMotor(bool flag);
-		void setLimit(float lower, float upper);
-		void setMaxMotorImpulse(float power);
-		void setMotorTarget(float angle, float duration);
-		void destroy();	
-	}
-}
-
-extern (C) {
-	hingeConstraint hingeConstraint_create(cubeshapeObject cubeA, cubeshapeObject cubeB, vec3 positionA, vec3 positionB, vec3 axis);
-}
-
-//------------------------------------------
+import japariSDK.japarilib;
 
 dog mydog;
 dog[] doglist;
@@ -64,16 +22,16 @@ class dog{
 
 	float[4][20] dna;
 
-	cubeshapeObject chest;
-	cubeshapeObject head;
-	cubeshapeObject muzzle;
-	cubeshapeObject earLeft;
-	cubeshapeObject earRight;
-	cubeshapeObject legFrontLeft;
-	cubeshapeObject legFrontRight;
-	cubeshapeObject legBackLeft;
-	cubeshapeObject legBackRight;
-	cubeshapeObject tail;
+	elementNode chest;
+	elementNode head;
+	elementNode muzzle;
+	elementNode earLeft;
+	elementNode earRight;
+	elementNode legFrontLeft;
+	elementNode legFrontRight;
+	elementNode legBackLeft;
+	elementNode legBackRight;
+	elementNode tail;
 
 	hingeConstraint hinge_body_head;
 	hingeConstraint hinge_head_muzzle;
@@ -105,16 +63,66 @@ class dog{
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 
-		chest			= cubeshape_create(createVec3(    x,     y,     z),	createVec3(  1, 0.5, 0.5),	createQuat(1, 0, 0, 0),	   2);
-		head			= cubeshape_create(createVec3(x+1.4,     y,     z),	createVec3(0.4, 0.4, 0.4),	createQuat(1, 0, 0, 0),	 0.5);
-		muzzle			= cubeshape_create(createVec3(x+2.1, y-0.2,     z),	createVec3(0.3, 0.2, 0.2),	createQuat(1, 0, 0, 0),	 0.1);
-		earLeft			= cubeshape_create(createVec3(x+1.4, y+0.5, z-0.2),	createVec3(0.1, 0.1, 0.1),	createQuat(1, 0, 0, 0),	0.05);
-		earRight		= cubeshape_create(createVec3(x+1.4, y+0.5, z+0.2),	createVec3(0.1, 0.1, 0.1),	createQuat(1, 0, 0, 0),	0.05);
-		legFrontLeft	= cubeshape_create(createVec3(x+0.5,   y-1, z-0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
-		legFrontRight	= cubeshape_create(createVec3(x+0.5,   y-1, z+0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
-		legBackLeft		= cubeshape_create(createVec3(x-0.5,   y-1, z-0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
-		legBackRight	= cubeshape_create(createVec3(x-0.5,   y-1, z+0.4),	createVec3(0.1, 0.5, 0.1),	createQuat(1, 0, 0, 0),	 0.3);
-		tail			= cubeshape_create(createVec3(x-1.5, y+0.4,     z),	createVec3(0.5, 0.1, 0.1),	createQuat(1, 0, 0, 0),	 0.2);
+		chest = getCubeshape().generate(paramWrap(
+					param("position", createVec3(    x,     y,     z)),
+					param("scale", createVec3(  1, 0.5, 0.5)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 2.0f)));
+
+		head = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+1.4,     y,     z)),
+					param("scale", createVec3(0.4, 0.4, 0.4)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.5f)));
+
+		muzzle = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+2.1, y-0.2,     z)),
+					param("scale", createVec3(0.3, 0.2, 0.2)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.1f)));
+
+		earLeft = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+1.4, y+0.5, z-0.2)),
+					param("scale", createVec3(0.1, 0.1, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.05f)));
+
+		earRight = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+1.4, y+0.5, z+0.2)),
+					param("scale", createVec3(0.1, 0.1, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.05f)));
+
+		legFrontLeft = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+0.5,   y-1, z-0.4)),
+					param("scale", createVec3(0.1, 0.5, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.3f)));
+
+		legFrontRight = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x+0.5,   y-1, z+0.4)),
+					param("scale", createVec3(0.1, 0.5, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.3f)));
+
+		legBackLeft = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x-0.5,   y-1, z-0.4)),
+					param("scale", createVec3(0.1, 0.5, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.3f)));
+
+		legBackRight = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x-0.5,   y-1, z+0.4)),
+					param("scale", createVec3(0.1, 0.5, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.3f)));
+
+		tail = getCubeshape().generate(paramWrap(
+					param("position", createVec3(x-1.5, y+0.4,     z)),
+					param("scale", createVec3(0.5, 0.1, 0.1)),
+					param("rotation", createQuat(1, 0, 0, 0)),
+					param("mass", 0.2f)));
+
 
 
 		hinge_body_head			= hingeConstraint_create(chest   , head         , createVec3(   1,    0,    0), createVec3(-0.4,   0,    0), createVec3(0, 0, 1));
@@ -224,9 +232,20 @@ extern (C) void tick(){
 		//成績順にソート
 		sort!((a,b)=>a.muzzle.getXpos() < b.muzzle.getXpos())(doglist);
 
+
 		//優秀なDNAをコピー
 		float[4][20] firstDNA = doglist[$-1].dna;
 		float[4][20] secondDNA = doglist[$-2].dna;
+
+		//新記録を更新したDNAを表示
+		if(topRecord < doglist[$-1].muzzle.getXpos()){
+			topRecord = doglist[$-1].muzzle.getXpos();
+			writeln("New Record!: " ~ to!string(topRecord));
+			writeln("dna:");
+			foreach(float[4] elem; doglist[$-1].dna){
+				writeln(to!string(elem[0]) ~ ", " ~ to!string(elem[1]) ~ ", " ~ to!string(elem[2]) ~ ", " ~ to!string(elem[3]));
+			}
+		}
 
 		//犬のリセット
 		foreach(int i, ref elem; doglist){
@@ -258,7 +277,10 @@ extern (C) void tick(){
 
 		}
 
+		generation++;
 		time = 0;
+
+		writeln("generation: " ~ to!string(generation));
 	}
 
 
