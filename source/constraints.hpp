@@ -12,7 +12,7 @@ class hingeConstraint{
 	btHingeConstraint* hinge;
 	public:
 	hingeConstraint();
-	hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB, vec3 axis);
+	hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis);
 	virtual void enableMotor(bool flag);
 	virtual void setLimit(float lower, float upper);
 	virtual void setMaxMotorImpulse(float power);
@@ -24,11 +24,11 @@ class generic6DofConstraint{
 	btGeneric6DofConstraint* gen6Dof;
 	public:
 	generic6DofConstraint();
-	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB);
-	virtual void setAngularLowerLimit(vec3 angularLower);
-	virtual void setAngularUpperLimit(vec3 angularUpper);
-	virtual void setLinearLowerLimit(vec3 linearLower);
-	virtual void setLinearUpperLimit(vec3 linearUpper);
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
+	virtual void setAngularLowerLimit(vec3 &angularLower);
+	virtual void setAngularUpperLimit(vec3 &angularUpper);
+	virtual void setLinearLowerLimit(vec3 &linearLower);
+	virtual void setLinearUpperLimit(vec3 &linearUpper);
 	virtual void getRotationalLimitMotor(int index);
 	virtual void destroy();
 };

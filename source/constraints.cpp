@@ -4,7 +4,7 @@
 hingeConstraint::hingeConstraint(){
 }
 
-hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB, vec3 axis){
+hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
 
 	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
@@ -38,7 +38,7 @@ hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, 
 generic6DofConstraint::generic6DofConstraint(){
 }
 
-generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB){
+generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB){
 
 	// それぞれの物体の重心を原点としてローカル座標をとる。
 	btTransform frameInA, frameInB;
@@ -54,19 +54,19 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 }
 
-void generic6DofConstraint::setAngularLowerLimit(vec3 angularLower){
+void generic6DofConstraint::setAngularLowerLimit(vec3 &angularLower){
 	gen6Dof->setAngularLowerLimit(angularLower.toBullet());
 }
 
-void generic6DofConstraint::setAngularUpperLimit(vec3 angularUpper){
+void generic6DofConstraint::setAngularUpperLimit(vec3 &angularUpper){
 	gen6Dof->setAngularUpperLimit(angularUpper.toBullet());
 }
 
-void generic6DofConstraint::setLinearLowerLimit(vec3 linearLower){
+void generic6DofConstraint::setLinearLowerLimit(vec3 &linearLower){
 	gen6Dof->setLinearLowerLimit(linearLower.toBullet());
 }
 
-void generic6DofConstraint::setLinearUpperLimit(vec3 linearUpper){
+void generic6DofConstraint::setLinearUpperLimit(vec3 &linearUpper){
 	gen6Dof->setLinearUpperLimit(linearUpper.toBullet());
 }
 
