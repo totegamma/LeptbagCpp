@@ -12,3 +12,5 @@ source/japari_park
 playground/thotgamma/argumentsTest/main
 
 *.depend
+
+*.bullet
