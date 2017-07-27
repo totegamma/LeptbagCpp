@@ -17,7 +17,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 
 #include "vertexmanager.hpp"
@@ -330,8 +330,6 @@ int main(){
 	uniform_LightColor = glGetUniformLocation(programID, "LightColor");
 	uniform_LightPower = glGetUniformLocation(programID, "LightPower");
 	uniform_LightDirection = glGetUniformLocation(programID, "LightDirection");
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
 
 	//入力のコールバック・カーソルタイプの設定

@@ -4,7 +4,7 @@
 #include "vertexmanager.hpp"
 #include "utilities/utilities.hpp"
 #include <algorithm>
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 extern btDiscreteDynamicsWorld* dynamicsWorld;
 

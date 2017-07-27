@@ -1,7 +1,7 @@
 #ifndef CONSTRAINTS_HPP
 #define CONSTRAINTS_HPP
 
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "elementNode.hpp"
 #include "utilities/utilities.hpp"
