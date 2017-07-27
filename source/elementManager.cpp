@@ -54,7 +54,7 @@ elementNode* elementManager::generate(parameterPack* input){
 
 
 void elementManager::destroy(int id){
-	delete elements[id];
+	delete elements.at(id);
 	elements[id] = elements.back();
 	elements[id]->changeID(id);
 	elements.pop_back();
