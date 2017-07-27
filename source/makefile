@@ -12,7 +12,6 @@ LIBPATH := -L/usr/local/lib
 LIBS := -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL
 
 
-
 all: $(DEPENDS) $(PROG)
 
 $(PROG): $(OBJS)

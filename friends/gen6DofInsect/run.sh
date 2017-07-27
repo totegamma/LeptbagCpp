@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET="simpledog"
+TARGET="gen6DofInsect"
 
 cp $TARGET".friends" "../../source/friends/"
 cd ../../source
