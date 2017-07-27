@@ -20,7 +20,21 @@ class hingeConstraint{
 	virtual void destroy();
 };
 
+class generic6DofConstraint{
+	btGeneric6DofConstraint* gen6Dof;
+	public:
+	generic6DofConstraint();
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 positionA, vec3 positionB);
+	virtual void setAngularLowerLimit(vec3 angularLower);
+	virtual void setAngularUpperLimit(vec3 angularUpper);
+	virtual void setLinearLowerLimit(vec3 linearLower);
+	virtual void setLinearUpperLimit(vec3 linearUpper);
+	virtual void getRotationalLimitMotor(int index);
+	virtual void destroy();
+};
+
 extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis);
+extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
 
 
 

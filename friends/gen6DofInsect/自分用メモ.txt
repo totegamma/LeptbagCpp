@@ -1,0 +1,91 @@
+class generic6dofConstraint{
+	btGeneric6DofConstraint* hinge;
+	public:
+	generic6dofConstraint();
+	generic6dofConstraint(elementNode* elemA, elementNode* elemB, vec3 frameInA, vec3 frameInB, bool useLinearReferenceFrameB);
+	virtual void enableMotor(bool flag);
+	virtual void setLimit(float lower, float upper);
+	virtual void setMaxMotorImpulse(float power);
+	virtual void setMotorTarget(float angle, float duration);
+	virtual void destroy();
+};
+
+
+//6dofconstraint
+// それぞれの物体の重心を原点としてローカル座標をとる。
+btTransform frameInA, frameInB;
+frameInA = cubeA->body->getCenterOfMassTransform();
+frameInB = cubeB->body->getCenterOfMassTransform();
+// デフォルトの関節の接点を相対座標で指定する
+frameInA.setOrigin(btVector3(btScalar(0), btScalar(-1.9), btScalar(0.)));
+frameInB.setOrigin(btVector3(btScalar(0), btScalar( 1.9), btScalar(0.)));
+
+btGeneric6DofConstraint* pGen6Dof = new btGeneric6DofConstraint(*(cubeA->body), *(cubeB->body), frameInA, frameInB, false);
+pGen6Dof->setAngularLowerLimit(btVector3(0,0,-M_PI));
+pGen6Dof->setAngularUpperLimit(btVector3(0,0,M_PI));
+pGen6Dof->setLinearLowerLimit(btVector3(0,0,0));
+pGen6Dof->setLinearUpperLimit(btVector3(0,0,0));
+pGen6Dof->getRotationalLimitMotor(2)->m_enableMotor = true;
+dynamicsWorld->addConstraint(pGen6Dof);
+
+
+// constraint.cpp 37行目以下に追加
+
+generic6DofConstraint::generic6DofConstraint(){
+}
+
+generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 frameInA, vec3 frameInB, bool useLinearReferenceFrameB){
+
+	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA.toBullet(), frameInB.toBullet(), useLinearReferenceFrameB);
+	dynamicsWorld->addConstraint(gen6Dof);
+
+}
+
+void generic6DofConstraint::setAngularLowerLimit(vec3 angularLower){
+	gen6Dof->setAngularLowerLimit(angularLower.toBullet());
+}
+
+void generic6DofConstraint::setAngularUpperLimit(vec3 angularUpper){
+	gen6Dof->setAngularUpperLimit(angularUpper.toBullet());
+}
+
+void generic6DofConstraint::setLinearLowerLimit(vec3 linearLower){
+	gen6Dof->setLinearLowerLimit(LinearLower.toBullet());
+}
+
+void generic6DofConstraint::setLinearUpperLimit(vec3 linearUpper){
+	gen6Dof->setLinearUpperLimit(LinearUpper.toBullet());
+}
+
+void generic6DofConstraint::getRotationalLimitMotor(int index){
+	// indexがよくわからん。誰か教えて欲しい。
+	gen6Dof->getRotationalLimitMotor(index)->m_enableMotor = true;
+}
+
+void generic6DofConstraint::destroy(){
+	dynamicsWorld->removeConstraint(gen6Dof);
+}
+
+generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &frameInA, vec3 &frameInB, bool useLinearReferenceFrameB){
+	return new generic6DofConstraint(elemA, elemB, frameInA, frameInB, useLinearReferenceFrameB);
+}
+
+
+// constraint.hpp 22行目以下に追加
+
+class generic6DofConstraint{
+	btGeneric6DofConstraint* gen6Dof;
+	public:
+	generic6DofConstraint();
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 frameInA, vec3 frameInB, bool useLinearReferenceFrameB);
+	virtual void setAngularLowerLimit(vec3 angularLower);
+	virtual void setAngularUpperLimit(vec3 angularUpper);
+	virtual void setLinearLowerLimit(vec3 linearLower);
+	virtual void setLinearUpperLimit(vec3 linearUpper);
+	virtual void getRotationalLimitMotor(int index);
+	virtual void destroy();
+};
+
+
+// constraint.hpp
+extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &frameInA, vec3 &frameInB, bool &useLinearReferenceFrameB);
