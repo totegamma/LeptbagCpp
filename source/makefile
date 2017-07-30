@@ -6,7 +6,7 @@ OBJS := $(SRCS:%.cpp=%.o)
 DEPS := $(SRCS:%.cpp=%.depend)
 
 CC := g++-7
-CCFLAGS := -std=c++17 -rdynamic -Wall
+CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0
 INCLUDEPATH := 
 LIBPATH := -L/usr/local/lib
 LIBS := -ldl -l BulletDynamics -l BulletCollision -l LinearMath -l glfw -lglew -framework OpenGL
