@@ -28,7 +28,7 @@ void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr){
 }
 
 vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b){
-	return new vertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_z, color_r, color_g, color_b);
+	return new vertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_z, color_r, color_g, color_b);//XXX 未確認
 }
 
 
@@ -41,6 +41,6 @@ std::vector<vertex> vertexManager::getList(){
 }
 
 extern "C" vertexManager* createVertexManager(){
-	return new vertexManager();
+	return new vertexManager();//XXX 未確認
 }
 

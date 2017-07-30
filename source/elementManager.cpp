@@ -4,7 +4,7 @@
 std::vector<elementManager*> elementManager::elementManagerList;
 
 elementManager* generateElementManager(){
-	return new elementManager();
+	return new elementManager();//XXX 未確認
 }
 
 elementManager::elementManager(){
@@ -93,5 +93,5 @@ void elementManager::render(){
 
 extern "C"
 elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*)){
-	return new elementManager(vm.getList(), bodyGenerator);
+	return new elementManager(vm.getList(), bodyGenerator);//XXX 未確認
 }

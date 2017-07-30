@@ -64,32 +64,32 @@ vertexManager paramWrapper::getModel(){
 
 extern "C"
 paramWrapper* createIntParam(univStr *tag, int value){
-	return new paramWrapper(*tag, value);
+	return new paramWrapper(*tag, value);//XXX 未確認
 }
 
 extern "C"
 paramWrapper* createFloatParam(univStr *tag, float value){
-	return new paramWrapper(*tag, value);
+	return new paramWrapper(*tag, value);//XXX 未確認
 }
 
 extern "C"
 paramWrapper* createStringParam(univStr *tag, univStr *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(*tag, *value);//XXX 未確認
 }
 
 extern "C"
 paramWrapper* createVec3Param(univStr *tag, vec3 *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(*tag, *value);//XXX 未確認
 }
 
 extern "C"
 paramWrapper* createQuatParam(univStr *tag, quat *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(*tag, *value);//XXX 未確認
 }
 
 extern "C"
 paramWrapper* createModelParam(univStr *tag, vertexManager *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(*tag, *value);//XXX 未確認
 }
 
 
@@ -97,7 +97,7 @@ paramWrapper* createModelParam(univStr *tag, vertexManager *value){
 
 
 parameterPack::parameterPack(int count, va_list arguments){
-	paramList = new paramWrapper*[count];
+	paramList = new paramWrapper*[count];//XXX 未確認
 	length = count;
 
 	for(int i = 0; i < count; i++){
@@ -132,7 +132,7 @@ extern "C"
 parameterPack* createParameterPack(int count, ...){
 	va_list arguments;
 	va_start(arguments, count);
-	return new parameterPack(count, arguments);
+	return new parameterPack(count, arguments);//XXX 未確認
 }
 
 
@@ -140,27 +140,27 @@ parameterPack* createParameterPack(int count, ...){
 
 
 paramWrapper* param(std::string tag, int value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(makeUnivStr(tag), value);//XXX 未確認
 }
 
 paramWrapper* param(std::string tag, float value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(makeUnivStr(tag), value);//XXX 未確認
 }
 
 paramWrapper* param(std::string tag, std::string value){
-	return new paramWrapper(makeUnivStr(tag), makeUnivStr(value));
+	return new paramWrapper(makeUnivStr(tag), makeUnivStr(value));//XXX 未確認
 }
 
 paramWrapper* param(std::string tag, vec3 value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(makeUnivStr(tag), value);//XXX 未確認
 }
 
 paramWrapper* param(std::string tag, quat value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(makeUnivStr(tag), value);//XXX 未確認
 }
 
 paramWrapper* param(std::string tag, vertexManager value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(makeUnivStr(tag), value);//XXX 未確認
 }
 
 //-------------------------------------------------------------------
