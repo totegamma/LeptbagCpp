@@ -23,7 +23,7 @@ glm::vec3 vec3::toGlm(){
 }
 
 vec3* createVec3(float x, float y, float z){
-	return new vec3(x, y, z);
+	return new vec3(x, y, z);//XXX 未確認
 }
 
 quat::quat(){
@@ -53,5 +53,5 @@ glm::quat quat::toGlm(){
 }
 
 quat* createQuat(float w, float x, float y, float z){
-	return new quat(w, x, y, z);
+	return new quat(w, x, y, z);//XXX 未確認
 }

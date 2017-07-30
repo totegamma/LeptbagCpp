@@ -11,7 +11,7 @@ std::string univStr::getString(){
 }
 
 univStr makeUnivStr(std::string in){
-	char *cstr = new char[in.length()];
+	char *cstr = new char[in.length()];//XXX 未確認
 	strcpy(cstr, in.c_str());
 	return univStr(cstr, in.length());
 }
@@ -19,7 +19,7 @@ univStr makeUnivStr(std::string in){
 //TODO 名前が最悪
 extern "C"
 univStr* createUnivStr(char *str, int length){
-	return new univStr(str, length);
+	return new univStr(str, length);//XXX 未確認
 }
 
 

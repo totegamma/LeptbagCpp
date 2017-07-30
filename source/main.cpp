@@ -342,11 +342,11 @@ int main(){
 
 
 	//物理ワールドの生成
-	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
-	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
-	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+	btBroadphaseInterface* broadphase = new btDbvtBroadphase(); //XXX 未確認
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();//XXX 未確認
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);//XXX 未確認
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;//XXX 未確認
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);//XXX 未確認
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 

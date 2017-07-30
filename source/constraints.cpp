@@ -6,7 +6,7 @@ hingeConstraint::hingeConstraint(){
 
 hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
 
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
+	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());//XXX 未確認
 	dynamicsWorld->addConstraint(hinge, true);
 
 }
@@ -32,7 +32,7 @@ void hingeConstraint::destroy(){
 }
 
 hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
-	return new hingeConstraint(elemA, elemB, positionA, positionB, axis);
+	return new hingeConstraint(elemA, elemB, positionA, positionB, axis);//XXX 未確認
 }
 
 generic6DofConstraint::generic6DofConstraint(){
@@ -49,7 +49,7 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	frameInB.setOrigin(positionB.toBullet());
 
 	// 6Dofを生成
-	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
+	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);//XXX 未確認
 	dynamicsWorld->addConstraint(gen6Dof);
 
 }
@@ -80,5 +80,5 @@ void generic6DofConstraint::destroy(){
 }
 
 generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB){
-	return new generic6DofConstraint(elemA, elemB, positionA, positionB);
+	return new generic6DofConstraint(elemA, elemB, positionA, positionB);//XXX 未確認
 }
