@@ -9,7 +9,7 @@ import japariSDK.japarilib;
 
 Random rnd;
 
-int dogNum = 30;
+int dogNum = 1;
 
 vertexManager[string] partsVertices;
 elementManager[string] partsGenerator;
@@ -62,8 +62,8 @@ class chorodog{
 		foreach(s; hingeName){
 
 			float axisx = 0.0f;
-			float axisy = 0.0f;
-			float axisz = 1.0f;
+			float axisy = 1.0f;
+			float axisz = 0.0f;
 
 			float thetax = hingeAxis[s].getx();
 			float thetay = hingeAxis[s].gety();
@@ -120,8 +120,8 @@ class chorodog{
 					hingeObject1Position[s], hingeObject2Position[s],
 					//partsPosition[hingeObject1Name[s]], partsPosition[hingeObject2Name[s]],
 					//hingeAxis[s]);
-					createVec3(axisx, axisy, axisz));
-					//createVec3(0.0f, 0.0f, 1.0f));
+					//createVec3(axisx, axisy, axisz));
+					createVec3(0.0f, 0.0f, 1.0f));
 			//hinges[s].setLimit(limitLower[s], limitUpper[s]);
 			//hinges[s].enableMotor(true);
 			//hinges[s].setMaxMotorImpulse(5);
@@ -150,16 +150,16 @@ extern (C) void init(){
 			if(elem["objectType"].str == "MESH"){
 				string name = elem["name"].str;
 
-				partsPosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, -1.0f*elem["zpos"].floating);
+				partsPosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
 				partsScale[name]	= createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				partsRotation[name] = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, -1.0*elem["zqat"].floating);
+				partsRotation[name] = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 				partsMass[name] = elem["mass"].floating;
 
 				partsVertices[name] = createVertexManager();
 
 				foreach(objvertex; elem["vertex"].array){
-					partsVertices[name].addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, -1.0*objvertex.array[2].floating,
-								objvertex.array[3].floating, objvertex.array[4].floating, -1.0*objvertex.array[5].floating,
+					partsVertices[name].addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+								objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
 								objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
 
@@ -174,13 +174,13 @@ extern (C) void init(){
 				string name = elem["name"].str;
 
 				hingeName ~= name;
-				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, -1.0*elem["zpos"].floating);
-				hingeAxis[name] = createVec3(elem["xrot"].floating , -1.0*elem["yrot"].floating, -1.0*elem["zrot"].floating);
+				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				hingeAxis[name] = createVec3(elem["xrot"].floating , elem["yrot"].floating, elem["zrot"].floating);
 				if(elem["useLimit"].str == "True") useLimit[name] = true; else useLimit[name] = false;
 				limitLower[name] = elem["limitLower"].floating;
 				limitUpper[name] = elem["limitUpper"].floating;
-				hingeObject1Position[name] = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, -1.0*elem["object1zpos"].floating);
-				hingeObject2Position[name] = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, -1.0*elem["object2zpos"].floating);
+				hingeObject1Position[name] = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
+				hingeObject2Position[name] = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
 				hingeObject1Name[name] = elem["object1"].str;
 				hingeObject2Name[name] = elem["object2"].str;
 
@@ -188,7 +188,7 @@ extern (C) void init(){
 		}
 
 		for (int i = 0; i < dogNum; i++){
-			new chorodog(-10.0f +to!float(i)*5.0f, 0.0f, 0.0f);
+			new chorodog(to!float(i)*5.0f, 0.0f, 0.0f);
 		}
 
 
