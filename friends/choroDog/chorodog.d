@@ -46,7 +46,6 @@ class chorodog{
 	void spawn(vec3 position){
 
 
-		partsRotation["hip"] = createQuat(0.662, 0.750, 0.0f, 0.0f);
 		foreach(string s, elementManager partsGen; partsGenerator){
 
 			parts[s] = partsGen.generate(paramWrap(
@@ -54,7 +53,9 @@ class chorodog{
 						param("scale",    partsScale[s]),
 						param("rotation", partsRotation[s]),
 						param("model",    partsVertices[s]),
-						param("mass", partsMass[s])));
+						param("mass", 
+							//0.0f)));
+							partsMass[s])));
 
 		}
 
@@ -71,22 +72,59 @@ class chorodog{
 			axisy = axisy * cos(thetax) - axisz * sin(thetax);
 			axisz = axisy * sin(thetax) + axisz * cos(thetax);
 
+			axisx = axisx * cos(thetaz) - axisy * sin(thetaz);
+			axisy = axisx * sin(thetaz) + axisy * cos(thetaz);
+
 			axisx = axisx * cos(thetay) - axisz * sin(thetay);
 			axisz = axisx * sin(thetay) + axisz * cos(thetay);
 
-			axisx = axisx * cos(thetaz) - axisy * sin(thetaz);
-			axisy = axisx * sin(thetaz) + axisy * cos(thetaz);
+			/*
+			float ob1posx;
+			float ob1posy;
+			float ob1posz;
+
+			ob1posy = hingeObject1Position[s].gety() * cos(thetax) - hingeObject1Position[s].getz() * sin(thetax);
+			ob1posz = hingeObject1Position[s].gety() * sin(thetax) + hingeObject1Position[s].getz() * cos(thetax);
+
+			ob1posx = hingeObject1Position[s].getx() * cos(thetaz) - hingeObject1Position[s].gety() * sin(thetaz);
+			ob1posy = hingeObject1Position[s].getx() * sin(thetaz) + hingeObject1Position[s].gety() * cos(thetaz);
+
+			ob1posx = hingeObject1Position[s].getx() * cos(thetay) - hingeObject1Position[s].getz() * sin(thetay);
+			ob1posz = hingeObject1Position[s].getx() * sin(thetay) + hingeObject1Position[s].getz() * cos(thetay);
+
+
+			float ob2posx;
+			float ob2posy;
+			float ob2posz;
+
+			ob2posy = hingeObject2Position[s].gety() * cos(thetax) - hingeObject2Position[s].getz() * sin(thetax);
+			ob2posz = hingeObject2Position[s].gety() * sin(thetax) + hingeObject2Position[s].getz() * cos(thetax);
+
+
+			ob2posx = hingeObject2Position[s].getx() * cos(thetaz) - hingeObject2Position[s].gety() * sin(thetaz);
+			ob2posy = hingeObject2Position[s].getx() * sin(thetaz) + hingeObject2Position[s].gety() * cos(thetaz);
+
+			ob2posx = hingeObject2Position[s].getx() * cos(thetay) - hingeObject2Position[s].getz() * sin(thetay);
+			ob2posz = hingeObject2Position[s].getx() * sin(thetay) + hingeObject2Position[s].getz() * cos(thetay);
+
+
+			hingeObject1Position[s] = createVec3(ob1posx, ob1posy, ob1posz);
+			hingeObject2Position[s] = createVec3(ob2posx, ob2posy, ob2posz);
+			*/
+
+
+
 
 
 			hinges[s] = hingeConstraint_create(parts[hingeObject1Name[s]], parts[hingeObject2Name[s]],
 					hingeObject1Position[s], hingeObject2Position[s],
 					//partsPosition[hingeObject1Name[s]], partsPosition[hingeObject2Name[s]],
-					//createVec3(hingeAxis[s].getx(), hingeAxis[s].gety(), hingeAxis[s].getz()));
-					//createVec3(axisx, axisy, axisz));
-					createVec3(0.0f, 0.0f, 1.0f));
-			hinges[s].setLimit(limitLower[s], limitUpper[s]);
-			hinges[s].enableMotor(true);
-			hinges[s].setMaxMotorImpulse(5);
+					//hingeAxis[s]);
+					createVec3(axisx, axisy, axisz));
+					//createVec3(0.0f, 0.0f, 1.0f));
+			//hinges[s].setLimit(limitLower[s], limitUpper[s]);
+			//hinges[s].enableMotor(true);
+			//hinges[s].setMaxMotorImpulse(5);
 		}
 
 	}
@@ -112,16 +150,16 @@ extern (C) void init(){
 			if(elem["objectType"].str == "MESH"){
 				string name = elem["name"].str;
 
-				partsPosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				partsPosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, -1.0f*elem["zpos"].floating);
 				partsScale[name]	= createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				partsRotation[name] = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
+				partsRotation[name] = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, -1.0*elem["zqat"].floating);
 				partsMass[name] = elem["mass"].floating;
 
 				partsVertices[name] = createVertexManager();
 
 				foreach(objvertex; elem["vertex"].array){
-					partsVertices[name].addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
-								objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
+					partsVertices[name].addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, -1.0*objvertex.array[2].floating,
+								objvertex.array[3].floating, objvertex.array[4].floating, -1.0*objvertex.array[5].floating,
 								objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
 
@@ -136,13 +174,13 @@ extern (C) void init(){
 				string name = elem["name"].str;
 
 				hingeName ~= name;
-				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				hingeAxis[name] = createVec3(elem["xrot"].floating, elem["yrot"].floating, elem["zrot"].floating);
+				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, -1.0*elem["zpos"].floating);
+				hingeAxis[name] = createVec3(elem["xrot"].floating , -1.0*elem["yrot"].floating, -1.0*elem["zrot"].floating);
 				if(elem["useLimit"].str == "True") useLimit[name] = true; else useLimit[name] = false;
 				limitLower[name] = elem["limitLower"].floating;
 				limitUpper[name] = elem["limitUpper"].floating;
-				hingeObject1Position[name] = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
-				hingeObject2Position[name] = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
+				hingeObject1Position[name] = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, -1.0*elem["object1zpos"].floating);
+				hingeObject2Position[name] = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, -1.0*elem["object2zpos"].floating);
 				hingeObject1Name[name] = elem["object1"].str;
 				hingeObject2Name[name] = elem["object2"].str;
 
@@ -150,7 +188,7 @@ extern (C) void init(){
 		}
 
 		for (int i = 0; i < dogNum; i++){
-			new chorodog(to!float(i)*5.0f, 0.0f, 0.0f);
+			new chorodog(-10.0f +to!float(i)*5.0f, 0.0f, 0.0f);
 		}
 
 
