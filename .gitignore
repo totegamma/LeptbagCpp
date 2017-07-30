@@ -14,3 +14,7 @@ playground/thotgamma/argumentsTest/main
 *.depend
 
 *.bullet
+
+source/japari_park.dSYM/Contents/Info.plist
+
+source/japari_park.dSYM/Contents/Resources/DWARF/japari_park
