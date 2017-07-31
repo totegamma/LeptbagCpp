@@ -342,7 +342,7 @@ int main(){
 
 
 	//物理ワールドの生成
-	btBroadphaseInterface* broadphase = new btDbvtBroadphase(); //XXX 未確認
+	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
@@ -352,6 +352,9 @@ int main(){
 
 	//頂点バッファオブジェクトを作る
 	initVBO();
+
+
+	initPrimitives();
 
 
 	void *lh;
@@ -466,6 +469,16 @@ int main(){
 
 	printf("unloading libdll.so\n");
 	dlclose(lh);
+
+
+	std::cout << "delete elementLists" << std::endl;
+
+
+	while(elementManager::elementManagerList.empty() == false){
+		delete elementManager::elementManagerList.back();
+		elementManager::elementManagerList.pop_back();
+	}
+
 
 
 	delete dynamicsWorld;
