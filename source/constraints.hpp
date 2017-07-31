@@ -13,6 +13,7 @@ class hingeConstraint{
 	public:
 	hingeConstraint();
 	hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis);
+	hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
 	virtual void enableMotor(bool flag);
 	virtual void setLimit(float lower, float upper);
 	virtual void setMaxMotorImpulse(float power);
@@ -34,6 +35,7 @@ class generic6DofConstraint{
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis);
+extern "C" hingeConstraint* hingeConstraint_create_test(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
 extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
 
 

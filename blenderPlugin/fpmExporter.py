@@ -22,6 +22,15 @@ def quaternion( position, quat ):
 
     return position
 
+def getQuatInv( quat ):
+
+    quat[1:4] = -1.0 * quat[1:4]
+    return quat
+
+def blenderToBullet( vec3 ):
+    return np.array([ vec3[0], vec3[2], -1.0*vec3[1] ])
+
+
 
 
 class fpmExporter(bpy.types.Operator, ExportHelper):
@@ -40,44 +49,61 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
             obj = bpy.data.objects[keyname]
             if obj.type == "EMPTY":
 
+                hingeLocation = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
+                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[3], obj.rotation_quaternion[2]], dtype=float)
+
                 #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
-                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
                 obj1Location = np.array([ obj.rigid_body_constraint.object1.location[0], obj.rigid_body_constraint.object1.location[2], obj.rigid_body_constraint.object1.location[1] ], dtype=float)
                 #クォータニオン
-                obj1Quat = np.array([ obj.rigid_body_constraint.object1.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[2] ], dtype=float)
+                obj1Quat = np.array([ obj.rigid_body_constraint.object1.rotation_quaternion[0], obj.rigid_body_constraint.object1.rotation_quaternion[1], obj.rigid_body_constraint.object1.rotation_quaternion[2], obj.rigid_body_constraint.object1.rotation_quaternion[3] ], dtype=float)
 
-                obj1Location = hingePosition - obj1Location
-                obj1Location = quaternion( obj1Location, obj1Quat )
+                obj1Location = hingeLocation - obj1Location
+                obj1Location = quaternion( obj1Location, getQuatInv(obj1Quat) )
+                #obj1Location = blenderToBullet(obj1Location)
 
 
                 #ヒンジの相対角度は回転前のobj2, obj2に対するものなので，それを補正
-                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
                 obj2Location = np.array([ obj.rigid_body_constraint.object2.location[0], obj.rigid_body_constraint.object2.location[2], obj.rigid_body_constraint.object2.location[1] ], dtype=float)
                 #クォータニオン
-                obj2Quat = np.array([ obj.rigid_body_constraint.object2.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[2] ], dtype=float)
+                obj2Quat = np.array([ obj.rigid_body_constraint.object2.rotation_quaternion[0], obj.rigid_body_constraint.object2.rotation_quaternion[1], obj.rigid_body_constraint.object2.rotation_quaternion[3], obj.rigid_body_constraint.object2.rotation_quaternion[2] ], dtype=float)
 
-                obj2Location = hingePosition - obj2Location
-                obj2Location = quaternion( obj2Location, obj2Quat )
+                obj2Location = hingeLocation - obj2Location
+                obj2Location = quaternion( obj2Location, getQuatInv(obj2Quat) )
+                #obj2Location = blenderToBullet(obj2Location)
+
+                #hingeLocation = blenderToBullet(hingeLocation)
+
+                hingeObj1Axis = np.array([ 0.0, 1.0, 0.0 ], dtype=float)
+
+                '''
+                hingeObj1Axis = quaternion( hingeObj1Axis, hingeQuat )
+                hingeObj1Axis = quaternion( hingeObj1Axis, getQuatInv(obj1Quat) )
+                '''
 
 
-                hingeAxis = np.array([ 0.0, 1.0, 0.0 ], dtype=float)
-                hingeQuat = np.array([ obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[3], obj.rotation_quaternion[2] ], dtype=float)
+                hingeObj2Axis = np.array([ 0.0, 1.0, 0.0 ], dtype=float)
 
-                hingeAxis = quaternion( hingeAxis, hingeQuat )
-                hingeAxis = quaternion( hingeAxis, obj2Quat ); 
-                hingeAxis[2] = -1.0*hingeAxis[2]
+                hingeObj2Axis = quaternion( hingeObj2Axis, hingeQuat )
+                hingeObj2Axis = quaternion( hingeObj2Axis, obj2Quat )
+                #hingeObj2Axis = quaternion( hingeObj2Axis, hingeQuat )
+
+
 
                 fo.write("\t{\n")
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
                 fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"constraintType\":\"%s\",\n" % obj.rigid_body_constraint.type)
-                fo.write("\t\t\"xpos\":%f,\n" % obj.location[0])
-                fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
-                fo.write("\t\t\"zpos\":%f,\n" % (-1.0*obj.location[1]))
+                fo.write("\t\t\"xpos\":%f,\n" % hingeLocation[0])
+                fo.write("\t\t\"ypos\":%f,\n" % hingeLocation[1])
+                fo.write("\t\t\"zpos\":%f,\n" % (-1.0*hingeLocation[2]))
 
-                fo.write("\t\t\"xaxs\":%f,\n" % hingeAxis[0])
-                fo.write("\t\t\"yaxs\":%f,\n" % hingeAxis[1])
-                fo.write("\t\t\"zaxs\":%f,\n" % hingeAxis[2])
+                fo.write("\t\t\"xaxs1\":%f,\n" % hingeObj1Axis[0])
+                fo.write("\t\t\"yaxs1\":%f,\n" % hingeObj1Axis[1])
+                fo.write("\t\t\"zaxs1\":%f,\n" % hingeObj1Axis[2])
+
+                fo.write("\t\t\"xaxs2\":%f,\n" % hingeObj2Axis[0])
+                fo.write("\t\t\"yaxs2\":%f,\n" % hingeObj2Axis[1])
+                fo.write("\t\t\"zaxs2\":%f,\n" % (-1.0*hingeObj2Axis[2]))
 
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[0])
