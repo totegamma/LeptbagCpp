@@ -343,27 +343,15 @@ int main(){
 
 	//物理ワールドの生成
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase(); //XXX 未確認
-	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();//XXX 未確認
-	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);//XXX 未確認
-	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;//XXX 未確認
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);//XXX 未確認
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 
 	//頂点バッファオブジェクトを作る
 	initVBO();
-
-
-	//<Test Code>
-
-
-	//getCubeshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
-	//getPlaneshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("face", vec3(0, 1, 0)), param("rotation", quat(1, 0, 0, 0)), param("mass", 0)));
-
-
-
-	//<\Test Code>
-
 
 
 	void *lh;
@@ -459,14 +447,6 @@ int main(){
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
-		//cubeshape::render();
-		//floorshape::render();
-
-		/*
-		for(auto elem: commonshapeList){
-			elem->render();
-		}
-		*/
 
 		for(auto elem: elementManager::elementManagerList){
 			elem->render();
@@ -486,6 +466,13 @@ int main(){
 
 	printf("unloading libdll.so\n");
 	dlclose(lh);
+
+
+	delete dynamicsWorld;
+	delete solver;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
 
 
 	glDeleteVertexArrays(1, &VertexArrayID);
