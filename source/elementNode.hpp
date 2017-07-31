@@ -5,6 +5,7 @@ class elementNode;
 
 #include "elementManager.hpp"
 #include "utilities/utilities.hpp"
+#include <iostream>
 
 class elementNode{
 	elementManager* parent;
@@ -21,6 +22,7 @@ class elementNode{
 	virtual float getXpos();
 	virtual float getYpos();
 	virtual float getZpos();
+	virtual float getBasis(int row, int column);
 	virtual void destroy();
 
 	virtual~elementNode();

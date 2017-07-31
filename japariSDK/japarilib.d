@@ -9,6 +9,7 @@ extern (C++) {
 		float getXpos();
 		float getYpos();
 		float getZpos();
+		float getBasis(int row, int column);
 		void destroy();
 	}
 	interface btRigidBody{
