@@ -18,6 +18,8 @@ class hingeConstraint{
 	virtual void setMaxMotorImpulse(float power);
 	virtual void setMotorTarget(float angle, float duration);
 	virtual void destroy();
+
+	virtual ~hingeConstraint() = default;
 };
 
 class generic6DofConstraint{
@@ -31,6 +33,8 @@ class generic6DofConstraint{
 	virtual void setLinearUpperLimit(vec3 &linearUpper);
 	virtual void getRotationalLimitMotor(int index);
 	virtual void destroy();
+
+	virtual ~generic6DofConstraint() = default;
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis);

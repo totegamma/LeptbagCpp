@@ -6,7 +6,7 @@ hingeConstraint::hingeConstraint(){
 
 hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
 
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());//XXX 未確認
+	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
 
 }
@@ -29,6 +29,7 @@ void hingeConstraint::setMotorTarget(float angle, float duration){
 
 void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
+	delete this;
 }
 
 hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
@@ -49,7 +50,7 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	frameInB.setOrigin(positionB.toBullet());
 
 	// 6Dofを生成
-	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);//XXX 未確認
+	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
 	dynamicsWorld->addConstraint(gen6Dof);
 
 }
@@ -77,6 +78,7 @@ void generic6DofConstraint::getRotationalLimitMotor(int index){
 
 void generic6DofConstraint::destroy(){
 	dynamicsWorld->removeConstraint(gen6Dof);
+	delete this;
 }
 
 generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB){
