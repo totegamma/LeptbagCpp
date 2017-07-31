@@ -3,10 +3,6 @@
 
 std::vector<elementManager*> elementManager::elementManagerList;
 
-elementManager* generateElementManager(){
-	return new elementManager();//XXX 未確認
-}
-
 elementManager::elementManager(){
 }
 
