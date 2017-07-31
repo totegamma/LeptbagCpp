@@ -1,12 +1,16 @@
 #include "elementManager.hpp"
+#include <iostream>
 
 
 std::vector<elementManager*> elementManager::elementManagerList;
 
 elementManager::elementManager(){
+	std::cout << "elementManager constructed(unexpected)" << std::endl;
 }
 
 elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*)){
+
+	std::cout << "elementManager constructed" << std::endl;
 
 	this->elementData = elementData;
 	this->bodyGenerator = bodyGenerator;
@@ -25,6 +29,15 @@ elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*b
 }
 
 elementManager::~elementManager(){
+	std::cout << "elementManager destructed" << std::endl;
+	while(elements.empty() == false){
+		delete elements.back();
+		elements.pop_back();
+	}
+}
+
+void elementManager::destroy(){
+	delete this;
 }
 
 

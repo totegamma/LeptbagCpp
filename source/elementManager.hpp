@@ -35,11 +35,13 @@ class elementManager{
 
 	elementManager();
 	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*));
-	~elementManager();
 
 	virtual elementNode* generate(parameterPack* input);
-	void destroy(int id);
+	virtual void destroy();
+	virtual void destroy(int id);
+	virtual ~elementManager();
 	void render();
+
 };
 
 extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*));

@@ -8,8 +8,10 @@
 extern std::vector<vertex> cubeShapeVertices;
 extern std::vector<vertex> planeShapeVertices;
 
-elementManager& getCubeshape();
-elementManager& getPlaneshape();
+void initPrimitives();
+
+elementManager* getCubeshape();
+elementManager* getPlaneshape();
 
 
 #endif

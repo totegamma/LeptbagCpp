@@ -66,12 +66,19 @@ std::vector<vertex> planeShapeVertices = {
 	vertex(-100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f)
 };
 
-elementManager& getCubeshape(){
-	static elementManager cubeshape =  elementManager(cubeShapeVertices, createBoxBody);
+elementManager* cubeshape;
+elementManager* planeshape;
+
+
+void initPrimitives(){
+	cubeshape = new elementManager(cubeShapeVertices, createBoxBody);
+	planeshape = new elementManager(planeShapeVertices, createPlaneBody);
+}
+
+elementManager* getCubeshape(){
 	return cubeshape;
 }
 
-elementManager& getPlaneshape(){
-	static elementManager planeshape =  elementManager(planeShapeVertices, createPlaneBody);
+elementManager* getPlaneshape(){
 	return planeshape;
 }
