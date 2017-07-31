@@ -9,7 +9,7 @@ import japariSDK.japarilib;
 
 Random rnd;
 
-int dogNum = 1;
+int dogNum = 30;
 
 vertexManager[string] partsVertices;
 elementManager[string] partsGenerator;
@@ -61,67 +61,13 @@ class chorodog{
 
 		foreach(s; hingeName){
 
-			float axisx = 0.0f;
-			float axisy = 1.0f;
-			float axisz = 0.0f;
-
-			float thetax = hingeAxis[s].getx();
-			float thetay = hingeAxis[s].gety();
-			float thetaz = hingeAxis[s].getz();
-
-			axisy = axisy * cos(thetax) - axisz * sin(thetax);
-			axisz = axisy * sin(thetax) + axisz * cos(thetax);
-
-			axisx = axisx * cos(thetaz) - axisy * sin(thetaz);
-			axisy = axisx * sin(thetaz) + axisy * cos(thetaz);
-
-			axisx = axisx * cos(thetay) - axisz * sin(thetay);
-			axisz = axisx * sin(thetay) + axisz * cos(thetay);
-
-			/*
-			float ob1posx;
-			float ob1posy;
-			float ob1posz;
-
-			ob1posy = hingeObject1Position[s].gety() * cos(thetax) - hingeObject1Position[s].getz() * sin(thetax);
-			ob1posz = hingeObject1Position[s].gety() * sin(thetax) + hingeObject1Position[s].getz() * cos(thetax);
-
-			ob1posx = hingeObject1Position[s].getx() * cos(thetaz) - hingeObject1Position[s].gety() * sin(thetaz);
-			ob1posy = hingeObject1Position[s].getx() * sin(thetaz) + hingeObject1Position[s].gety() * cos(thetaz);
-
-			ob1posx = hingeObject1Position[s].getx() * cos(thetay) - hingeObject1Position[s].getz() * sin(thetay);
-			ob1posz = hingeObject1Position[s].getx() * sin(thetay) + hingeObject1Position[s].getz() * cos(thetay);
-
-
-			float ob2posx;
-			float ob2posy;
-			float ob2posz;
-
-			ob2posy = hingeObject2Position[s].gety() * cos(thetax) - hingeObject2Position[s].getz() * sin(thetax);
-			ob2posz = hingeObject2Position[s].gety() * sin(thetax) + hingeObject2Position[s].getz() * cos(thetax);
-
-
-			ob2posx = hingeObject2Position[s].getx() * cos(thetaz) - hingeObject2Position[s].gety() * sin(thetaz);
-			ob2posy = hingeObject2Position[s].getx() * sin(thetaz) + hingeObject2Position[s].gety() * cos(thetaz);
-
-			ob2posx = hingeObject2Position[s].getx() * cos(thetay) - hingeObject2Position[s].getz() * sin(thetay);
-			ob2posz = hingeObject2Position[s].getx() * sin(thetay) + hingeObject2Position[s].getz() * cos(thetay);
-
-
-			hingeObject1Position[s] = createVec3(ob1posx, ob1posy, ob1posz);
-			hingeObject2Position[s] = createVec3(ob2posx, ob2posy, ob2posz);
-			*/
-
-
 
 
 
 			hinges[s] = hingeConstraint_create(parts[hingeObject1Name[s]], parts[hingeObject2Name[s]],
 					hingeObject1Position[s], hingeObject2Position[s],
-					//partsPosition[hingeObject1Name[s]], partsPosition[hingeObject2Name[s]],
-					//hingeAxis[s]);
-					//createVec3(axisx, axisy, axisz));
-					createVec3(0.0f, 0.0f, 1.0f));
+					hingeAxis[s]);
+					//createVec3(0.0f, -1.0f, 0.0f));
 			//hinges[s].setLimit(limitLower[s], limitUpper[s]);
 			//hinges[s].enableMotor(true);
 			//hinges[s].setMaxMotorImpulse(5);
@@ -175,7 +121,9 @@ extern (C) void init(){
 
 				hingeName ~= name;
 				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				hingeAxis[name] = createVec3(elem["xrot"].floating , elem["yrot"].floating, elem["zrot"].floating);
+
+				hingeAxis[name] = createVec3(elem["xaxs"].floating , elem["yaxs"].floating, elem["zaxs"].floating);
+
 				if(elem["useLimit"].str == "True") useLimit[name] = true; else useLimit[name] = false;
 				limitLower[name] = elem["limitLower"].floating;
 				limitUpper[name] = elem["limitUpper"].floating;

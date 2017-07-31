@@ -39,6 +39,34 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
         for keyname in bpy.data.objects.keys():
             obj = bpy.data.objects[keyname]
             if obj.type == "EMPTY":
+
+                #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
+                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
+                obj1Location = np.array([ obj.rigid_body_constraint.object1.location[0], obj.rigid_body_constraint.object1.location[2], obj.rigid_body_constraint.object1.location[1] ], dtype=float)
+                #クォータニオン
+                obj1Quat = np.array([ obj.rigid_body_constraint.object1.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[2] ], dtype=float)
+
+                obj1Location = hingePosition - obj1Location
+                obj1Location = quaternion( obj1Location, obj1Quat )
+
+
+                #ヒンジの相対角度は回転前のobj2, obj2に対するものなので，それを補正
+                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
+                obj2Location = np.array([ obj.rigid_body_constraint.object2.location[0], obj.rigid_body_constraint.object2.location[2], obj.rigid_body_constraint.object2.location[1] ], dtype=float)
+                #クォータニオン
+                obj2Quat = np.array([ obj.rigid_body_constraint.object2.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[2] ], dtype=float)
+
+                obj2Location = hingePosition - obj2Location
+                obj2Location = quaternion( obj2Location, obj2Quat )
+
+
+                hingeAxis = np.array([ 0.0, 1.0, 0.0 ], dtype=float)
+                hingeQuat = np.array([ obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[3], obj.rotation_quaternion[2] ], dtype=float)
+
+                hingeAxis = quaternion( hingeAxis, hingeQuat )
+                hingeAxis = quaternion( hingeAxis, obj2Quat ); 
+                hingeAxis[2] = -1.0*hingeAxis[2]
+
                 fo.write("\t{\n")
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
                 fo.write("\t\t\"name\":\"%s\",\n" % keyname)
@@ -46,39 +74,17 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"xpos\":%f,\n" % obj.location[0])
                 fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
                 fo.write("\t\t\"zpos\":%f,\n" % (-1.0*obj.location[1]))
-                fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[0])
-                fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
-                fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[1])
+
+                fo.write("\t\t\"xaxs\":%f,\n" % hingeAxis[0])
+                fo.write("\t\t\"yaxs\":%f,\n" % hingeAxis[1])
+                fo.write("\t\t\"zaxs\":%f,\n" % hingeAxis[2])
 
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
-
-                #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
-                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
-                obj1Location = np.array([ obj.rigid_body_constraint.object1.location[0], obj.rigid_body_constraint.object1.location[2], obj.rigid_body_constraint.object1.location[1] ], dtype=float)
-
-                obj1Location = hingePosition - obj1Location
-                #クォータニオン
-                obj1Quat = np.array([ obj.rigid_body_constraint.object1.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object1.rotation_quaternion[2] ], dtype=float)
-
-                obj1Location = quaternion( obj1Location, obj1Quat )
-
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[0])
                 fo.write("\t\t\"object1ypos\":%f,\n" % obj1Location[1])
                 fo.write("\t\t\"object1zpos\":%f,\n" % (-1.0*obj1Location[2]))
 
                 fo.write("\t\t\"object2\":\"%s\",\n" % obj.rigid_body_constraint.object2.name)
-
-                #ヒンジの相対角度は回転前のobj2, obj2に対するものなので，それを補正
-                hingePosition = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
-                obj2Location = np.array([ obj.rigid_body_constraint.object2.location[0], obj.rigid_body_constraint.object2.location[2], obj.rigid_body_constraint.object2.location[1] ], dtype=float)
-
-                obj2Location = hingePosition - obj2Location
-                #クォータニオン
-                obj2Quat = np.array([ obj.rigid_body_constraint.object2.rotation_quaternion[0], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[1], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[3], -1.0 * obj.rigid_body_constraint.object2.rotation_quaternion[2] ], dtype=float)
-
-                obj2Location = quaternion( obj2Location, obj2Quat )
-
-
                 fo.write("\t\t\"object2xpos\":%f,\n" % obj2Location[0])
                 fo.write("\t\t\"object2ypos\":%f,\n" % obj2Location[1])
                 fo.write("\t\t\"object2zpos\":%f,\n" % (-1.0*obj2Location[2]))
