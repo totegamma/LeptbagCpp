@@ -19,7 +19,7 @@ extern (C) void init(){
 										param("scale",    createVec3(1, 1, 1)),
 										param("face",    createVec3(0, 1, 0)),
 										param("rotation",createQuat(1, 0, 0, 0)),
-										param("mass", 0)));
+										param("mass", 0.0)));
 
 
 

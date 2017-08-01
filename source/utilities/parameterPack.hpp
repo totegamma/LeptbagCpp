@@ -1,20 +1,34 @@
 #ifndef PARAMETERPACK_HPP
 #define PARAMETERPACK_HPP
 
+#include <assert.h>
+
 #include "../vertexManager.hpp"
 #include "universalString.hpp"
 #include "universalVector.hpp"
 
 class paramWrapper{
 
-	public:
-	univStr tag;
 	int intValue;
 	float floatValue;
 	univStr stringValue;
 	vec3 vec3Value;
 	quat quatValue;
 	vertexManager modelValue;
+
+	enum type{
+		INT,
+		FLOAT,
+		STRING,
+		VEC3,
+		QUAT,
+		MODEL
+	};
+
+	type contain;
+
+	public:
+	univStr tag;
 
 	paramWrapper() = default;
 	paramWrapper(univStr tag, int intValue);
