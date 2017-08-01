@@ -4,57 +4,75 @@
 paramWrapper::paramWrapper(univStr tag, int intValue){
 	this->tag = tag;
 	this->intValue = intValue;
+
+	contain = INT;
 }
 
 paramWrapper::paramWrapper(univStr tag, float floatValue){
 	this->tag = tag;
 	this->floatValue = floatValue;
+
+	contain = FLOAT;
 }
 
 paramWrapper::paramWrapper(univStr tag, univStr stringValue){
 	this->tag = tag;
 	this->stringValue = stringValue;
+
+	contain = STRING;
 }
 
 paramWrapper::paramWrapper(univStr tag, vec3 vec3Value){
 	this->tag = tag;
 	this->vec3Value = vec3Value;
+
+	contain = VEC3;
 }
 
 paramWrapper::paramWrapper(univStr tag, quat quatValue){
 	this->tag = tag;
 	this->quatValue = quatValue;
+
+	contain = QUAT;
 }
 
 paramWrapper::paramWrapper(univStr tag, vertexManager modelValue){
 	this->tag = tag;
 	this->modelValue = modelValue;
+
+	contain = MODEL;
 }
 
 //-------------------------------------------------------------------
 
 
 int paramWrapper::getInt(){
+	assert(contain == INT);
 	return intValue;
 }
 
 float paramWrapper::getFloat(){
+	assert(contain == FLOAT);
 	return floatValue;
 }
 
 univStr paramWrapper::getString(){
+	assert(contain == STRING);
 	return stringValue;
 }
 
 vec3 paramWrapper::getVec3(){
+	assert(contain == VEC3);
 	return vec3Value;
 }
 
 quat paramWrapper::getQuat(){
+	assert(contain == QUAT);
 	return quatValue;
 }
 
 vertexManager paramWrapper::getModel(){
+	assert(contain == MODEL);
 	return modelValue;
 }
 
@@ -97,7 +115,7 @@ paramWrapper* createModelParam(univStr *tag, vertexManager *value){
 
 
 parameterPack::parameterPack(int count, va_list arguments){
-	paramList = new paramWrapper*[count];//XXX 未確認
+	paramList = new paramWrapper*[count];
 	length = count;
 
 	for(int i = 0; i < count; i++){
