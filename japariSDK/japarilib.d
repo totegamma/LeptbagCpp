@@ -9,6 +9,7 @@ extern (C++) {
 		float getXpos();
 		float getYpos();
 		float getZpos();
+		float getBasis(int row, int column);
 		void destroy();
 	}
 	interface btRigidBody{
@@ -128,6 +129,7 @@ extern (C++) {
 
 extern (C) {
 	hingeConstraint hingeConstraint_create(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axis);
+	hingeConstraint hingeConstraintWithRotation(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, quat rotation);
 	hingeConstraint hingeConstraint_create_test(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
 	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB);
 }

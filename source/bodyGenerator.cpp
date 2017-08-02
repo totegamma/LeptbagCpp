@@ -65,8 +65,8 @@ btRigidBody* createConvexHullShapeBody(parameterPack* input){
 			convexHullShapePoints.push_back(
 					//NOTE: bulletは物体に0.04のマージンを加えるので、その分だけ小さいオブジェクトを作成する。
 					btVector3(
-						target.x - (0.04*(-1*((signbit(target.x)*2)-1))), 
-						target.y - (0.04*(-1*((signbit(target.y)*2)-1))), 
+						target.x - (0.04*(-1*((signbit(target.x)*2)-1))),
+						target.y - (0.04*(-1*((signbit(target.y)*2)-1))),
 						target.z - (0.04*(-1*((signbit(target.z)*2)-1))))
 					);
 		}
@@ -75,7 +75,7 @@ btRigidBody* createConvexHullShapeBody(parameterPack* input){
 	btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));
 
 	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
-	btVector3 inertia(0, 0, 0);
+	btVector3 inertia(0, 0, 0);	
 	shape->calculateLocalInertia(mass, inertia);
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
 	btRigidBody* body = new btRigidBody(bodyCI);
