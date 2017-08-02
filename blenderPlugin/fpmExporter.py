@@ -50,7 +50,7 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
             if obj.type == "EMPTY":
 
                 hingeLocation = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
-                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[3], obj.rotation_quaternion[2]], dtype=float)
+                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[2], obj.rotation_quaternion[3]], dtype=float)
 
                 #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
                 obj1Location = np.array([ obj.rigid_body_constraint.object1.location[0], obj.rigid_body_constraint.object1.location[2], obj.rigid_body_constraint.object1.location[1] ], dtype=float)
@@ -105,6 +105,11 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"yaxs2\":%f,\n" % hingeObj2Axis[1])
                 fo.write("\t\t\"zaxs2\":%f,\n" % (-1.0*hingeObj2Axis[2]))
 
+                fo.write("\t\t\"wquat\":%f,\n" % hingeQuat[0])
+                fo.write("\t\t\"xquat\":%f,\n" % hingeQuat[1])
+                fo.write("\t\t\"yquat\":%f,\n" % hingeQuat[3])
+                fo.write("\t\t\"zquat\":%f,\n" % (-1.0*hingeQuat[2]))
+
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[0])
                 fo.write("\t\t\"object1ypos\":%f,\n" % obj1Location[1])
@@ -130,19 +135,20 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                     fo.write("\t\t\"mass\":%f,\n" % obj.rigid_body.mass)
                     fo.write("\t\t\"friction\":%f,\n" % obj.rigid_body.friction)
                     fo.write("\t\t\"restitution\":%f,\n" % obj.rigid_body.restitution)
+                    #生の情報を出力する
                     fo.write("\t\t\"xpos\":%f,\n" % obj.location[0])
-                    fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
-                    fo.write("\t\t\"zpos\":%f,\n" % (-1.0*obj.location[1]))
+                    fo.write("\t\t\"ypos\":%f,\n" % obj.location[1])
+                    fo.write("\t\t\"zpos\":%f,\n" % obj.location[2])
                     fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[0])
-                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
+                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[1])
                     fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[1])
                     fo.write("\t\t\"wqat\":%f,\n" % obj.rotation_quaternion[0])
                     fo.write("\t\t\"xqat\":%f,\n" % obj.rotation_quaternion[1])
-                    fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[3])
-                    fo.write("\t\t\"zqat\":%f,\n" % (-1.0*obj.rotation_quaternion[2]))
+                    fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[2])
+                    fo.write("\t\t\"zqat\":%f,\n" % obj.rotation_quaternion[3])
                     fo.write("\t\t\"xscl\":%f,\n" % obj.scale[0])
                     fo.write("\t\t\"yscl\":%f,\n" % obj.scale[2])
-                    fo.write("\t\t\"zscl\":%f,\n" % obj.scale[1])
+                    fo.write("\t\t\"zscl\":%f,\n" % obj.scale[2])
 
                     if obj.rigid_body.collision_shape == "CONVEX_HULL":
                         fo.write("\t\t\"vertex\": [\n")
@@ -217,15 +223,15 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                     fo.write("\t\t\"objectType\":\"MESH\",\n")
                     fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                     fo.write("\t\t\"xpos\":%f,\n" % obj.location[0])
-                    fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
-                    fo.write("\t\t\"zpos\":%f,\n" % (-1.0*obj.location[1]))
+                    fo.write("\t\t\"ypos\":%f,\n" % obj.location[1])
+                    fo.write("\t\t\"zpos\":%f,\n" % obj.location[2])
                     fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[0])
-                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
+                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[1])
                     fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[1])
                     fo.write("\t\t\"wqat\":%f,\n" % obj.rotation_quaternion[0])
                     fo.write("\t\t\"xqat\":%f,\n" % obj.rotation_quaternion[1])
-                    fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[3])
-                    fo.write("\t\t\"zqat\":%f,\n" % (-1.0*obj.rotation_quaternion[2]))
+                    fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[2])
+                    fo.write("\t\t\"zqat\":%f,\n" % obj.rotation_quaternion[3])
                     fo.write("\t\t\"xscl\":%f,\n" % obj.scale[0])
                     fo.write("\t\t\"yscl\":%f,\n" % obj.scale[2])
                     fo.write("\t\t\"zscl\":%f,\n" % obj.scale[1])

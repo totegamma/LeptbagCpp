@@ -40,6 +40,16 @@ float elementNode::getZpos(){
 	return pos.getZ();
 }
 
+float elementNode::getBasis(int row, int column){
+	btTransform transform;
+	transform = body->getCenterOfMassTransform();
+	//body->getMotionState()->getWorldTransform(transform);
+	btVector3 x = transform.getBasis().getColumn(column);
+	if(row == 0) return x.getX();
+	if(row == 1) return x.getY();
+	else         return x.getZ();
+}
+
 void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
@@ -47,7 +57,7 @@ void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 	btVector3 pos = transform.getOrigin();
 	btQuaternion rotation = transform.getRotation();
 
-	input->at(id) = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ())) 
+	input->at(id) = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ()))
 		* glm::toMat4(glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ()))
 		* glm::scale(glm::mat4(1.0f), initialScale.toGlm());
 }
@@ -68,4 +78,3 @@ int elementNode::getID(){
 void elementNode::changeID(int newID){
 	id = newID;
 }
-
