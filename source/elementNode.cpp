@@ -42,8 +42,8 @@ float elementNode::getZpos(){
 
 float elementNode::getBasis(int row, int column){
 	btTransform transform;
-	//transform = body->getCenterOfMassTransform();
-	body->getMotionState()->getWorldTransform(transform);
+	transform = body->getCenterOfMassTransform();
+	//body->getMotionState()->getWorldTransform(transform);
 	btVector3 x = transform.getBasis().getColumn(column);
 	if(row == 0) return x.getX();
 	if(row == 1) return x.getY();

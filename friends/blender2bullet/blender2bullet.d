@@ -139,7 +139,7 @@ extern (C) void init(){
 		}
 
 		for (int i = 0; i < dogNum; i++){
-			new blender2bullet(to!float(i)*5.0f, 0.0f, 0.0f);
+			new blender2bullet(0.0f, 0.0f, 0.0f);
 		}
 
 
