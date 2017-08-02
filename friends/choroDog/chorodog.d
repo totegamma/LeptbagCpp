@@ -54,13 +54,9 @@ class chorodog{
 						param("scale",    partsScale[s]),
 						param("rotation", partsRotation[s]),
 						param("model",    partsVertices[s]),
-						param("mass",
+						param("mass", 
 							//0.0f)));
 							partsMass[s])));
-
-			writeln(parts[s].getBasis(0,0), " ", parts[s].getBasis(0,1), " ", parts[s].getBasis(0,2));
-			writeln(parts[s].getBasis(1,0), " ", parts[s].getBasis(1,1), " ", parts[s].getBasis(1,2));
-			writeln(parts[s].getBasis(2,0), " ", parts[s].getBasis(2,1), " ", parts[s].getBasis(2,2));
 
 		}
 
