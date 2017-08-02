@@ -50,7 +50,7 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
             if obj.type == "EMPTY":
 
                 hingeLocation = np.array( [ obj.location[0], obj.location[2], obj.location[1] ], dtype=float)
-                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[3], obj.rotation_quaternion[2]], dtype=float)
+                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[2], obj.rotation_quaternion[3]], dtype=float)
 
                 #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
                 obj1Location = np.array([ obj.rigid_body_constraint.object1.location[0], obj.rigid_body_constraint.object1.location[2], obj.rigid_body_constraint.object1.location[1] ], dtype=float)
@@ -104,6 +104,11 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"xaxs2\":%f,\n" % hingeObj2Axis[0])
                 fo.write("\t\t\"yaxs2\":%f,\n" % hingeObj2Axis[1])
                 fo.write("\t\t\"zaxs2\":%f,\n" % (-1.0*hingeObj2Axis[2]))
+
+                fo.write("\t\t\"wquat\":%f,\n" % hingeQuat[0])
+                fo.write("\t\t\"xquat\":%f,\n" % hingeQuat[1])
+                fo.write("\t\t\"yquat\":%f,\n" % hingeQuat[3])
+                fo.write("\t\t\"zquat\":%f,\n" % (-1.0*hingeQuat[2]))
 
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[0])
