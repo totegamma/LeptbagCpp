@@ -3,38 +3,17 @@
 hingeConstraint::hingeConstraint(){
 }
 
-hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
-
-	// CenterOfMass IS NOT a "center of mass"
-	btTransform frameInA, frameInB;
-	frameInA = elemA->getBody()->getCenterOfMassTransform();
-	frameInB = elemB->getBody()->getCenterOfMassTransform();
-
-	btQuaternion quatToBullet = btQuaternion(sin(-M_PI/4),0,0,cos(-M_PI/4));
-	frameInA.setRotation(frameInA.getRotation().inverse() * rotation.toBullet() * quatToBullet);
-	frameInB.setRotation(frameInB.getRotation().inverse() * rotation.toBullet() * quatToBullet);
-
-	frameInA.setOrigin(positionA.toBullet());
-	frameInB.setOrigin(positionB.toBullet());
-
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB);
-	dynamicsWorld->addConstraint(hinge, true);
-
-}
-
-hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
-
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
-	dynamicsWorld->addConstraint(hinge, true);
-
-}
-
 hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
 
+
+
 	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axisA.toBullet(), axisB.toBullet());
+
 	dynamicsWorld->addConstraint(hinge, true);
 
 }
+
+
 
 void hingeConstraint::enableMotor(bool flag){
 	hinge->enableMotor(flag);
@@ -56,18 +35,11 @@ void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
 }
 
-hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
-	return new hingeConstraint(elemA, elemB, positionA, positionB, axis);
-}
-
-hingeConstraint* hingeConstraintWithRotation(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
-	return new hingeConstraint(elemA, elemB, positionA, positionB, rotation);
-}
-
-
-hingeConstraint* hingeConstraint_create_test(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
+hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
 	return new hingeConstraint(elemA, elemB, positionA, positionB, axisA, axisB);
 }
+
+
 
 generic6DofConstraint::generic6DofConstraint(){
 }
