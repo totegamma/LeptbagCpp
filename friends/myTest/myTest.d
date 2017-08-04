@@ -83,7 +83,7 @@ extern (C) void init(){
 
 
 		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-		auto jsonString = import("chorodog.fpm");
+		auto jsonString = import("myTest.fpm");
 		//auto jsonString = import("hingeTest.fpm");
 
 		JSONValue model = parseJSON(jsonString);
@@ -130,9 +130,9 @@ extern (C) void init(){
 			}
 		}
 
-		for (int i = 0; i < dogNum; i++){
-			new chorodog(to!float(i)*5.0f, 0.0f, 0.0f);
-		}
+
+
+		new chorodog(0.0f, 0.0f, 0.0f);
 
 
 	}
