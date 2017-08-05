@@ -62,7 +62,7 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 obj1Location = np.array([obj.rigid_body_constraint.object1.location[0],
                                          obj.rigid_body_constraint.object1.location[1],
                                          obj.rigid_body_constraint.object1.location[2]],
-                                        dtype=float)qu
+                                        dtype=float)
                 #クォータニオン
                 obj1Quat = np.array([obj.rigid_body_constraint.object1.rotation_quaternion[0],
                                      obj.rigid_body_constraint.object1.rotation_quaternion[1],
