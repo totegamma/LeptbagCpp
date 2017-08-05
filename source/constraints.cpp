@@ -53,6 +53,10 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 	// 6Dofを生成
 	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
+	gen6Dof->setAngularLowerLimit(btVector3(0,0,0));
+	gen6Dof->setAngularUpperLimit(btVector3(0,0,0));
+	gen6Dof->setLinearLowerLimit(btVector3(0,0,0));
+	gen6Dof->setLinearUpperLimit(btVector3(0,0,0));
 	dynamicsWorld->addConstraint(gen6Dof);
 
 }
