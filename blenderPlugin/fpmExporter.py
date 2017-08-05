@@ -55,13 +55,14 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
             if obj.type == "EMPTY":
 
                 hingeLocation = np.array([obj.location[0], obj.location[1], obj.location[2]], dtype=float)
-                hingeQuat = getQuatInv(np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[2], obj.rotation_quaternion[3]], dtype=float))
+                hingeQuat = np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[2], obj.rotation_quaternion[3]], dtype=float)
+                hingeQuatInv = getQuatInv(hingeQuat)
 
                 #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
                 obj1Location = np.array([obj.rigid_body_constraint.object1.location[0],
                                          obj.rigid_body_constraint.object1.location[1],
                                          obj.rigid_body_constraint.object1.location[2]],
-                                        dtype=float)
+                                        dtype=float)qu
                 #クォータニオン
                 obj1Quat = np.array([obj.rigid_body_constraint.object1.rotation_quaternion[0],
                                      obj.rigid_body_constraint.object1.rotation_quaternion[1],
@@ -90,10 +91,10 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 hingeObj1Axis = np.array([ 0.0, 0.0, 1.0 ], dtype=float)
                 hingeObj2Axis = np.array([ 0.0, 0.0, 1.0 ], dtype=float)
 
-                hingeObj1Axis = quaternion(hingeObj1Axis, hingeQuat)
+                hingeObj1Axis = quaternion(hingeObj1Axis, hingeQuatInv)
                 hingeObj1Axis = quaternion(hingeObj1Axis, obj1Quat)
 
-                hingeObj2Axis = quaternion(hingeObj2Axis, hingeQuat)
+                hingeObj2Axis = quaternion(hingeObj2Axis, hingeQuatInv)
                 hingeObj2Axis = quaternion(hingeObj2Axis, obj2Quat)
 
 
@@ -101,7 +102,6 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
                 fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"constraintType\":\"%s\",\n" % obj.rigid_body_constraint.type)
-                fo.write("\t\t\"enabled\":\"%s\",\n" % obj.rigid_body_constraint.enabled)
 
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[1])
@@ -120,6 +120,11 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"xaxs2\":%f,\n" % hingeObj2Axis[1])
                 fo.write("\t\t\"yaxs2\":%f,\n" % hingeObj2Axis[2])
                 fo.write("\t\t\"zaxs2\":%f,\n" % hingeObj2Axis[0])
+
+                fo.write("\t\t\"wqat\":%f,\n" % hingeQuat[0])
+                fo.write("\t\t\"xqat\":%f,\n" % hingeQuat[1])
+                fo.write("\t\t\"yqat\":%f,\n" % hingeQuat[3])
+                fo.write("\t\t\"zqat\":%f,\n" % (-1.0*hingeQuat[2]))
 
                 fo.write("\t\t\"useLimit\":\"%s\",\n" % obj.rigid_body_constraint.use_limit_ang_z)
                 fo.write("\t\t\"limitLower\":%f,\n" % obj.rigid_body_constraint.limit_ang_z_lower)
