@@ -3,13 +3,13 @@
 		"objectType":"constraint",
 		"name":"Constraint",
 		"constraintType":"HINGE",
-		"enabled":"True",
+		"enabled":"False",
 		"xpos":-0.000241,
 		"ypos":0.013907,
 		"zpos":0.496013,
 		"xaxs":0.000000,
 		"yaxs":1.000000,
-		"zaxs":0.000000,
+		"zaxs":-0.000000,
 		"object1":"head",
 		"object1xpos":0.000242,
 		"object1ypos":-0.008268,
@@ -18,9 +18,9 @@
 		"object2xpos":-0.000242,
 		"object2ypos":0.008268,
 		"object2zpos":-0.248048,
-		"useLimit":"False",
-		"limitLower":-0.785398,
-		"limitUpper":0.785398
+		"useLimit":"True",
+		"limitLower":-0.523599,
+		"limitUpper":0.523599
 	},
 	{
 		"objectType":"constraint",
@@ -30,9 +30,9 @@
 		"xpos":-0.046028,
 		"ypos":-0.174672,
 		"zpos":0.379664,
-		"xaxs":0.000000,
-		"yaxs":1.000000,
-		"zaxs":0.000000,
+		"xaxs":-1.000000,
+		"yaxs":0.000000,
+		"zaxs":-0.000000,
 		"object1":"head",
 		"object1xpos":-0.045545,
 		"object1ypos":-0.124616,
@@ -41,9 +41,9 @@
 		"object2xpos":0.045545,
 		"object2ypos":0.124616,
 		"object2zpos":-0.059468,
-		"useLimit":"False",
-		"limitLower":-0.785398,
-		"limitUpper":0.785398
+		"useLimit":"True",
+		"limitLower":-1.047198,
+		"limitUpper":1.047198
 	},
 	{
 		"objectType":"constraint",
@@ -64,9 +64,9 @@
 		"object2xpos":-0.046999,
 		"object2ypos":0.124766,
 		"object2zpos":-0.059470,
-		"useLimit":"False",
-		"limitLower":-0.785398,
-		"limitUpper":0.785398
+		"useLimit":"True",
+		"limitLower":-1.047198,
+		"limitUpper":1.047198
 	},
 	{
 		"objectType":"constraint",
@@ -76,9 +76,9 @@
 		"xpos":0.048181,
 		"ypos":0.344959,
 		"zpos":0.389765,
-		"xaxs":0.000000,
-		"yaxs":1.000000,
-		"zaxs":0.000000,
+		"xaxs":-1.000000,
+		"yaxs":0.000000,
+		"zaxs":-0.000000,
 		"object1":"legBRST",
 		"object1xpos":-0.048180,
 		"object1ypos":0.097980,
@@ -87,9 +87,9 @@
 		"object2xpos":0.048180,
 		"object2ypos":-0.097980,
 		"object2zpos":0.083004,
-		"useLimit":"False",
-		"limitLower":-0.785398,
-		"limitUpper":0.785398
+		"useLimit":"True",
+		"limitLower":-1.047198,
+		"limitUpper":1.047198
 	},
 	{
 		"objectType":"constraint",
@@ -99,9 +99,9 @@
 		"xpos":-0.046545,
 		"ypos":0.344356,
 		"zpos":0.389702,
-		"xaxs":0.000000,
-		"yaxs":1.000000,
-		"zaxs":0.000000,
+		"xaxs":-1.000000,
+		"yaxs":0.000000,
+		"zaxs":-0.000000,
 		"object1":"legBLST",
 		"object1xpos":0.046546,
 		"object1ypos":0.098042,
@@ -110,9 +110,9 @@
 		"object2xpos":-0.046546,
 		"object2ypos":-0.098042,
 		"object2zpos":0.082401,
-		"useLimit":"False",
-		"limitLower":-0.785398,
-		"limitUpper":0.785398
+		"useLimit":"True",
+		"limitLower":-1.047198,
+		"limitUpper":1.047198
 	},
 	{
 		"objectType":"MESH",
