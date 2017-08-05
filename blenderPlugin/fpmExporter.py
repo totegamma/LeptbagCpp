@@ -158,14 +158,14 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                         fo.write("\t\t\"zqat\":%f,\n" % obj.rotation_quaternion[1])
 
                         fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
-                        fo.write("\t\t\"object1xpos\":%f,\n" % obj.rigid_body_constraint.object1.location[1])
-                        fo.write("\t\t\"object1ypos\":%f,\n" % obj.rigid_body_constraint.object1.location[2])
-                        fo.write("\t\t\"object1zpos\":%f,\n" % obj.rigid_body_constraint.object1.location[0])
+                        fo.write("\t\t\"object1xpos\":%f,\n" % (obj.location[1]-obj.rigid_body_constraint.object1.location[1]))
+                        fo.write("\t\t\"object1ypos\":%f,\n" % (obj.location[2]-obj.rigid_body_constraint.object1.location[2]))
+                        fo.write("\t\t\"object1zpos\":%f,\n" % (obj.location[0]-obj.rigid_body_constraint.object1.location[0]))
 
                         fo.write("\t\t\"object2\":\"%s\",\n" % obj.rigid_body_constraint.object2.name)
-                        fo.write("\t\t\"object2xpos\":%f,\n" % obj.rigid_body_constraint.object2.location[1])
-                        fo.write("\t\t\"object2ypos\":%f,\n" % obj.rigid_body_constraint.object2.location[2])
-                        fo.write("\t\t\"object2zpos\":%f,\n" % obj.rigid_body_constraint.object2.location[0])
+                        fo.write("\t\t\"object2xpos\":%f,\n" % (obj.location[1]-obj.rigid_body_constraint.object2.location[1]))
+                        fo.write("\t\t\"object2ypos\":%f,\n" % (obj.location[2]-obj.rigid_body_constraint.object2.location[2]))
+                        fo.write("\t\t\"object2zpos\":%f,\n" % (obj.location[0]-obj.rigid_body_constraint.object2.location[0]))
 
 
                         fo.write("\t\t\"useXAngLimit\":\"%s\",\n" % obj.rigid_body_constraint.use_limit_ang_y)
@@ -186,7 +186,7 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                         fo.write("\t\t\"zLinLimitLower\":%f,\n" % obj.rigid_body_constraint.limit_lin_x_lower)
                         fo.write("\t\t\"xLinLimitUpper\":%f,\n" % obj.rigid_body_constraint.limit_lin_y_upper)
                         fo.write("\t\t\"yLinLimitUpper\":%f,\n" % obj.rigid_body_constraint.limit_lin_z_upper)
-                        fo.write("\t\t\"zLinLimitUpper\":%f,\n" % obj.rigid_body_constraint.limit_lin_x_upper)
+                        fo.write("\t\t\"zLinLimitUpper\":%f\n" % obj.rigid_body_constraint.limit_lin_x_upper)
                         fo.write("\t},\n")
 
 

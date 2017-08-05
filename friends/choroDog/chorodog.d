@@ -12,7 +12,7 @@ import libGA;
 Random rnd;
 
 //strategy 1:DE, 2:simple GA
-int strategy = 2;
+int strategy = 0;
 
 string measuredPart = "head";
 int dogNum = 80;
@@ -108,6 +108,7 @@ class chorodog{
 
 	elementNode[string] parts;
 	hingeConstraint[string] hinges;
+	generic6DofConstraint[string] g6dofs;
 
 	float[string][20] dna;
 
@@ -154,15 +155,22 @@ class chorodog{
 			}
 		}
 
+		foreach(string s, param; g6dofParams){
+			g6dofs[s] = generic6DofConstraint_create(parts[g6dofParams[s].object1Name], parts[g6dofParams[s].object2Name],
+					g6dofParams[s].object1Position, g6dofParams[s].object2Position,
+					g6dofParams[s].rotation);
+		}
+
+
+
 	}
 
 	void move(int sequence){
-		foreach(string s, hinge; hinges){
+		if(hinges.length!=0) foreach(string s, hinge; hinges){
 			if(hingeParams[s].enabled){
 				float target = abs(hingeParams[s].limitLower-hingeParams[s].limitUpper) * dna[sequence][s] * 2.0/PI;
 				hinge.setMotorTarget(target, 0.5);
 			}
-
 		}
 	}
 
@@ -186,9 +194,9 @@ extern (C) void init(){
 
 
 		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-		auto jsonString = import("models/chorodog.fpm");
+		//auto jsonString = import("models/chorodog.fpm");
+		auto jsonString = import("models/chorodog6dof_simplified.fpm");
 		//auto jsonString = import("models/chorodog_simplified.fpm");
-		//auto jsonString = import("hingeTest.fpm");
 
 		JSONValue model = parseJSON(jsonString);
 
@@ -244,22 +252,22 @@ extern (C) void init(){
 
 				g6dofParams[name].name = name;
 				if(elem["enabled"].str == "True") g6dofParams[name].enabled = true; else g6dofParams[name].enabled = false;
-				g6dofParams[name].position = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				g6dofParams[name].position = createVec3(to!float(elem["xpos"].str), to!float(elem["ypos"].str), to!float(elem["zpos"].str));
 				g6dofParams[name].rotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 				g6dofParams[name].object1Name = elem["object1"].str;
 				g6dofParams[name].object2Name = elem["object2"].str;
 				g6dofParams[name].object1Position = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
 				g6dofParams[name].object2Position = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
 				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[0]= true; else g6dofParams[name].useAngLimit[0] = false;
-				if(elem["useXYngLimit"].str == "True") g6dofParams[name].useAngLimit[1]= true; else g6dofParams[name].useAngLimit[1] = false;
-				if(elem["useXZngLimit"].str == "True") g6dofParams[name].useAngLimit[2]= true; else g6dofParams[name].useAngLimit[2] = false;
+				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[1]= true; else g6dofParams[name].useAngLimit[1] = false;
+				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[2]= true; else g6dofParams[name].useAngLimit[2] = false;
 
 				g6dofParams[name].angLimitLower = createVec3(elem["xAngLimitLower"].floating, elem["yAngLimitLower"].floating, elem["zAngLimitLower"].floating);
 				g6dofParams[name].angLimitUpper = createVec3(elem["xAngLimitUpper"].floating, elem["yAngLimitUpper"].floating, elem["zAngLimitUpper"].floating);
 
 				if(elem["useXLinLimit"].str == "True") g6dofParams[name].useLinLimit[0]= true; else g6dofParams[name].useLinLimit[0] = false;
-				if(elem["useXYngLimit"].str == "True") g6dofParams[name].useLinLimit[1]= true; else g6dofParams[name].useLinLimit[1] = false;
-				if(elem["useXZngLimit"].str == "True") g6dofParams[name].useLinLimit[2]= true; else g6dofParams[name].useLinLimit[2] = false;
+				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useLinLimit[1]= true; else g6dofParams[name].useLinLimit[1] = false;
+				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useLinLimit[2]= true; else g6dofParams[name].useLinLimit[2] = false;
 
 				g6dofParams[name].angLimitLower = createVec3(elem["xLinLimitLower"].floating, elem["yLinLimitLower"].floating, elem["zLinLimitLower"].floating);
 				g6dofParams[name].angLimitUpper = createVec3(elem["xLinLimitUpper"].floating, elem["yLinLimitUpper"].floating, elem["zLinLimitUpper"].floating);
@@ -424,7 +432,7 @@ extern (C) void tick(){
 
 				break;
 
-			default: assert(0);
+			default: break;
 
 		}
 
