@@ -21,14 +21,72 @@ float bodyMass = 42.592;
 
 chorodog[] chorodogs;
 
-vertexManager[string] partsVertices;
 elementManager[string] partsGenerator;
+
+struct partParam{
+
+	vertexManager vertices;
+	vec3 position;
+	vec3 scale;
+	quat rotation;
+	float mass;
+
+}
+
+
+/*
 vec3[string] partsPosition;
 vec3[string] partsScale;
 quat[string] partsRotation;
 float[string] partsMass;
+*/
 
 
+struct hingeParam{
+
+	string name;
+	vec3 position;
+	vec3 axis1;
+	vec3 axis2;
+	string object1Name;
+	string object2Name;
+	vec3 object1Position;
+	vec3 object2Position;
+	bool enabled;
+	bool useLimit;
+	float limitLower;
+	float limitUpper;
+
+
+}
+
+struct g6dofParam{
+
+	string name;
+	bool enabled;
+	vec3 position;
+	quat rotation;
+	string object1Name;
+	string object2Name;
+	vec3 object1Position;
+	vec3 object2Position;
+	bool[3] useAngLimit;
+	vec3 angLimitLower;
+	vec3 angLimitUpper;
+	bool[3] useLinLimit;
+	vec3 linLimitLower;
+	vec3 linLimitUpper;
+
+
+}
+
+
+partParam[string] partParams;
+hingeParam[string] hingeParams;
+g6dofParam[string] g6dofParams;
+
+
+/*
 string[] hingeName;
 string[string] hingeObject1Name;
 string[string] hingeObject2Name;
@@ -41,6 +99,7 @@ float[string] limitLower;
 float[string] limitUpper;
 vec3[string] hingeObject1Position;
 vec3[string] hingeObject2Position;
+*/
 
 
 
@@ -58,7 +117,7 @@ class chorodog{
 
 		if(initialDNA == true){
 			foreach(string s, hinge; hinges){
-				if(hingeEnabled[s]){
+				if(hingeParams[s].enabled){
 					for(int row = 0; row < 20; row++){
 						dna[row][s] = uniform(-PI/2, PI/2, rnd);
 					}
@@ -74,22 +133,22 @@ class chorodog{
 		foreach(string s, elementManager partsGen; partsGenerator){
 
 			parts[s] = partsGen.generate(paramWrap(
-						param("position", addVec(partsPosition[s], position)),
-						param("scale",    partsScale[s]),
-						param("rotation", partsRotation[s]),
-						param("model",    partsVertices[s]),
+						param("position", addVec(partParams[s].position, position)),
+						param("scale",    partParams[s].scale),
+						param("rotation", partParams[s].rotation),
+						param("model",    partParams[s].vertices),
 						param("mass", 
 							//0.0f)));
-							partsMass[s] * bodyMass)));
+							partParams[s].mass * bodyMass)));
 
 		}
 
-		foreach(s; hingeName){
-			hinges[s] = hingeConstraint_create(parts[hingeObject1Name[s]], parts[hingeObject2Name[s]],
-					hingeObject1Position[s], hingeObject2Position[s],
-					hingeAxis1[s], hingeAxis2[s]);
-			hinges[s].setLimit(limitLower[s], limitUpper[s]);
-			if(hingeEnabled[s]){
+		foreach(string s, param; hingeParams){
+			hinges[s] = hingeConstraint_create(parts[hingeParams[s].object1Name], parts[hingeParams[s].object2Name],
+					hingeParams[s].object1Position, hingeParams[s].object2Position,
+					hingeParams[s].axis1, hingeParams[s].axis2);
+			hinges[s].setLimit( hingeParams[s].limitLower, hingeParams[s].limitUpper );
+			if( hingeParams[s].enabled ){
 				hinges[s].enableMotor(true);
 				hinges[s].setMaxMotorImpulse(5);
 			}
@@ -99,8 +158,8 @@ class chorodog{
 
 	void move(int sequence){
 		foreach(string s, hinge; hinges){
-			if(hingeEnabled[s]){
-				float target = abs(limitLower[s]-limitUpper[s]) * dna[sequence][s] * 2.0/PI;
+			if(hingeParams[s].enabled){
+				float target = abs(hingeParams[s].limitLower-hingeParams[s].limitUpper) * dna[sequence][s] * 2.0/PI;
 				hinge.setMotorTarget(target, 0.5);
 			}
 
@@ -135,45 +194,76 @@ extern (C) void init(){
 
 		foreach(elem; model.array){
 			if(elem["objectType"].str == "MESH"){
+
 				string name = elem["name"].str;
 
-				partsPosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				partsScale[name]	= createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				partsRotation[name] = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
-				partsMass[name] = elem["mass"].floating;
+				partParams[name] = partParam();
+				partParams[name].position = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				partParams[name].scale	= createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				partParams[name].rotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
+				partParams[name].mass = elem["mass"].floating;
 
-				partsVertices[name] = createVertexManager();
+				partParams[name].vertices = createVertexManager();
 
 				foreach(objvertex; elem["vertex"].array){
-					partsVertices[name].addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+					partParams[name].vertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
 								objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
 								objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
 
-				partsGenerator[name] = createElementManager(partsVertices[name], &createConvexHullShapeBody);
+				partsGenerator[name] = createElementManager(partParams[name].vertices, &createConvexHullShapeBody);
 
 
 			}
 		}
 
 		foreach(elem; model.array){
-			if(elem["objectType"].str == "constraint"){
+			if(elem["objectType"].str == "hingeConstraint"){
+
 				string name = elem["name"].str;
+				hingeParams[name] = hingeParam();
+				hingeParams[name].name = name;
 
-				hingeName ~= name;
-
-				hingeAxis1[name] = createVec3(elem["xaxs1"].floating , elem["yaxs1"].floating, elem["zaxs1"].floating);
-				hingeAxis2[name] = createVec3(elem["xaxs2"].floating , elem["yaxs2"].floating, elem["zaxs2"].floating);
+				hingeParams[name].axis1 = createVec3(elem["xaxs1"].floating , elem["yaxs1"].floating, elem["zaxs1"].floating);
+				hingeParams[name].axis2 = createVec3(elem["xaxs2"].floating , elem["yaxs2"].floating, elem["zaxs2"].floating);
 
 
-				if(elem["enabled"].str == "True") hingeEnabled[name] = true; else hingeEnabled[name] = false;
-				if(elem["useLimit"].str == "True") useLimit[name] = true; else useLimit[name] = false;
-				limitLower[name] = elem["limitLower"].floating;
-				limitUpper[name] = elem["limitUpper"].floating;
-				hingeObject1Position[name] = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
-				hingeObject2Position[name] = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
-				hingeObject1Name[name] = elem["object1"].str;
-				hingeObject2Name[name] = elem["object2"].str;
+				if(elem["enabled"].str == "True") hingeParams[name].enabled = true; else hingeParams[name].enabled = false;
+				if(elem["useLimit"].str == "True") hingeParams[name].useLimit = true; else hingeParams[name].useLimit = false;
+				hingeParams[name].limitLower = elem["limitLower"].floating;
+				hingeParams[name].limitUpper = elem["limitUpper"].floating;
+				hingeParams[name].object1Position = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
+				hingeParams[name].object2Position = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
+				hingeParams[name].object1Name = elem["object1"].str;
+				hingeParams[name].object2Name = elem["object2"].str;
+
+			}else if(elem["objectType"].str == "genericConstraint"){
+
+				string name = elem["name"].str;
+				g6dofParams[name] = g6dofParam();
+
+				g6dofParams[name].name = name;
+				if(elem["enabled"].str == "True") g6dofParams[name].enabled = true; else g6dofParams[name].enabled = false;
+				g6dofParams[name].position = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				g6dofParams[name].rotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
+				g6dofParams[name].object1Name = elem["object1"].str;
+				g6dofParams[name].object2Name = elem["object2"].str;
+				g6dofParams[name].object1Position = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
+				g6dofParams[name].object2Position = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
+				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[0]= true; else g6dofParams[name].useAngLimit[0] = false;
+				if(elem["useXYngLimit"].str == "True") g6dofParams[name].useAngLimit[1]= true; else g6dofParams[name].useAngLimit[1] = false;
+				if(elem["useXZngLimit"].str == "True") g6dofParams[name].useAngLimit[2]= true; else g6dofParams[name].useAngLimit[2] = false;
+
+				g6dofParams[name].angLimitLower = createVec3(elem["xAngLimitLower"].floating, elem["yAngLimitLower"].floating, elem["zAngLimitLower"].floating);
+				g6dofParams[name].angLimitUpper = createVec3(elem["xAngLimitUpper"].floating, elem["yAngLimitUpper"].floating, elem["zAngLimitUpper"].floating);
+
+				if(elem["useXLinLimit"].str == "True") g6dofParams[name].useLinLimit[0]= true; else g6dofParams[name].useLinLimit[0] = false;
+				if(elem["useXYngLimit"].str == "True") g6dofParams[name].useLinLimit[1]= true; else g6dofParams[name].useLinLimit[1] = false;
+				if(elem["useXZngLimit"].str == "True") g6dofParams[name].useLinLimit[2]= true; else g6dofParams[name].useLinLimit[2] = false;
+
+				g6dofParams[name].angLimitLower = createVec3(elem["xLinLimitLower"].floating, elem["yLinLimitLower"].floating, elem["zLinLimitLower"].floating);
+				g6dofParams[name].angLimitUpper = createVec3(elem["xLinLimitUpper"].floating, elem["yLinLimitUpper"].floating, elem["zLinLimitUpper"].floating);
+
 
 			}
 		}

@@ -840,7 +840,7 @@
 		]
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_chest_head",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -867,7 +867,7 @@
 		"limitUpper":0.174533
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_chest_hip",
 		"constraintType":"HINGE",
 		"enabled":"True",
@@ -894,7 +894,7 @@
 		"limitUpper":1.221730
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_chest_legFLT",
 		"constraintType":"HINGE",
 		"enabled":"True",
@@ -921,7 +921,7 @@
 		"limitUpper":1.047198
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_chest_legFRT",
 		"constraintType":"HINGE",
 		"enabled":"True",
@@ -948,7 +948,7 @@
 		"limitUpper":1.047198
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_hip_legBLT",
 		"constraintType":"HINGE",
 		"enabled":"True",
@@ -975,7 +975,7 @@
 		"limitUpper":1.308997
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_hip_legBRT",
 		"constraintType":"HINGE",
 		"enabled":"True",
@@ -1002,7 +1002,7 @@
 		"limitUpper":1.308997
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_hip_tail",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1029,7 +1029,7 @@
 		"limitUpper":0.087266
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legBLS_legBLST",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1056,7 +1056,7 @@
 		"limitUpper":1.570796
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legBLT_legBLS",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1083,7 +1083,7 @@
 		"limitUpper":2.792527
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legBRS_legBRST",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1110,7 +1110,7 @@
 		"limitUpper":1.570796
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legBRT_legBRS",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1137,7 +1137,7 @@
 		"limitUpper":2.792527
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legFLS_legFLST",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1164,7 +1164,7 @@
 		"limitUpper":1.570796
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legFLT_legFLS",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1191,7 +1191,7 @@
 		"limitUpper":0.174533
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legFRS_legFRST",
 		"constraintType":"HINGE",
 		"enabled":"False",
@@ -1218,7 +1218,7 @@
 		"limitUpper":1.570796
 	},
 	{
-		"objectType":"constraint",
+		"objectType":"hingeConstraint",
 		"name":"hinge_legFRT_legFRS",
 		"constraintType":"HINGE",
 		"enabled":"False",
