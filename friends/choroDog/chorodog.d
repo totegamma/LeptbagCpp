@@ -33,7 +33,8 @@ string[] hingeName;
 string[string] hingeObject1Name;
 string[string] hingeObject2Name;
 vec3[string] hingePosition;
-vec3[string] hingeAxis;
+vec3[string] hingeAxis1;
+vec3[string] hingeAxis2;
 bool[string] hingeEnabled;
 bool[string] useLimit;
 float[string] limitLower;
@@ -86,7 +87,7 @@ class chorodog{
 		foreach(s; hingeName){
 			hinges[s] = hingeConstraint_create(parts[hingeObject1Name[s]], parts[hingeObject2Name[s]],
 					hingeObject1Position[s], hingeObject2Position[s],
-					hingeAxis[s]);
+					hingeAxis1[s], hingeAxis2[s]);
 			hinges[s].setLimit(limitLower[s], limitUpper[s]);
 			if(hingeEnabled[s]){
 				hinges[s].enableMotor(true);
@@ -126,8 +127,8 @@ extern (C) void init(){
 
 
 		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-		//auto jsonString = import("chorodog.fpm");
-		auto jsonString = import("models/chorodog_simplified.fpm");
+		auto jsonString = import("models/chorodog.fpm");
+		//auto jsonString = import("models/chorodog_simplified.fpm");
 		//auto jsonString = import("hingeTest.fpm");
 
 		JSONValue model = parseJSON(jsonString);
@@ -160,9 +161,9 @@ extern (C) void init(){
 				string name = elem["name"].str;
 
 				hingeName ~= name;
-				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
 
-				hingeAxis[name] = createVec3(elem["xaxs"].floating , elem["yaxs"].floating, elem["zaxs"].floating);
+				hingeAxis1[name] = createVec3(elem["xaxs1"].floating , elem["yaxs1"].floating, elem["zaxs1"].floating);
+				hingeAxis2[name] = createVec3(elem["xaxs2"].floating , elem["yaxs2"].floating, elem["zaxs2"].floating);
 
 
 				if(elem["enabled"].str == "True") hingeEnabled[name] = true; else hingeEnabled[name] = false;
