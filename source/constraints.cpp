@@ -57,25 +57,39 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 }
 
-void generic6DofConstraint::setAngularLowerLimit(vec3 &angularLower){
-	gen6Dof->setAngularLowerLimit(angularLower.toBullet());
+void generic6DofConstraint::setAngularLimit(vec3 &lower, vec3 &upper){
+	gen6Dof->setAngularLowerLimit(lower.toBullet());
+	gen6Dof->setAngularUpperLimit(upper.toBullet());
 }
 
-void generic6DofConstraint::setAngularUpperLimit(vec3 &angularUpper){
-	gen6Dof->setAngularUpperLimit(angularUpper.toBullet());
+void generic6DofConstraint::setLinearLimit(vec3 &lower, vec3 &upper){
+	gen6Dof->setLinearLowerLimit(lower.toBullet());
+	gen6Dof->setLinearUpperLimit(upper.toBullet());
 }
 
-void generic6DofConstraint::setLinearLowerLimit(vec3 &linearLower){
-	gen6Dof->setLinearLowerLimit(linearLower.toBullet());
-}
-
-void generic6DofConstraint::setLinearUpperLimit(vec3 &linearUpper){
-	gen6Dof->setLinearUpperLimit(linearUpper.toBullet());
-}
-
-void generic6DofConstraint::getRotationalLimitMotor(int index){
-	// indexがよくわからん。誰か教えて欲しい。
+void generic6DofConstraint::setRotationalMotor(int index){
+	// 0,1,2 -> x,y,z (?)
 	gen6Dof->getRotationalLimitMotor(index)->m_enableMotor = true;
+}
+
+void generic6DofConstraint::setLinearMotor(int index){
+	gen6Dof->getTranslationalLimitMotor()->m_enableMotor[index] = true;
+}
+
+void generic6DofConstraint::setMaxRotationalMotorForce(int index, float force){
+	gen6Dof->getRotationalLimitMotor(index)->m_maxMotorForce = force;
+}
+
+void generic6DofConstraint::setMaxLinearMotorForce(vec3 &force){
+	gen6Dof->getTranslationalLimitMotor()->m_maxMotorForce = force.toBullet();
+}
+
+void generic6DofConstraint::setRotationalTargetVelocity(int index, float velocity){
+	gen6Dof->getRotationalLimitMotor(index)->m_targetVelocity = velocity;
+}
+
+void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
+	gen6Dof->getTranslationalLimitMotor()->m_targetVelocity = velocity.toBullet();
 }
 
 void generic6DofConstraint::destroy(){
