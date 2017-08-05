@@ -137,7 +137,7 @@ class chorodog{
 						param("scale",    partParams[s].scale),
 						param("rotation", partParams[s].rotation),
 						param("model",    partParams[s].vertices),
-						param("mass", 
+						param("mass",
 							//0.0f)));
 							partParams[s].mass * bodyMass)));
 
@@ -271,7 +271,7 @@ extern (C) void init(){
 		chorodogs.length = dogNum;
 
 		foreach(int i, ref elem; chorodogs) elem = new chorodog(to!float(i)*5.0f, 0.0f, -1.0f, true);
-		
+
 
 
 	}
