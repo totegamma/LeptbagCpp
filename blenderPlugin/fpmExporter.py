@@ -102,6 +102,7 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
                 fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"constraintType\":\"%s\",\n" % obj.rigid_body_constraint.type)
+                fo.write("\t\t\"enabled\":\"%s\",\n" % obj.rigid_body_constraint.enabled)
 
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
                 fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[1])
