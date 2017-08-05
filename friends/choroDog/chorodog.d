@@ -11,7 +11,7 @@ import libGA;
 
 Random rnd;
 
-//strategy 1:DE, 2:simple GA
+//strategy 0:do not learn, 1:DE, 2:simple GA
 int strategy = 0;
 
 string measuredPart = "head";
@@ -33,13 +33,6 @@ struct partParam{
 
 }
 
-
-/*
-vec3[string] partsPosition;
-vec3[string] partsScale;
-quat[string] partsRotation;
-float[string] partsMass;
-*/
 
 
 struct hingeParam{
@@ -86,20 +79,6 @@ hingeParam[string] hingeParams;
 g6dofParam[string] g6dofParams;
 
 
-/*
-string[] hingeName;
-string[string] hingeObject1Name;
-string[string] hingeObject2Name;
-vec3[string] hingePosition;
-vec3[string] hingeAxis1;
-vec3[string] hingeAxis2;
-bool[string] hingeEnabled;
-bool[string] useLimit;
-float[string] limitLower;
-float[string] limitUpper;
-vec3[string] hingeObject1Position;
-vec3[string] hingeObject2Position;
-*/
 
 
 

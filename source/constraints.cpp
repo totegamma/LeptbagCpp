@@ -38,6 +38,8 @@ generic6DofConstraint::generic6DofConstraint(){
 
 generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
 
+
+
 	// それぞれの物体の重心を原点としてローカル座標をとる。
 	btTransform frameInA, frameInB;
 	frameInA = elemA->getBody()->getCenterOfMassTransform();
@@ -53,10 +55,16 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 	// 6Dofを生成
 	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
+	/*
 	gen6Dof->setAngularLowerLimit(btVector3(0,0,0));
 	gen6Dof->setAngularUpperLimit(btVector3(0,0,0));
 	gen6Dof->setLinearLowerLimit(btVector3(0,0,0));
 	gen6Dof->setLinearUpperLimit(btVector3(0,0,0));
+	*/
+
+	//elemAとelemBの衝突判定を無効にする
+	elemA->getBody()->setIgnoreCollisionCheck( elemB->getBody(), true );
+
 	dynamicsWorld->addConstraint(gen6Dof);
 
 }
