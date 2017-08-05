@@ -129,5 +129,5 @@ extern (C++) {
 
 extern (C) {
 	hingeConstraint hingeConstraint_create(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
-	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB);
+	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB, quat rotation);
 }
