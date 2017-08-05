@@ -36,12 +36,17 @@ hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, 
 generic6DofConstraint::generic6DofConstraint(){
 }
 
-generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB){
+generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
 
 	// それぞれの物体の重心を原点としてローカル座標をとる。
 	btTransform frameInA, frameInB;
 	frameInA = elemA->getBody()->getCenterOfMassTransform();
 	frameInB = elemB->getBody()->getCenterOfMassTransform();
+
+	btQuaternion quatToBullet = btQuaternion(sin(-M_PI/4),0,0,cos(-M_PI/4));
+	frameInA.setRotation(frameInA.getRotation().inverse() * rotation.toBullet() * quatToBullet);
+	frameInB.setRotation(frameInB.getRotation().inverse() * rotation.toBullet() * quatToBullet);
+
 	// デフォルトの関節の接点をローカル座標で指定する
 	frameInA.setOrigin(positionA.toBullet());
 	frameInB.setOrigin(positionB.toBullet());
@@ -77,6 +82,6 @@ void generic6DofConstraint::destroy(){
 	dynamicsWorld->removeConstraint(gen6Dof);
 }
 
-generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB){
-	return new generic6DofConstraint(elemA, elemB, positionA, positionB);
+generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
+	return new generic6DofConstraint(elemA, elemB, positionA, positionB, rotation);
 }

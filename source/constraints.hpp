@@ -24,7 +24,7 @@ class generic6DofConstraint{
 	btGeneric6DofConstraint* gen6Dof;
 	public:
 	generic6DofConstraint();
-	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
 	virtual void setAngularLowerLimit(vec3 &angularLower);
 	virtual void setAngularUpperLimit(vec3 &angularUpper);
 	virtual void setLinearLowerLimit(vec3 &linearLower);
@@ -34,7 +34,7 @@ class generic6DofConstraint{
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
-extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
+extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
 
 
 
