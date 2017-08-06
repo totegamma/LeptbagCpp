@@ -70,7 +70,6 @@ struct g6dofParam{
 	vec3 linLimitLower;
 	vec3 linLimitUpper;
 
-
 }
 
 
@@ -88,6 +87,7 @@ class chorodog{
 	elementNode[string] parts;
 	hingeConstraint[string] hinges;
 	generic6DofConstraint[string] g6dofs;
+	float neko = 0;
 
 	float[string][20] dna;
 
@@ -127,7 +127,7 @@ class chorodog{
 			hinges[s] = hingeConstraint_create(parts[hingeParams[s].object1Name], parts[hingeParams[s].object2Name],
 					hingeParams[s].object1Position, hingeParams[s].object2Position,
 					hingeParams[s].axis1, hingeParams[s].axis2);
-			hinges[s].setLimit( hingeParams[s].limitLower, hingeParams[s].limitUpper );
+			hinges[s].setLimit( hingeParams[s].limitLower, hingeParams[s].limitLower );
 			if( hingeParams[s].enabled ){
 				hinges[s].enableMotor(true);
 				hinges[s].setMaxMotorImpulse(5);
@@ -138,6 +138,31 @@ class chorodog{
 			g6dofs[s] = generic6DofConstraint_create(parts[g6dofParams[s].object1Name], parts[g6dofParams[s].object2Name],
 					g6dofParams[s].object1Position, g6dofParams[s].object2Position,
 					g6dofParams[s].rotation);
+
+			for(int i=0; i<3; i++){
+				if(g6dofParams[s].useAngLimit[i]) g6dofs[s].setRotationalMotor(i);
+				if(g6dofParams[s].useLinLimit[i]) g6dofs[s].setLinearMotor(i);
+			}
+
+			vec3 zeroVec3 = createVec3( 0.0, 0.0, 0.0 ); //セッターに同じvec3を入れるとロック
+			g6dofs[s].setAngularLimit( g6dofParams[s].angLimitLower, g6dofParams[s].angLimitUpper );
+
+
+			g6dofs[s].setLinearLimit( zeroVec3, zeroVec3 );
+
+
+			/*
+			g6dofs[s].setLinearTargetVelocity(createVec3(
+						uniform(g6dofParams[s].linLimitLower.getx(), g6dofParams[s].linLimitUpper.getx(), rnd),
+						uniform(g6dofParams[s].linLimitLower.gety(), g6dofParams[s].linLimitUpper.gety(), rnd),
+						uniform(g6dofParams[s].linLimitLower.getz(), g6dofParams[s].linLimitUpper.getz(), rnd)));
+						*/
+
+			//最大出力．index ; (x, y, z)=(0, 1, 2)(たぶん？)
+			g6dofs[s].setMaxRotationalMotorForce( 0, 5.0);
+			g6dofs[s].setMaxRotationalMotorForce( 1, 5.0);
+			g6dofs[s].setMaxRotationalMotorForce( 2, 5.0);
+			g6dofs[s].setMaxLinearMotorForce( zeroVec3 );
 		}
 
 
@@ -151,11 +176,25 @@ class chorodog{
 				hinge.setMotorTarget(target, 0.5);
 			}
 		}
+		g6dofs["Constraint.003"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko), 0.0f));
+		g6dofs["Constraint.001"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko-PI/2.0), 0.0f));
+		g6dofs["Constraint.002"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko-PI), 0.0f));
+		g6dofs["Constraint.004"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko-PI*3.0/2.0), 0.0f));
+
+		neko += 0.3f;
+		if(neko>=2.0*3.14f) neko -= 2.0*3.14f;
+
+			/*
+						uniform(g6dofParams[s].angLimitLower.getx(), g6dofParams[s].angLimitUpper.getx(), rnd),
+						uniform(g6dofParams[s].angLimitLower.gety(), g6dofParams[s].angLimitUpper.gety(), rnd),
+						uniform(g6dofParams[s].angLimitLower.getz(), g6dofParams[s].angLimitUpper.getz(), rnd)));
+						*/
 	}
 
 	void despawn(){
 		foreach(part; parts) part.destroy();
 		foreach(hinge; hinges) hinge.destroy();
+		foreach(dofs; g6dofs) dofs.destroy();
 	}
 
 
@@ -224,6 +263,7 @@ extern (C) void init(){
 				hingeParams[name].object1Name = elem["object1"].str;
 				hingeParams[name].object2Name = elem["object2"].str;
 
+
 			}else if(elem["objectType"].str == "genericConstraint"){
 
 				string name = elem["name"].str;
@@ -238,18 +278,18 @@ extern (C) void init(){
 				g6dofParams[name].object1Position = createVec3(elem["object1xpos"].floating, elem["object1ypos"].floating, elem["object1zpos"].floating);
 				g6dofParams[name].object2Position = createVec3(elem["object2xpos"].floating, elem["object2ypos"].floating, elem["object2zpos"].floating);
 				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[0]= true; else g6dofParams[name].useAngLimit[0] = false;
-				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[1]= true; else g6dofParams[name].useAngLimit[1] = false;
-				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useAngLimit[2]= true; else g6dofParams[name].useAngLimit[2] = false;
+				if(elem["useYAngLimit"].str == "True") g6dofParams[name].useAngLimit[1]= true; else g6dofParams[name].useAngLimit[1] = false;
+				if(elem["useZAngLimit"].str == "True") g6dofParams[name].useAngLimit[2]= true; else g6dofParams[name].useAngLimit[2] = false;
 
 				g6dofParams[name].angLimitLower = createVec3(elem["xAngLimitLower"].floating, elem["yAngLimitLower"].floating, elem["zAngLimitLower"].floating);
 				g6dofParams[name].angLimitUpper = createVec3(elem["xAngLimitUpper"].floating, elem["yAngLimitUpper"].floating, elem["zAngLimitUpper"].floating);
 
 				if(elem["useXLinLimit"].str == "True") g6dofParams[name].useLinLimit[0]= true; else g6dofParams[name].useLinLimit[0] = false;
-				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useLinLimit[1]= true; else g6dofParams[name].useLinLimit[1] = false;
-				if(elem["useXAngLimit"].str == "True") g6dofParams[name].useLinLimit[2]= true; else g6dofParams[name].useLinLimit[2] = false;
+				if(elem["useYAngLimit"].str == "True") g6dofParams[name].useLinLimit[1]= true; else g6dofParams[name].useLinLimit[1] = false;
+				if(elem["useZAngLimit"].str == "True") g6dofParams[name].useLinLimit[2]= true; else g6dofParams[name].useLinLimit[2] = false;
 
-				g6dofParams[name].angLimitLower = createVec3(elem["xLinLimitLower"].floating, elem["yLinLimitLower"].floating, elem["zLinLimitLower"].floating);
-				g6dofParams[name].angLimitUpper = createVec3(elem["xLinLimitUpper"].floating, elem["yLinLimitUpper"].floating, elem["zLinLimitUpper"].floating);
+				g6dofParams[name].linLimitLower = createVec3(elem["xLinLimitLower"].floating, elem["yLinLimitLower"].floating, elem["zLinLimitLower"].floating);
+				g6dofParams[name].linLimitUpper = createVec3(elem["xLinLimitUpper"].floating, elem["yLinLimitUpper"].floating, elem["zLinLimitUpper"].floating);
 
 
 			}
@@ -286,11 +326,23 @@ extern (C) void tick(){
 		sequence = (sequence+1)%20;
 		timerDivisor = 0;
 
-		if(!evaluation) foreach(elem; chorodogs) elem.move(sequence);
-		else foreach(elem; evaluateds) elem.move(sequence);
+		switch(strategy){
+			case 0:
+				foreach(elem; chorodogs) elem.move(sequence);
+				break;
+			case 1:
+				if(!evaluation) foreach(elem; chorodogs) elem.move(sequence);
+				else foreach(elem; evaluateds) elem.move(sequence);
+				break;
+			case 2:
+				foreach(elem; chorodogs) elem.move(sequence);
+				break;
+			default: break;
+		}
+
+	}
 
 		time++;
-	}
 
 	//世代終わり
 	if(time == 30 + generation*2){
@@ -308,6 +360,9 @@ extern (C) void tick(){
 		time = 0;
 
 		switch(strategy){
+
+			//through
+			case 0: break;
 
 			//DE
 			case 1:
@@ -411,7 +466,7 @@ extern (C) void tick(){
 
 				break;
 
-			default: break;
+			default: assert(0);
 
 		}
 

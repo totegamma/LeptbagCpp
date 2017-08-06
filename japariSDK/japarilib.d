@@ -124,8 +124,8 @@ extern (C++) {
 		void setLinearMotor(int index);
 		void setMaxRotationalMotorForce(int index, float force);
 		void setMaxLinearMotorForce(vec3 force);
-		void setRotationalTargetVelocity(int index, float velocity);
-		void setLinearTargetVelocity(float velocity);
+		void setRotationalTargetVelocity(vec3 velocity);
+		void setLinearTargetVelocity(vec3 velocity);
 		void destroy();
 	}
 }
