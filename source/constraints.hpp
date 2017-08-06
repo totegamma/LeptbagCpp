@@ -24,17 +24,22 @@ class generic6DofConstraint{
 	btGeneric6DofConstraint* gen6Dof;
 	public:
 	generic6DofConstraint();
-	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
-	virtual void setAngularLowerLimit(vec3 &angularLower);
-	virtual void setAngularUpperLimit(vec3 &angularUpper);
-	virtual void setLinearLowerLimit(vec3 &linearLower);
-	virtual void setLinearUpperLimit(vec3 &linearUpper);
-	virtual void getRotationalLimitMotor(int index);
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
+	virtual void setAngularLimit(vec3 &lower, vec3 &upper);
+	virtual void setLinearLimit(vec3 &lower, vec3 &upper);
+
+	virtual void setRotationalMotor(int index);
+	virtual void setLinearMotor(int index);
+	virtual void setMaxRotationalMotorForce(int index, float force);
+	virtual void setMaxLinearMotorForce(vec3 &force);
+	virtual void setRotationalTargetVelocity(vec3 &velocity);
+	virtual void setLinearTargetVelocity(vec3 &velocity);
+
 	virtual void destroy();
 };
 
 extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
-extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB);
+extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
 
 
 
