@@ -32,7 +32,7 @@ class generic6DofConstraint{
 	virtual void setLinearMotor(int index);
 	virtual void setMaxRotationalMotorForce(int index, float force);
 	virtual void setMaxLinearMotorForce(vec3 &force);
-	virtual void setRotationalTargetVelocity(int index, float velocity);
+	virtual void setRotationalTargetVelocity(vec3 &velocity);
 	virtual void setLinearTargetVelocity(vec3 &velocity);
 
 	virtual void destroy();

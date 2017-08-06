@@ -1,5 +1,7 @@
 #include "constraints.hpp"
 
+//hingeConstraint------------------------------------------
+
 hingeConstraint::hingeConstraint(){
 }
 
@@ -33,6 +35,12 @@ hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, 
 	return new hingeConstraint(elemA, elemB, positionA, positionB, axisA, axisB);
 }
 
+//----------------------------------------------------------
+
+
+
+//generic6dofConstraint-------------------------------------
+
 generic6DofConstraint::generic6DofConstraint(){
 }
 
@@ -54,6 +62,8 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	frameInB.setOrigin(positionB.toBullet());
 
 	// 6Dofを生成
+	//最後のboolはangularLimit, linearLimtitをAのローカル座標内で規定するならtrue．B内ならfalse．(たぶん．以下参照)
+	//https://gamedev.stackexchange.com/questions/54349/what-are-frame-a-and-frame-b-in-btgeneric6dofconstraints-constructor-for
 	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
 	/*
 	gen6Dof->setAngularLowerLimit(btVector3(0,0,0));
@@ -63,6 +73,8 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	*/
 
 	//elemAとelemBの衝突判定を無効にする
+	//new btGeneric6dofConstraintの後に実行しないと働かない
+	//void btRigidBody*->setIgnoreCollisionCheck( btRigidBody*, bool );
 	elemA->getBody()->setIgnoreCollisionCheck( elemB->getBody(), true );
 
 	dynamicsWorld->addConstraint(gen6Dof);
@@ -70,6 +82,8 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 }
 
 void generic6DofConstraint::setAngularLimit(vec3 &lower, vec3 &upper){
+	//lower == upperでロック
+	//lower > upperで制限なし．Linearも同様．
 	gen6Dof->setAngularLowerLimit(lower.toBullet());
 	gen6Dof->setAngularUpperLimit(upper.toBullet());
 }
@@ -96,8 +110,10 @@ void generic6DofConstraint::setMaxLinearMotorForce(vec3 &force){
 	gen6Dof->getTranslationalLimitMotor()->m_maxMotorForce = force.toBullet();
 }
 
-void generic6DofConstraint::setRotationalTargetVelocity(int index, float velocity){
-	gen6Dof->getRotationalLimitMotor(index)->m_targetVelocity = velocity;
+void generic6DofConstraint::setRotationalTargetVelocity(vec3 &velocity){
+	gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity = velocity.getx();
+	gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity = velocity.gety();
+	gen6Dof->getRotationalLimitMotor(2)->m_targetVelocity = velocity.getz();
 }
 
 void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
@@ -111,3 +127,5 @@ void generic6DofConstraint::destroy(){
 generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
 	return new generic6DofConstraint(elemA, elemB, positionA, positionB, rotation);
 }
+
+//----------------------------------------------------------
