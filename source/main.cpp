@@ -406,7 +406,12 @@ int main(){
 	}
 
 
-
+	int maxSerializeBufferSize = 1024*1024*5;
+	btDefaultSerializer* serializer = new btDefaultSerializer(maxSerializeBufferSize);
+	dynamicsWorld->serialize(serializer);
+	FILE* file = fopen("testFile.bullet","wb");
+	fwrite(serializer->getBufferPointer(),serializer->getCurrentBufferSize(),1, file);
+	fclose(file);
 
 
 	glEnableVertexAttribArray(0);

@@ -1,10 +1,42 @@
+import numpy as np
 import bpy
 from bpy_extras.io_utils import ExportHelper
 
 bl_info = {
     "name": "Friends Physical Model Exporter",
     "category": "Import-Export",
-}
+    }
+
+def mulQuat(w1, v1, w2, v2):
+    w = w1*w2 - np.dot(v1, v2)
+    v = w1*v2 + w2*v1 + np.cross(v1, v2)
+    return np.array([w, v[0], v[1], v[2]], dtype=float)
+
+def quaternion( position, quat ):
+
+
+    Quat = quat[1:4]
+    QuatW = quat[0]
+
+    QuatInv = -1.0*Quat
+    QuatInvW = QuatW
+
+    #上記クォータニオンを適用
+    tmp = mulQuat(QuatInvW, QuatInv, 0, position)
+    ans = mulQuat(tmp[0], tmp[1:4], QuatW, Quat)
+
+    return ans[1:4]
+
+def getQuatInv( quat ):
+
+    quat[1:4] = -1.0 * quat[1:4]
+    return quat
+
+def blenderToBullet( vec3 ):
+    return np.array([ vec3[0], vec3[2], -1.0*vec3[1] ])
+
+
+
 
 class fpmExporter(bpy.types.Operator, ExportHelper):
     bl_label = 'export fpm'
@@ -21,28 +53,88 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
         for keyname in bpy.data.objects.keys():
             obj = bpy.data.objects[keyname]
             if obj.type == "EMPTY":
+
+                hingeLocation = np.array([obj.location[0], obj.location[1], obj.location[2]], dtype=float)
+                hingeQuat = getQuatInv(np.array([obj.rotation_quaternion[0], obj.rotation_quaternion[1], obj.rotation_quaternion[2], obj.rotation_quaternion[3]], dtype=float))
+
+                #ヒンジの相対角度は回転前のobj1, obj2に対するものなので，それを補正
+                obj1Location = np.array([obj.rigid_body_constraint.object1.location[0],
+                                         obj.rigid_body_constraint.object1.location[1],
+                                         obj.rigid_body_constraint.object1.location[2]],
+                                        dtype=float)
+                #クォータニオン
+                obj1Quat = np.array([obj.rigid_body_constraint.object1.rotation_quaternion[0],
+                                     obj.rigid_body_constraint.object1.rotation_quaternion[1],
+                                     obj.rigid_body_constraint.object1.rotation_quaternion[2],
+                                     obj.rigid_body_constraint.object1.rotation_quaternion[3]],
+                                    dtype=float)
+
+                #ヒンジの相対角度は回転前のobj2, obj2に対するものなので，それを補正
+                obj2Location = np.array([obj.rigid_body_constraint.object2.location[0],
+                                         obj.rigid_body_constraint.object2.location[1],
+                                         obj.rigid_body_constraint.object2.location[2]],
+                                        dtype=float)
+                #クォータニオン
+                obj2Quat = np.array([obj.rigid_body_constraint.object2.rotation_quaternion[0],
+                                     obj.rigid_body_constraint.object2.rotation_quaternion[1],
+                                     obj.rigid_body_constraint.object2.rotation_quaternion[2],
+                                     obj.rigid_body_constraint.object2.rotation_quaternion[3]],
+                                    dtype=float)
+
+                obj1Location = hingeLocation - obj1Location
+                obj1Location = quaternion(obj1Location, obj1Quat)
+
+                obj2Location = hingeLocation - obj2Location
+                obj2Location = quaternion(obj2Location, obj2Quat)
+
+                hingeObj1Axis = np.array([ 0.0, 0.0, 1.0 ], dtype=float)
+                hingeObj2Axis = np.array([ 0.0, 0.0, 1.0 ], dtype=float)
+
+                hingeObj1Axis = quaternion(hingeObj1Axis, hingeQuat)
+                hingeObj1Axis = quaternion(hingeObj1Axis, obj1Quat)
+
+                hingeObj2Axis = quaternion(hingeObj2Axis, hingeQuat)
+                hingeObj2Axis = quaternion(hingeObj2Axis, obj2Quat)
+
+
                 fo.write("\t{\n")
                 fo.write("\t\t\"objectType\":\"constraint\",\n")
                 fo.write("\t\t\"name\":\"%s\",\n" % keyname)
                 fo.write("\t\t\"constraintType\":\"%s\",\n" % obj.rigid_body_constraint.type)
-                fo.write("\t\t\"xpos\":%f,\n" % obj.location[1])
-                fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
-                fo.write("\t\t\"zpos\":%f,\n" % obj.location[0])
-                fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[1])
-                fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
-                fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[0])
+                fo.write("\t\t\"enabled\":\"%s\",\n" % obj.rigid_body_constraint.enabled)
+
                 fo.write("\t\t\"object1\":\"%s\",\n" % obj.rigid_body_constraint.object1.name)
-                fo.write("\t\t\"object1xpos\":%f,\n" % (obj.location[1] - obj.rigid_body_constraint.object1.location[1]))
-                fo.write("\t\t\"object1ypos\":%f,\n" % (obj.location[2] - obj.rigid_body_constraint.object1.location[2]))
-                fo.write("\t\t\"object1zpos\":%f,\n" % (obj.location[0] - obj.rigid_body_constraint.object1.location[0]))
+                fo.write("\t\t\"object1xpos\":%f,\n" % obj1Location[1])
+                fo.write("\t\t\"object1ypos\":%f,\n" % obj1Location[2])
+                fo.write("\t\t\"object1zpos\":%f,\n" % obj1Location[0])
+
                 fo.write("\t\t\"object2\":\"%s\",\n" % obj.rigid_body_constraint.object2.name)
-                fo.write("\t\t\"object2xpos\":%f,\n" % (obj.location[1] - obj.rigid_body_constraint.object2.location[1]))
-                fo.write("\t\t\"object2ypos\":%f,\n" % (obj.location[2] - obj.rigid_body_constraint.object2.location[2]))
-                fo.write("\t\t\"object2zpos\":%f,\n" % (obj.location[0] - obj.rigid_body_constraint.object2.location[0]))
+                fo.write("\t\t\"object2xpos\":%f,\n" % obj2Location[1])
+                fo.write("\t\t\"object2ypos\":%f,\n" % obj2Location[2])
+                fo.write("\t\t\"object2zpos\":%f,\n" % obj2Location[0])
+
+                fo.write("\t\t\"xaxs1\":%f,\n" % hingeObj1Axis[1])
+                fo.write("\t\t\"yaxs1\":%f,\n" % hingeObj1Axis[2])
+                fo.write("\t\t\"zaxs1\":%f,\n" % hingeObj1Axis[0])
+
+                fo.write("\t\t\"xaxs2\":%f,\n" % hingeObj2Axis[1])
+                fo.write("\t\t\"yaxs2\":%f,\n" % hingeObj2Axis[2])
+                fo.write("\t\t\"zaxs2\":%f,\n" % hingeObj2Axis[0])
+
                 fo.write("\t\t\"useLimit\":\"%s\",\n" % obj.rigid_body_constraint.use_limit_ang_z)
                 fo.write("\t\t\"limitLower\":%f,\n" % obj.rigid_body_constraint.limit_ang_z_lower)
                 fo.write("\t\t\"limitUpper\":%f\n" % obj.rigid_body_constraint.limit_ang_z_upper)
                 fo.write("\t},\n")
+
+
+
+
+
+
+
+
+
+
             elif obj.type == "MESH":
 
                 if obj.rigid_body:
@@ -57,9 +149,6 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                     fo.write("\t\t\"xpos\":%f,\n" % obj.location[1])
                     fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
                     fo.write("\t\t\"zpos\":%f,\n" % obj.location[0])
-                    fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[1])
-                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
-                    fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[0])
                     fo.write("\t\t\"wqat\":%f,\n" % obj.rotation_quaternion[0])
                     fo.write("\t\t\"xqat\":%f,\n" % obj.rotation_quaternion[2])
                     fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[3])
@@ -143,9 +232,6 @@ class fpmExporter(bpy.types.Operator, ExportHelper):
                     fo.write("\t\t\"xpos\":%f,\n" % obj.location[1])
                     fo.write("\t\t\"ypos\":%f,\n" % obj.location[2])
                     fo.write("\t\t\"zpos\":%f,\n" % obj.location[0])
-                    fo.write("\t\t\"xrot\":%f,\n" % obj.rotation_euler[1])
-                    fo.write("\t\t\"yrot\":%f,\n" % obj.rotation_euler[2])
-                    fo.write("\t\t\"zrot\":%f,\n" % obj.rotation_euler[0])
                     fo.write("\t\t\"wqat\":%f,\n" % obj.rotation_quaternion[0])
                     fo.write("\t\t\"xqat\":%f,\n" % obj.rotation_quaternion[2])
                     fo.write("\t\t\"yqat\":%f,\n" % obj.rotation_quaternion[3])

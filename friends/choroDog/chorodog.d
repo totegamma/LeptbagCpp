@@ -4,12 +4,22 @@ import std.math;
 import std.json;
 import std.random;
 import std.conv;
+import std.algorithm;
 
 import japariSDK.japarilib;
+import libGA;
 
 Random rnd;
 
-int dogNum = 30;
+//strategy 1:DE, 2:simple GA
+int strategy = 2;
+
+string measuredPart = "head";
+int dogNum = 80;
+int attackProbability = 30;
+float bodyMass = 42.592;
+
+chorodog[] chorodogs;
 
 vertexManager[string] partsVertices;
 elementManager[string] partsGenerator;
@@ -24,6 +34,7 @@ string[string] hingeObject1Name;
 string[string] hingeObject2Name;
 vec3[string] hingePosition;
 vec3[string] hingeAxis;
+bool[string] hingeEnabled;
 bool[string] useLimit;
 float[string] limitLower;
 float[string] limitUpper;
@@ -38,15 +49,27 @@ class chorodog{
 	elementNode[string] parts;
 	hingeConstraint[string] hinges;
 
+	float[string][20] dna;
 
-	this(float x, float y, float z){
+	this(float x, float y, float z, bool initialDNA){
+
 		spawn(createVec3(x, y, z));
+
+		if(initialDNA == true){
+			foreach(string s, hinge; hinges){
+				if(hingeEnabled[s]){
+					for(int row = 0; row < 20; row++){
+						dna[row][s] = uniform(-PI/2, PI/2, rnd);
+					}
+				}
+			}
+		}
+
 	}
 
 	void spawn(vec3 position){
 
 
-		partsRotation["hip"] = createQuat(0.662, 0.750, 0.0f, 0.0f);
 		foreach(string s, elementManager partsGen; partsGenerator){
 
 			parts[s] = partsGen.generate(paramWrap(
@@ -54,42 +77,41 @@ class chorodog{
 						param("scale",    partsScale[s]),
 						param("rotation", partsRotation[s]),
 						param("model",    partsVertices[s]),
-						param("mass", partsMass[s])));
+						param("mass", 
+							//0.0f)));
+							partsMass[s] * bodyMass)));
 
 		}
 
 		foreach(s; hingeName){
-
-			float axisx = 0.0f;
-			float axisy = 0.0f;
-			float axisz = 1.0f;
-
-			float thetax = hingeAxis[s].getx();
-			float thetay = hingeAxis[s].gety();
-			float thetaz = hingeAxis[s].getz();
-
-			axisy = axisy * cos(thetax) - axisz * sin(thetax);
-			axisz = axisy * sin(thetax) + axisz * cos(thetax);
-
-			axisx = axisx * cos(thetay) - axisz * sin(thetay);
-			axisz = axisx * sin(thetay) + axisz * cos(thetay);
-
-			axisx = axisx * cos(thetaz) - axisy * sin(thetaz);
-			axisy = axisx * sin(thetaz) + axisy * cos(thetaz);
-
-
 			hinges[s] = hingeConstraint_create(parts[hingeObject1Name[s]], parts[hingeObject2Name[s]],
 					hingeObject1Position[s], hingeObject2Position[s],
-					//partsPosition[hingeObject1Name[s]], partsPosition[hingeObject2Name[s]],
-					//createVec3(hingeAxis[s].getx(), hingeAxis[s].gety(), hingeAxis[s].getz()));
-					//createVec3(axisx, axisy, axisz));
-					createVec3(0.0f, 0.0f, 1.0f));
+					hingeAxis[s]);
 			hinges[s].setLimit(limitLower[s], limitUpper[s]);
-			hinges[s].enableMotor(true);
-			hinges[s].setMaxMotorImpulse(5);
+			if(hingeEnabled[s]){
+				hinges[s].enableMotor(true);
+				hinges[s].setMaxMotorImpulse(5);
+			}
 		}
 
 	}
+
+	void move(int sequence){
+		foreach(string s, hinge; hinges){
+			if(hingeEnabled[s]){
+				float target = abs(limitLower[s]-limitUpper[s]) * dna[sequence][s] * 2.0/PI;
+				hinge.setMotorTarget(target, 0.5);
+			}
+
+		}
+	}
+
+	void despawn(){
+		foreach(part; parts) part.destroy();
+		foreach(hinge; hinges) hinge.destroy();
+	}
+
+
 }
 
 
@@ -104,7 +126,9 @@ extern (C) void init(){
 
 
 		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-		auto jsonString = import("chorodog.fpm");
+		//auto jsonString = import("chorodog.fpm");
+		auto jsonString = import("models/chorodog_simplified.fpm");
+		//auto jsonString = import("hingeTest.fpm");
 
 		JSONValue model = parseJSON(jsonString);
 
@@ -137,7 +161,11 @@ extern (C) void init(){
 
 				hingeName ~= name;
 				hingePosition[name] = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				hingeAxis[name] = createVec3(elem["xrot"].floating, elem["yrot"].floating, elem["zrot"].floating);
+
+				hingeAxis[name] = createVec3(elem["xaxs"].floating , elem["yaxs"].floating, elem["zaxs"].floating);
+
+
+				if(elem["enabled"].str == "True") hingeEnabled[name] = true; else hingeEnabled[name] = false;
 				if(elem["useLimit"].str == "True") useLimit[name] = true; else useLimit[name] = false;
 				limitLower[name] = elem["limitLower"].floating;
 				limitUpper[name] = elem["limitUpper"].floating;
@@ -149,9 +177,10 @@ extern (C) void init(){
 			}
 		}
 
-		for (int i = 0; i < dogNum; i++){
-			new chorodog(to!float(i)*5.0f, 0.0f, 0.0f);
-		}
+		chorodogs.length = dogNum;
+
+		foreach(int i, ref elem; chorodogs) elem = new chorodog(to!float(i)*5.0f, 0.0f, -1.0f, true);
+		
 
 
 	}
@@ -163,8 +192,158 @@ extern (C) void init(){
 
 }
 
+bool evaluation = false;
+float topRecord = 128.0;
+int timerDivisor = 0;
+int time = 0;
+int generation = 0;
+int sequence = 0;
+float[] preRecords;
+float[string][20][] preDNAs;
+chorodog[] evaluateds;
 
 extern (C) void tick(){
+
+	if(timerDivisor++ == 6){
+		sequence = (sequence+1)%20;
+		timerDivisor = 0;
+
+		if(!evaluation) foreach(elem; chorodogs) elem.move(sequence);
+		else foreach(elem; evaluateds) elem.move(sequence);
+
+		time++;
+	}
+
+	//世代終わり
+	if(time == 30 + generation*2){
+
+
+		float proRecordTmp = topRecord;
+
+		if(!evaluation){
+			generation++;
+			writeln("end generation: " ~ to!string(generation));
+		}else{
+			writeln("end evaluating to generation: " ~ to!string(generation));
+		}
+
+		time = 0;
+
+		switch(strategy){
+
+			//DE
+			case 1:
+
+				if(!evaluation){
+
+					preRecords.length = chorodogs.length;
+					evaluateds.length = chorodogs.length;
+					preDNAs.length = chorodogs.length;
+
+					foreach(int i, dog; chorodogs){
+						preRecords[i] = dog.parts[measuredPart].getZpos();
+						preDNAs[i] = dog.dna;
+					}
+
+					//犬のリセット
+					foreach(int i, ref elem; chorodogs){
+						if(proRecordTmp>elem.parts[measuredPart].getZpos()) proRecordTmp = elem.parts[measuredPart].getZpos();
+						elem.despawn();
+					}
+					float ditherF = uniform(0.5f, 1.0f, rnd);
+					evaluateds = diffEvo( chorodogs, 0.9f, ditherF);
+					evaluation = true;
+
+				}else{
+					//犬のリセット
+					foreach(int i, ref elem; chorodogs){
+						if(proRecordTmp>evaluateds[i].parts[measuredPart].getZpos()) proRecordTmp = evaluateds[i].parts[measuredPart].getZpos();
+						elem = new chorodog(to!float(i)*5.0f, 0.0f, 0.0f, true);
+						if(evaluateds[i].parts[measuredPart].getZpos() <= preRecords[i]) elem.dna = evaluateds[i].dna;
+						else elem.dna = preDNAs[i];
+					}
+					foreach(int i, ref elem; evaluateds) elem.despawn();
+					evaluation = false;
+				}
+
+				if(proRecordTmp<topRecord){
+					topRecord = proRecordTmp;
+					writeln("new record! : ", -1.0*topRecord);
+				}
+
+
+				break;
+
+
+				//simple GA
+			case 2:
+
+				//前回の優秀個体を残す
+				float[string][20] pre1FirstDNA = chorodogs[0].dna;
+				float[string][20] pre1SecondDNA = chorodogs[5].dna;
+				float[string][20] pre1ThirdDNA = chorodogs[10].dna;
+
+
+				//成績順にソート
+				sort!((a,b)=>a.parts[measuredPart].getZpos() > b.parts[measuredPart].getZpos())(chorodogs);
+				//優秀なDNAをコピー
+				float[string][20] firstDNA = chorodogs[$-1].dna;
+				float[string][20] secondDNA = chorodogs[$-2].dna;
+				float[string][20] thirdDNA = chorodogs[$-3].dna;
+
+				//新記録を更新したDNAを表示
+				if(topRecord > chorodogs[$-1].parts[measuredPart].getZpos()){
+					topRecord = -1.0 * chorodogs[$-1].parts[measuredPart].getZpos();
+					writeln("New Proceeding Record!: " ~ to!string(topRecord));
+				}
+
+
+				//犬のリセット
+				foreach(elem; chorodogs) elem.despawn();
+				foreach(int i, ref elem; chorodogs){
+					elem = new chorodog(to!float(i)*5.0f, 0.0f, -1.0f, true);
+				}
+
+				foreach(int j, dog; chorodogs){
+
+					//最初の2個体はさっきの優秀個体をそのまま動かす
+					if( (j >= 0)&&(j < 5)) dog.dna = firstDNA;
+					else if( (j >= 5)&&(j < 10) ) dog.dna = secondDNA;
+					else if( (j >= 10)&&(j < 15)) dog.dna = thirdDNA;
+					else if( (j >= 15)&&(j < 20) ) dog.dna = pre1FirstDNA;
+					else if( (j >= 20)&&(j < 25) ) dog.dna = pre1SecondDNA;
+					else if( (j >= 25)&&(j < 30) ) dog.dna = pre1ThirdDNA;
+
+					else if(j >= 30){
+						//交配
+						foreach(int i, dnas; dog.dna){
+							foreach(string s, eachdna; dnas){
+								if(uniform(0, 2, rnd) == 0) eachdna = firstDNA[i][s];
+								else eachdna = secondDNA[i][s];
+
+								//突然変異
+								int proOfAttack = uniform(0, 101, rnd);
+
+								if(proOfAttack > attackProbability) eachdna = uniform(-PI/2, PI/2, rnd);
+							}
+						}
+					}
+
+				}
+
+				break;
+
+			default: assert(0);
+
+		}
+
+
+
+	}
+
+
+
+
 }
 
 
