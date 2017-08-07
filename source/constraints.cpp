@@ -65,12 +65,6 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	//最後のboolはangularLimit, linearLimtitをAのローカル座標内で規定するならtrue．B内ならfalse．(たぶん．以下参照)
 	//https://gamedev.stackexchange.com/questions/54349/what-are-frame-a-and-frame-b-in-btgeneric6dofconstraints-constructor-for
 	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
-	/*
-	gen6Dof->setAngularLowerLimit(btVector3(0,0,0));
-	gen6Dof->setAngularUpperLimit(btVector3(0,0,0));
-	gen6Dof->setLinearLowerLimit(btVector3(0,0,0));
-	gen6Dof->setLinearUpperLimit(btVector3(0,0,0));
-	*/
 
 	//elemAとelemBの衝突判定を無効にする
 	//new btGeneric6dofConstraintの後に実行しないと働かない
@@ -80,6 +74,13 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	dynamicsWorld->addConstraint(gen6Dof);
 
 }
+
+
+float generic6DofConstraint::getAngle(int index){
+	gen6Dof->calculateTransforms();
+	return gen6Dof->getAngle(index);
+}
+
 
 void generic6DofConstraint::setAngularLimit(vec3 &lower, vec3 &upper){
 	//lower == upperでロック
@@ -119,6 +120,10 @@ void generic6DofConstraint::setRotationalTargetVelocity(vec3 &velocity){
 void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
 	gen6Dof->getTranslationalLimitMotor()->m_targetVelocity = velocity.toBullet();
 }
+
+
+
+
 
 void generic6DofConstraint::destroy(){
 	dynamicsWorld->removeConstraint(gen6Dof);
