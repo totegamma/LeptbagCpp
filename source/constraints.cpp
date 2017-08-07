@@ -75,6 +75,13 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 }
 
+
+float generic6DofConstraint::getAngle(int index){
+	gen6Dof->calculateTransforms();
+	return gen6Dof->getAngle(index);
+}
+
+
 void generic6DofConstraint::setAngularLimit(vec3 &lower, vec3 &upper){
 	//lower == upperでロック
 	//lower > upperで制限なし．Linearも同様．
@@ -115,10 +122,7 @@ void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
 }
 
 
-float generic6DofConstraint::getAngle(int index){
-	gen6Dof->calculateTransforms();
-	return gen6Dof->getAngle(index);
-}
+
 
 
 void generic6DofConstraint::destroy(){
