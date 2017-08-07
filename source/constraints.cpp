@@ -1,14 +1,12 @@
 #include "constraints.hpp"
-#include <iostream>
 
 hingeConstraint::hingeConstraint(){
 }
 
-hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
+hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
 
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axis.toBullet(), axis.toBullet());
+	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axisA.toBullet(), axisB.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
-
 }
 
 void hingeConstraint::enableMotor(bool flag){
@@ -32,8 +30,8 @@ void hingeConstraint::destroy(){
 	delete this;
 }
 
-hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axis){
-	return new hingeConstraint(elemA, elemB, positionA, positionB, axis);//XXX 未確認
+hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
+	return new hingeConstraint(elemA, elemB, positionA, positionB, axisA, axisB);//XXX 未確認
 }
 
 generic6DofConstraint::generic6DofConstraint(){

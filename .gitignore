@@ -15,6 +15,13 @@ playground/thotgamma/argumentsTest/main
 
 *.bullet
 
+*.blend1
+
 source/japari_park.dSYM/Contents/Info.plist
 
 source/japari_park.dSYM/Contents/Resources/DWARF/japari_park
+
+
+friends/choroDog/chorodog.blend1
+
+*.blend1
