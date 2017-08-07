@@ -23,6 +23,8 @@ class elementNode{
 	virtual float getYpos();
 	virtual float getZpos();
 	virtual float getBasis(int row, int column);
+	virtual float getFriction();
+	virtual void setFriction(float coef);
 	virtual void destroy();
 
 	virtual~elementNode();

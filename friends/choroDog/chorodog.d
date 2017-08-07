@@ -310,6 +310,9 @@ extern (C) void init(){
 
 }
 
+
+
+
 bool evaluation = false;
 float topRecord = 128.0;
 int timerDivisor = 0;
@@ -329,6 +332,9 @@ extern (C) void tick(){
 		switch(strategy){
 			case 0:
 				foreach(elem; chorodogs) elem.move(sequence);
+				writeln(chorodogs[0].parts["legBRST"].getFriction());
+				if(generation==0) foreach(part; chorodogs[0].parts) part.setFriction(5000.0);
+				if(generation==30) foreach(part; chorodogs[0].parts) part.setFriction(0.0);
 				break;
 			case 1:
 				if(!evaluation) foreach(elem; chorodogs) elem.move(sequence);
