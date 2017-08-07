@@ -118,6 +118,7 @@ extern (C++) {
 	}
 
 	interface generic6DofConstraint{
+		float getAngle(int index);
 		void setAngularLimit(vec3 lower, vec3 upper);
 		void setLinearLimit(vec3 lower, vec3 upper);
 		void setRotationalMotor(int index);
@@ -126,7 +127,6 @@ extern (C++) {
 		void setMaxLinearMotorForce(vec3 force);
 		void setRotationalTargetVelocity(vec3 velocity);
 		void setLinearTargetVelocity(vec3 velocity);
-		float getAngle(int index);
 		void destroy();
 	}
 }

@@ -25,6 +25,7 @@ class generic6DofConstraint{
 	public:
 	generic6DofConstraint();
 	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
+	virtual float getAngle(int index);
 	virtual void setAngularLimit(vec3 &lower, vec3 &upper);
 	virtual void setLinearLimit(vec3 &lower, vec3 &upper);
 
@@ -35,7 +36,6 @@ class generic6DofConstraint{
 	virtual void setRotationalTargetVelocity(vec3 &velocity);
 	virtual void setLinearTargetVelocity(vec3 &velocity);
 
-	virtual float getAngle(int index);
 
 	virtual void destroy();
 };
