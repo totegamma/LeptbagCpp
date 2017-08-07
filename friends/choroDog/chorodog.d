@@ -191,6 +191,7 @@ class chorodog{
 		}
 		*/
 
+
 		neko += 0.3f;
 		if(neko>=2.0*3.14f) neko -= 2.0*3.14f;
 
@@ -336,6 +337,7 @@ extern (C) void tick(){
 		switch(strategy){
 			case 0:
 				foreach(elem; chorodogs) elem.move(sequence);
+				writeln(chorodogs[0].g6dofs["Constraint.003"].getAngle(0), ", ", chorodogs[0].g6dofs["Constraint.003"].getAngle(1), ", ", chorodogs[0].g6dofs["Constraint.003"].getAngle(2) );
 				break;
 			case 1:
 				if(!evaluation) foreach(elem; chorodogs) elem.move(sequence);
