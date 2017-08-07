@@ -10,6 +10,8 @@ extern (C++) {
 		float getYpos();
 		float getZpos();
 		float getBasis(int row, int column);
+		float getFriction();
+		float setFriction(float coef);
 		void destroy();
 	}
 	interface btRigidBody{
