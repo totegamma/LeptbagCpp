@@ -114,6 +114,13 @@ void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
 	gen6Dof->getTranslationalLimitMotor()->m_targetVelocity = velocity.toBullet();
 }
 
+
+float generic6DofConstraint::getAngle(int index){
+	gen6Dof->calculateTransforms();
+	return gen6Dof->getAngle(index);
+}
+
+
 void generic6DofConstraint::destroy(){
 	dynamicsWorld->removeConstraint(gen6Dof);
 }

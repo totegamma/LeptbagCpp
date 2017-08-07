@@ -34,7 +34,8 @@ class generic6DofConstraint{
 	virtual void setMaxLinearMotorForce(vec3 &force);
 	virtual void setRotationalTargetVelocity(vec3 &velocity);
 	virtual void setLinearTargetVelocity(vec3 &velocity);
-	virtual void setRotationTarget(float theta, float phi, float impulse);
+
+	virtual float getAngle(int index);
 
 	virtual void destroy();
 };
