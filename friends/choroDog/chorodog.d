@@ -181,14 +181,20 @@ class chorodog{
 		g6dofs["Constraint.002"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko-PI), 0.0f));
 		g6dofs["Constraint.004"].setRotationalTargetVelocity(createVec3(0.0f,1.0*sin(neko-PI*3.0/2.0), 0.0f));
 
-		neko += 0.3f;
-		if(neko>=2.0*3.14f) neko -= 2.0*3.14f;
+		/*
+		foreach(string s, dofs; g6dofs){
 
-			/*
+		dofs.setRotationalTargetVelocity(createVec3(
 						uniform(g6dofParams[s].angLimitLower.getx(), g6dofParams[s].angLimitUpper.getx(), rnd),
 						uniform(g6dofParams[s].angLimitLower.gety(), g6dofParams[s].angLimitUpper.gety(), rnd),
 						uniform(g6dofParams[s].angLimitLower.getz(), g6dofParams[s].angLimitUpper.getz(), rnd)));
-						*/
+		}
+		*/
+
+		neko += 0.3f;
+		if(neko>=2.0*3.14f) neko -= 2.0*3.14f;
+
+
 	}
 
 	void despawn(){
@@ -214,6 +220,7 @@ extern (C) void init(){
 		//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
 		//auto jsonString = import("models/chorodog.fpm");
 		auto jsonString = import("models/chorodog6dof_simplified.fpm");
+		//auto jsonString = import("models/lowPolyFox_trimed.fpm");
 		//auto jsonString = import("models/chorodog_simplified.fpm");
 
 		JSONValue model = parseJSON(jsonString);

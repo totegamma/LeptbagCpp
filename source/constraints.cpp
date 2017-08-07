@@ -65,12 +65,6 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 	//最後のboolはangularLimit, linearLimtitをAのローカル座標内で規定するならtrue．B内ならfalse．(たぶん．以下参照)
 	//https://gamedev.stackexchange.com/questions/54349/what-are-frame-a-and-frame-b-in-btgeneric6dofconstraints-constructor-for
 	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
-	/*
-	gen6Dof->setAngularLowerLimit(btVector3(0,0,0));
-	gen6Dof->setAngularUpperLimit(btVector3(0,0,0));
-	gen6Dof->setLinearLowerLimit(btVector3(0,0,0));
-	gen6Dof->setLinearUpperLimit(btVector3(0,0,0));
-	*/
 
 	//elemAとelemBの衝突判定を無効にする
 	//new btGeneric6dofConstraintの後に実行しないと働かない
