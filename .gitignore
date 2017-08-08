@@ -1,27 +1,14 @@
-
 *.o
-
 *.so
-
-source/visualBullet
-
-*.friends
-
+*.depend
 source/japari_park
 
-playground/thotgamma/argumentsTest/main
-
-*.depend
-
+*.friends
+*.fpm
 *.bullet
 
 *.blend1
 
 source/japari_park.dSYM/Contents/Info.plist
-
 source/japari_park.dSYM/Contents/Resources/DWARF/japari_park
 
-
-friends/choroDog/chorodog.blend1
-
-*.blend1
