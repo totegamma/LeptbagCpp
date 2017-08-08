@@ -10,6 +10,8 @@ extern (C++) {
 		float getYpos();
 		float getZpos();
 		float getBasis(int row, int column);
+		float getFriction();
+		float setFriction(float coef);
 		void destroy();
 	}
 	interface btRigidBody{
@@ -118,16 +120,20 @@ extern (C++) {
 	}
 
 	interface generic6DofConstraint{
-		void setAngularLowerLimit(vec3 angularLower);
-		void setAngularUpperLimit(vec3 angularUpper);
-		void setLinearLowerLimit(vec3 linearLower);
-		void setLinearUpperLimit(vec3 linearUpper);
-		void getRotationalLimitMotor(int index);
+		float getAngle(int index);
+		void setAngularLimit(vec3 lower, vec3 upper);
+		void setLinearLimit(vec3 lower, vec3 upper);
+		void setRotationalMotor(int index);
+		void setLinearMotor(int index);
+		void setMaxRotationalMotorForce(int index, float force);
+		void setMaxLinearMotorForce(vec3 force);
+		void setRotationalTargetVelocity(vec3 velocity);
+		void setLinearTargetVelocity(vec3 velocity);
 		void destroy();
 	}
 }
 
 extern (C) {
 	hingeConstraint hingeConstraint_create(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
-	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB);
+	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB, quat rotation);
 }

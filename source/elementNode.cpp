@@ -50,6 +50,15 @@ float elementNode::getBasis(int row, int column){
 	else         return x.getZ();
 }
 
+float elementNode::getFriction(){
+	return body->getFriction();
+}
+
+void elementNode::setFriction(float coef){
+	body->setFriction(coef);
+}
+
+
 void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
@@ -61,6 +70,7 @@ void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 		* glm::toMat4(glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ()))
 		* glm::scale(glm::mat4(1.0f), initialScale.toGlm());
 }
+
 
 void elementNode::destroy(){
 	parent->destroy(id);
