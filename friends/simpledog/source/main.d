@@ -6,7 +6,7 @@ import std.math;
 import std.algorithm;
 
 
-import japariSDK.japarilib;
+import japarilib;
 
 
 dog mydog;
@@ -137,15 +137,15 @@ class dog{
 					param("mass", 0.2f)));
 
 
-		hinge_body_head			= hingeConstraint_create(chest   , head         , createVec3(   1,    0,    0), createVec3(-0.4,   0,    0), createVec3(0, 0, 1));
-		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       , createVec3( 0.4, -0.2,    0), createVec3(-0.3,   0,    0), createVec3(0, 0, 1));
-		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4, -0.2), createVec3(0, 0, 1));
-		hinge_earRight_head		= hingeConstraint_create(earRight, head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4,  0.2), createVec3(0, 0, 1));
-		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft , createVec3( 0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
-		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight, createVec3( 0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
-		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , createVec3(-0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
-		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , createVec3(-0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1));
-		hinge_body_tail			= hingeConstraint_create(chest   , tail         , createVec3(  -1,  0.4,    0), createVec3( 0.5,   0,  0.0), createVec3(0, 0, 1));
+		hinge_body_head			= hingeConstraint_create(chest   , head         , createVec3(   1,    0,    0), createVec3(-0.4,   0,    0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       , createVec3( 0.4, -0.2,    0), createVec3(-0.3,   0,    0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4, -0.2), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_earRight_head		= hingeConstraint_create(earRight, head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4,  0.2), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft , createVec3( 0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight, createVec3( 0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , createVec3(-0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , createVec3(-0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_tail			= hingeConstraint_create(chest   , tail         , createVec3(  -1,  0.4,    0), createVec3( 0.5,   0,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
 
 		hinge_body_head.setLimit(-PI/6, PI/6);
 		hinge_head_muzzle.setLimit(0, 0);
