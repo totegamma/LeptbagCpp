@@ -1,16 +1,8 @@
 #include "elementNode.hpp"
 
-elementNode::elementNode(){
-}
 
-elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation){
-	this->id = id;
-	this->parent = parent;
-	this->body = body;
-
-	this->initialPosition = position;
-	this->initialScale = scale;
-	this->initialRotation = rotation;
+elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation)
+	: id(id), parent(parent), body(body), initialPosition(position), initialScale(scale), initialRotation(rotation) {
 }
 
 elementNode::~elementNode(){
@@ -19,38 +11,38 @@ elementNode::~elementNode(){
 	delete body;
 }
 
-float elementNode::getXpos(){
+float elementNode::getXpos() const {
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
 	btVector3 pos = transform.getOrigin();
 	return pos.getX();
 }
 
-float elementNode::getYpos(){
+float elementNode::getYpos() const {
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
 	btVector3 pos = transform.getOrigin();
 	return pos.getY();
 }
 
-float elementNode::getZpos(){
+float elementNode::getZpos() const {
 	btTransform transform;
 	body->getMotionState()->getWorldTransform(transform);
 	btVector3 pos = transform.getOrigin();
 	return pos.getZ();
 }
 
-float elementNode::getBasis(int row, int column){
+float elementNode::getBasis(int row, int column) const {
 	btTransform transform;
 	//transform = body->getCenterOfMassTransform();
 	body->getMotionState()->getWorldTransform(transform);
 	btVector3 x = transform.getBasis().getColumn(column);
 	if(row == 0) return x.getX();
 	if(row == 1) return x.getY();
-	else         return x.getZ();
+	else         return x.getZ(); //TODO
 }
 
-float elementNode::getFriction(){
+float elementNode::getFriction() const{
 	return body->getFriction();
 }
 
@@ -77,11 +69,11 @@ void elementNode::destroy(){
 }
 
 
-btRigidBody* elementNode::getBody(){
+btRigidBody* elementNode::getBody() const{
 	return body;
 }
 
-int elementNode::getID(){
+int elementNode::getID() const{
 	return id;
 }
 
