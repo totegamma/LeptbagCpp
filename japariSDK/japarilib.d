@@ -1,5 +1,7 @@
 module japarilib;
 
+import dlib.math.vector;
+import dlib.math.quaternion;
 
 extern (C++) {
 	interface elementManager{
@@ -28,7 +30,7 @@ extern (C){
 }
 
 extern (C++){
-	interface vec3{
+	interface vec3_interface{
 		float getx();
 		float gety();
 		float getz();
@@ -50,6 +52,18 @@ extern (C++){
 	}
 	interface parameterPack{
 	}
+}
+
+class vec3 : vec3_interface{
+
+	this(){
+	}
+	extern (C++){
+		float getx();
+		float gety();
+		float getz();
+	}
+
 }
 
 extern (C) {
@@ -83,12 +97,12 @@ paramWrapper param(string tag, string value){
 	return createStringParam(mksh(tag), mksh(value));
 }
 
-paramWrapper param(string tag, vec3 value){
-	return createVec3Param(mksh(tag), value);
+paramWrapper param(string tag, Vector3f value){
+	return createVec3Param(mksh(tag), createVec3(value.x, value.y, value.z));
 }
 
-paramWrapper param(string tag, quat value){
-	return createQuatParam(mksh(tag), value);
+paramWrapper param(string tag, Quaternionf value){
+	return createQuatParam(mksh(tag), createQuat(value.w, value.x, value.y, value.z));
 }
 
 paramWrapper param(string tag, vertexManager value){
@@ -106,9 +120,6 @@ parameterPack paramWrap(ARGS...)(ARGS args){
 	return createParameterPack(args.length, args);
 }
 
-vec3 addVec(vec3 A, vec3 B){
-	return createVec3(A.getx() + B.getx(), A.gety() + B.gety(), A.getz() + B.getz());
-}
 
 extern (C++) {
 	interface hingeConstraint{
