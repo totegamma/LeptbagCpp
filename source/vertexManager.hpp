@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,6 +13,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <bullet/btBulletDynamicsCommon.h>
+
 
 
 class vertex{
@@ -63,16 +65,16 @@ extern std::vector <vertex> vertexBufferArray;
 
 extern void initVBO();
 
-extern void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr);
+extern void registervertex(std::shared_ptr<std::vector<vertex>> input, std::vector<GLuint>* arrayaddr);
 
 extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 
 
 class vertexManager{
-	std::vector<vertex> vertexList;
+	std::shared_ptr<std::vector<vertex>> vertexList;
 	public:
 	virtual void addVertex(vertex& input);
-	std::vector<vertex> getList();
+	std::shared_ptr<std::vector<vertex>> getList();
 
 	vertexManager();
 	~vertexManager();

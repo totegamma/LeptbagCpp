@@ -454,6 +454,8 @@ int main(){
 		glfwPollEvents();
 	}
 
+	std::cout << "stopping program..." << std::endl;
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
@@ -475,6 +477,7 @@ int main(){
 	}
 
 
+	std::cout << "delete bullet world" << std::endl;
 
 	delete dynamicsWorld;
 	delete solver;
@@ -489,6 +492,7 @@ int main(){
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 
+	std::cout << "end of main function" << std::endl;
 
 	return 0;
 }

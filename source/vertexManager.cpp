@@ -11,7 +11,7 @@ void initVBO(){
 	glGenBuffers(1, &vertexBufferObject);
 }
 
-void registervertex(std::vector<vertex>* input, std::vector<GLuint>* arrayaddr){
+void registervertex(std::shared_ptr<std::vector<vertex>> input, std::vector<GLuint>* arrayaddr){
 
 	for(auto elem: *input){
 		auto itr = std::find(vertexBufferArray.begin(), vertexBufferArray.end(), elem);
@@ -34,10 +34,10 @@ vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z,
 
 
 void vertexManager::addVertex(vertex& input){
-	vertexList.push_back(input);
+	vertexList->push_back(input);
 }
 
-std::vector<vertex> vertexManager::getList(){
+std::shared_ptr<std::vector<vertex>> vertexManager::getList(){
 	return vertexList;
 }
 
@@ -48,6 +48,7 @@ extern "C" vertexManager* createVertexManager(){
 
 
 vertexManager::vertexManager(){
+	vertexList = std::make_shared<std::vector<vertex>>();
 	std::cout << "vertexManager constructed" << std::endl;
 }
 
