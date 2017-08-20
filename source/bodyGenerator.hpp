@@ -4,12 +4,13 @@
 #include "vertexmanager.hpp"
 #include "utilities/utilities.hpp"
 #include <algorithm>
+#include <memory>
 #include <bullet/btBulletDynamicsCommon.h>
 
 extern btDiscreteDynamicsWorld* dynamicsWorld;
 
-extern "C" btRigidBody* createBoxBody(parameterPack* input);
-extern "C" btRigidBody* createPlaneBody(parameterPack* input);
-extern "C" btRigidBody* createConvexHullShapeBody(parameterPack* input);
+extern "C" btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input);
+extern "C" btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input);
+extern "C" btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input);
 
 #endif

@@ -5,7 +5,7 @@
 std::vector<elementManager*> elementManager::elementManagerList;
 
 
-elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*))
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
 	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
 	std::cout << "elementManager constructed" << std::endl;
@@ -37,7 +37,9 @@ void elementManager::destroySelf(){
 
 
 
-elementNode* elementManager::generate(parameterPack* input){
+elementNode* elementManager::generate(parameterPack* raw_input){
+
+	auto input = std::unique_ptr<parameterPack>(raw_input);
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -49,7 +51,7 @@ elementNode* elementManager::generate(parameterPack* input){
 					* glm::scale(glm::mat4(1.0f), scale.toGlm())
 					);
 
-	btRigidBody *newbody = bodyGenerator(input);
+	btRigidBody *newbody = bodyGenerator(std::move(input));
 	elementNode *newNode = new elementNode(elements.size(), this, newbody, position, scale, rotation);
 	elements.push_back(newNode);
 
@@ -96,6 +98,6 @@ void elementManager::render(){
 }
 
 extern "C"
-elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*)){
+elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
 	return new elementManager(vm.getList(), bodyGenerator);//XXX 未確認
 }
