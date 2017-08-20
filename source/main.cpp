@@ -413,14 +413,6 @@ int main(){
 	}
 
 
-	int maxSerializeBufferSize = 1024*1024*5;
-	btDefaultSerializer* serializer = new btDefaultSerializer(maxSerializeBufferSize);
-	dynamicsWorld->serialize(serializer);
-	FILE* file = fopen("testFile.bullet","wb");
-	fwrite(serializer->getBufferPointer(),serializer->getCurrentBufferSize(),1, file);
-	fclose(file);
-
-
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -462,14 +454,6 @@ int main(){
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
-		//cubeshape::render();
-		//floorshape::render();
-
-		/*
-		for(auto elem: commonshapeList){
-			elem->render();
-		}
-		*/
 
 		for(auto elem: elementManager::elementManagerList){
 			elem->render();
