@@ -41,9 +41,9 @@ elementNode* elementManager::generate(parameterPack* raw_input){
 
 	auto input = std::unique_ptr<parameterPack>(raw_input);
 
-	vec3 position = input->search("position")->getVec3();
-	vec3 scale = input->search("scale")->getVec3();
-	quat rotation = input->search("rotation")->getQuat();
+	vec3 position = *input->search("position")->getVec3();
+	vec3 scale    = *input->search("scale")->getVec3();
+	quat rotation = *input->search("rotation")->getQuat();
 
 	instanceMatrixArray.push_back(
 					glm::translate(glm::mat4(1.0f), position.toGlm())

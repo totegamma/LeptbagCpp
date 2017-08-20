@@ -22,7 +22,6 @@ extern (C) void init(){
 										param("scale",    Vector3f(1, 1, 1)),
 										param("face",     Vector3f(0, 1, 0)),
 										param("rotation", Quaternionf(0, 0, 0, 1)),
-										param("chinko", Quaternionf(0, 0, 0, 1)),
 										param("mass",     0.0)));
 
 

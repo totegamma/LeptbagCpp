@@ -9,7 +9,9 @@ class univStr{
 	int length;
 
 	public:
-	univStr() = default;
+	univStr() = delete;
+	univStr(std::string input);
+
 	univStr(char* str, int length);
 	std::string getString();
 
@@ -21,7 +23,6 @@ class univStr{
 };
 
 
-univStr makeUnivStr(std::string in);
 extern "C" univStr* createUnivStr(char*str, int length);
 
 #endif
