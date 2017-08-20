@@ -10,12 +10,14 @@
 
 class paramWrapper{
 
-	int intValue;
-	float floatValue;
-	univStr* stringValue;
-	vec3* vec3Value;
-	quat* quatValue;
-	vertexManager* modelValue;
+	union data_t{
+		int intValue;
+		float floatValue;
+		univStr* stringValue;
+		vec3* vec3Value;
+		quat* quatValue;
+		vertexManager* modelValue;
+	} data;
 
 	enum type{
 		INT,
