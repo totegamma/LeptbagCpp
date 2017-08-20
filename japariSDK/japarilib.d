@@ -30,7 +30,7 @@ extern (C){
 }
 
 extern (C++){
-	interface vec3_interface{
+	interface vec3{
 		float getx();
 		float gety();
 		float getz();
@@ -54,17 +54,6 @@ extern (C++){
 	}
 }
 
-class vec3 : vec3_interface{
-
-	this(){
-	}
-	extern (C++){
-		float getx();
-		float gety();
-		float getz();
-	}
-
-}
 
 extern (C) {
 	vec3 createVec3(float x, float y, float z);
