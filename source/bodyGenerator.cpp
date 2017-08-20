@@ -52,7 +52,7 @@ btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 	vec3 scale    = *input->search("scale")->getVec3();
 	quat rotation = *input->search("rotation")->getQuat();
 	btScalar mass = btScalar(input->search("mass")->getFloat());
-	std::vector<vertex> objectData = input->search("model")->getModel()->getList();
+	std::vector<vertex> objectData = *input->search("model")->getModel()->getList();
 
 	std::vector<btVector3> convexHullShapePoints;
 

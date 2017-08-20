@@ -28,7 +28,7 @@ class elementManager_interface{
 
 class elementManager : public elementManager_interface {
 
-	std::vector<vertex> elementData;
+	std::shared_ptr<std::vector<vertex>> elementData;
 	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);
 
 	GLuint indexBufferObject;
@@ -44,7 +44,7 @@ class elementManager : public elementManager_interface {
 
 	static std::vector<elementManager*> elementManagerList;
 
-	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
+	elementManager(std::shared_ptr<std::vector<vertex>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 	virtual elementNode* generate(parameterPack* input);
 	virtual void destroySelf();
@@ -54,6 +54,6 @@ class elementManager : public elementManager_interface {
 
 };
 
-extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
+extern "C" elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 #endif

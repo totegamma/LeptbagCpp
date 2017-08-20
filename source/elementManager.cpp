@@ -5,12 +5,12 @@
 std::vector<elementManager*> elementManager::elementManagerList;
 
 
-elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
+elementManager::elementManager(std::shared_ptr<std::vector<vertex>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
 	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
 	std::cout << "elementManager constructed" << std::endl;
 
-	registervertex(&elementData, &indexBufferArray);
+	registervertex(elementData, &indexBufferArray);
 
 	glGenBuffers(1, &indexBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
@@ -24,11 +24,12 @@ elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*b
 }
 
 elementManager::~elementManager(){
-	std::cout << "elementManager destructed" << std::endl;
+	std::cout << "start destructing elements..." << std::endl;
 	while(elements.empty() == false){
 		delete elements.back();
 		elements.pop_back();
 	}
+	std::cout << "elements successfully destructed" << std::endl;
 }
 
 void elementManager::destroySelf(){
@@ -92,12 +93,12 @@ void elementManager::render(){
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-	glDrawElementsInstanced(GL_TRIANGLES, elementData.size(), GL_UNSIGNED_INT, (void*)0, elements.size());
+	glDrawElementsInstanced(GL_TRIANGLES, elementData->size(), GL_UNSIGNED_INT, (void*)0, elements.size());
 
 
 }
 
 extern "C"
-elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
-	return new elementManager(vm.getList(), bodyGenerator);//XXX 未確認
+elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
+	return new elementManager(std::unique_ptr<vertexManager>(vm)->getList(), bodyGenerator);//XXX 未確認
 }

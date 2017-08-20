@@ -71,8 +71,8 @@ elementManager* planeshape;
 
 
 void initPrimitives(){
-	cubeshape = new elementManager(cubeShapeVertices, createBoxBody);
-	planeshape = new elementManager(planeShapeVertices, createPlaneBody);
+	cubeshape = new elementManager(std::make_shared<std::vector<vertex>>(cubeShapeVertices), createBoxBody);
+	planeshape = new elementManager(std::make_shared<std::vector<vertex>>(planeShapeVertices), createPlaneBody);
 }
 
 elementManager* getCubeshape(){
