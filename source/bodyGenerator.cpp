@@ -1,7 +1,7 @@
 #include "bodyGenerator.hpp"
 
 extern "C"
-btRigidBody* createBoxBody(parameterPack* input){
+btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input){
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();
@@ -23,7 +23,7 @@ btRigidBody* createBoxBody(parameterPack* input){
 }
 
 extern "C"
-btRigidBody* createPlaneBody(parameterPack* input){
+btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input){
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 face = input->search("face")->getVec3();
@@ -46,7 +46,7 @@ btRigidBody* createPlaneBody(parameterPack* input){
 }
 
 extern "C"
-btRigidBody* createConvexHullShapeBody(parameterPack* input){
+btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 
 	vec3 position = input->search("position")->getVec3();
 	vec3 scale = input->search("scale")->getVec3();

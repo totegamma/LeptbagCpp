@@ -8,6 +8,8 @@ class elementManager;
 #include "utilities/utilities.hpp"
 #include "bodyGenerator.hpp"
 
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -19,7 +21,7 @@ class elementManager;
 
 class elementManager_interface{
 	public:
-	virtual elementNode* generate(parameterPack* input) = 0;
+	virtual elementNode* generate(parameterPack* raw_input) = 0;
 	virtual void destroySelf() = 0;
 	virtual void destroyElement(int id) = 0;
 };
@@ -27,7 +29,7 @@ class elementManager_interface{
 class elementManager : public elementManager_interface {
 
 	std::vector<vertex> elementData;
-	btRigidBody* (*bodyGenerator)(parameterPack*);
+	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);
 
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
@@ -42,7 +44,7 @@ class elementManager : public elementManager_interface {
 
 	static std::vector<elementManager*> elementManagerList;
 
-	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*));
+	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 	virtual elementNode* generate(parameterPack* input);
 	virtual void destroySelf();
@@ -52,6 +54,6 @@ class elementManager : public elementManager_interface {
 
 };
 
-extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*));
+extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 #endif
