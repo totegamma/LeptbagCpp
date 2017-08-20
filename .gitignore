@@ -9,6 +9,8 @@ source/japari_park
 
 *.blend1
 
+*.dub/
+
 source/japari_park.dSYM/Contents/Info.plist
 source/japari_park.dSYM/Contents/Resources/DWARF/japari_park
 
