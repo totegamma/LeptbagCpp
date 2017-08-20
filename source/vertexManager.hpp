@@ -73,6 +73,9 @@ class vertexManager{
 	public:
 	virtual void addVertex(vertex& input);
 	std::vector<vertex> getList();
+
+	vertexManager();
+	~vertexManager();
 };
 
 extern "C" vertexManager* createVertexManager();
