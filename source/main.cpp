@@ -371,8 +371,6 @@ int main(){
 	DIR *dp;       // ディレクトリへのポインタ
 	dirent* entry; // readdir() で返されるエントリーポイント
 
-	std::string hoge;
-
 	dp = opendir(path);
 	if (dp==NULL) exit(1);
 	entry = readdir(dp);
