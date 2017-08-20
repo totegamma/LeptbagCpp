@@ -65,7 +65,7 @@ void elementNode::loadMatrix(std::vector<glm::mat4> *input){
 
 
 void elementNode::destroy(){
-	parent->destroy(id);
+	parent->destroyElement(id);
 }
 
 

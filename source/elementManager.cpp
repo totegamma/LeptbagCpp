@@ -4,16 +4,11 @@
 
 std::vector<elementManager*> elementManager::elementManagerList;
 
-elementManager::elementManager(){
-	std::cout << "elementManager constructed(unexpected)" << std::endl;
-}
 
-elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*)){
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*))
+	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
 	std::cout << "elementManager constructed" << std::endl;
-
-	this->elementData = elementData;
-	this->bodyGenerator = bodyGenerator;
 
 	registervertex(&elementData, &indexBufferArray);
 
@@ -36,7 +31,7 @@ elementManager::~elementManager(){
 	}
 }
 
-void elementManager::destroy(){
+void elementManager::destroySelf(){
 	delete this;
 }
 
@@ -62,7 +57,7 @@ elementNode* elementManager::generate(parameterPack* input){
 }
 
 
-void elementManager::destroy(int id){
+void elementManager::destroyElement(int id){
 	delete elements.at(id);
 	elements[id] = elements.back();
 	elements[id]->changeID(id);
