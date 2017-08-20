@@ -1,0 +1,21 @@
+{
+
+	"targetName": "planktower",
+	"name": "planktower",
+	"authors": [
+		"thotgamma"
+	],
+	"dependencies": {
+		"dlib": "~>0.11.1"
+	},
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2017, thotgamma",
+	"license": "proprietary",
+
+	"sourcePaths": ["source/", "japariSDK/"],
+	"targetType": "dynamicLibrary",
+	"dflags": ["-defaultlib=libphobos2.so"],
+	"lflags": ["-undefined", "dynamic_lookup"],
+	"postBuildCommands": ["./run.sh $$DUB_TARGET_NAME $$DUB_RUN"]
+
+}
