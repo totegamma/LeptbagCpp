@@ -3,42 +3,42 @@
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, int intValue){
 	this->tag = std::move(tag);
-	this->intValue = intValue;
+	this->data.intValue = intValue;
 
 	contain = INT;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, float floatValue){
 	this->tag = std::move(tag);
-	this->floatValue = floatValue;
+	this->data.floatValue = floatValue;
 
 	contain = FLOAT;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, univStr* stringValue){
 	this->tag = std::move(tag);
-	this->stringValue = stringValue;
+	this->data.stringValue = stringValue;
 
 	contain = STRING;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vec3* vec3Value){
 	this->tag = std::move(tag);
-	this->vec3Value = vec3Value;
+	this->data.vec3Value = vec3Value;
 
 	contain = VEC3;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, quat* quatValue){
 	this->tag = std::move(tag);
-	this->quatValue = quatValue;
+	this->data.quatValue = quatValue;
 
 	contain = QUAT;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelValue){
 	this->tag = std::move(tag);
-	this->modelValue = modelValue;
+	this->data.modelValue = modelValue;
 
 	contain = MODEL;
 }
@@ -48,32 +48,32 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelVal
 
 int paramWrapper::getInt(){
 	assert(contain == INT);
-	return intValue;
+	return data.intValue;
 }
 
 float paramWrapper::getFloat(){
 	assert(contain == FLOAT);
-	return floatValue;
+	return data.floatValue;
 }
 
 univStr* paramWrapper::getString(){
 	assert(contain == STRING);
-	return stringValue;
+	return data.stringValue;
 }
 
 vec3* paramWrapper::getVec3(){
 	assert(contain == VEC3);
-	return vec3Value;
+	return data.vec3Value;
 }
 
 quat* paramWrapper::getQuat(){
 	assert(contain == QUAT);
-	return quatValue;
+	return data.quatValue;
 }
 
 vertexManager* paramWrapper::getModel(){
 	assert(contain == MODEL);
-	return modelValue;
+	return data.modelValue;
 }
 
 
