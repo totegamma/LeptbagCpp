@@ -1,4 +1,5 @@
 #include "vertexManager.hpp"
+#include <iostream>
 
 
 GLuint vertexBufferObject;
@@ -41,6 +42,15 @@ std::vector<vertex> vertexManager::getList(){
 }
 
 extern "C" vertexManager* createVertexManager(){
+	std::cout << "createVertexManager called" << std::endl;
 	return new vertexManager();//XXX 未確認
 }
 
+
+vertexManager::vertexManager(){
+	std::cout << "vertexManager constructed" << std::endl;
+}
+
+vertexManager::~vertexManager(){
+	std::cout << "vertexManager destructed" << std::endl;
+}
