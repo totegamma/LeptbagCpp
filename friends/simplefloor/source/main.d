@@ -5,7 +5,10 @@ import std.random;
 import std.math;
 import std.algorithm;
 
-import japariSDK.japarilib;
+
+import japarilib;
+import dlib.math.vector;
+import dlib.math.quaternion;
 
 
 
@@ -15,21 +18,18 @@ extern (C) void init(){
 	rt_init();
 
 	getPlaneshape().generate(paramWrap(
-										param("position",createVec3(0, 0, 0)),
-										param("scale",    createVec3(1, 1, 1)),
-										param("face",    createVec3(0, 1, 0)),
-										param("rotation",createQuat(1, 0, 0, 0)),
-										param("mass", 0.0)));
-
-
+										param("position", Vector3f(0, 0, 0)),
+										param("scale",    Vector3f(1, 1, 1)),
+										param("face",     Vector3f(0, 1, 0)),
+										param("rotation", Quaternionf(0, 0, 0, 1)),
+										param("mass",     0.0)));
 
 
 }
 
 
 extern (C) void tick(){
+
 }
-
-
 
 //------------------------------------------
