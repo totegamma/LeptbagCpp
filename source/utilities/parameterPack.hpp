@@ -66,6 +66,7 @@ class parameterPack{
 	parameterPack(int count, va_list arguments);
 	~parameterPack();
 	std::shared_ptr<paramWrapper> search(std::string input);
+	void add(paramWrapper* input);
 
 
 };

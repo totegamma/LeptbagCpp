@@ -130,8 +130,12 @@ std::shared_ptr<paramWrapper> parameterPack::search(std::string input){
 			return elem;
 		}
 	}
-	std::cout << "404: " << input << std::endl;
+	std::cout << "404: " << input << std::endl; //TODO ここは例外処理にしたい
 	return nullptr;
+}
+
+void parameterPack::add(paramWrapper* input){
+	paramList.push_back(std::shared_ptr<paramWrapper>(input));
 }
 
 
