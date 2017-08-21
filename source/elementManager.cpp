@@ -52,6 +52,8 @@ elementNode* elementManager::generate(parameterPack* raw_input){
 					* glm::scale(glm::mat4(1.0f), scale.toGlm())
 					);
 
+	input->add(param("caller", this));
+
 	btRigidBody *newbody = bodyGenerator(std::move(input));
 	elementNode *newNode = new elementNode(elements.size(), this, newbody, position, scale, rotation);
 	elements.push_back(newNode);
@@ -101,4 +103,9 @@ void elementManager::render(){
 extern "C"
 elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
 	return new elementManager(std::unique_ptr<vertexManager>(vm)->getList(), bodyGenerator);//XXX 未確認
+}
+
+std::shared_ptr<std::vector<vertex>> elementManager::getElementDataPtr(){
+	return elementData;
+
 }
