@@ -115,26 +115,19 @@ paramWrapper* createModelParam(univStr *tag, vertexManager *value){
 
 
 parameterPack::parameterPack(int count, va_list arguments){
-	paramList = new paramWrapper*[count];
-	length = count;
-
 	for(int i = 0; i < count; i++){
-		paramList[i] = va_arg(arguments, paramWrapper*);
+		paramList.push_back(std::shared_ptr<paramWrapper>(va_arg(arguments, paramWrapper*)));
 	}
 	va_end(arguments);
 }
 
 parameterPack::~parameterPack(){
-	for(int i = 0; i < length; i++){
-		delete paramList[i];
-	}
-	delete[] paramList;
 }
 
-paramWrapper* parameterPack::search(std::string input){
-	for(int i = 0; i < length; i++){
-		if(paramList[i]->tag->getString() == input){
-			return paramList[i];
+std::shared_ptr<paramWrapper> parameterPack::search(std::string input){
+	for(auto elem: paramList){
+		if(elem->tag->getString() == input){
+			return elem;
 		}
 	}
 	std::cout << "404: " << input << std::endl;
