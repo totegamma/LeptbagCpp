@@ -1,12 +1,16 @@
 #ifndef PARAMETERPACK_HPP
 #define PARAMETERPACK_HPP
 
+class paramWrapper;
+class parameterPack;
+
 #include <assert.h>
 #include <memory>
 
-#include "../vertexManager.hpp"
 #include "universalString.hpp"
 #include "universalVector.hpp"
+#include "../vertexManager.hpp"
+#include "../elementManager.hpp"
 
 class paramWrapper{
 
@@ -17,6 +21,7 @@ class paramWrapper{
 		vec3* vec3Value;
 		quat* quatValue;
 		vertexManager* modelValue;
+		elementManager* emValue;
 	} data;
 
 	enum type{
@@ -25,7 +30,8 @@ class paramWrapper{
 		STRING,
 		VEC3,
 		QUAT,
-		MODEL
+		MODEL,
+		EM,
 	};
 
 	type contain;
@@ -40,6 +46,7 @@ class paramWrapper{
 	paramWrapper(std::unique_ptr<univStr>, vec3* vec3Value);
 	paramWrapper(std::unique_ptr<univStr>, quat* quatValue);
 	paramWrapper(std::unique_ptr<univStr>, vertexManager* modelValue);
+	paramWrapper(std::unique_ptr<univStr>, elementManager* emValue);
 
 	int getInt();
 	float getFloat();
@@ -47,6 +54,7 @@ class paramWrapper{
 	vec3* getVec3();
 	quat* getQuat();
 	vertexManager* getModel();
+	elementManager* getEm();
 };
 
 extern "C" paramWrapper* createIntParam   (univStr *tag, int value);
@@ -55,6 +63,7 @@ extern "C" paramWrapper* createStringParam(univStr *tag, univStr *value);
 extern "C" paramWrapper* createVec3Param  (univStr *tag, vec3 *value);
 extern "C" paramWrapper* createQuatParam  (univStr *tag, quat *value);
 extern "C" paramWrapper* createModelParam (univStr *tag, vertexManager *value);
+extern "C" paramWrapper* createEmParam    (univStr *tag, elementManager *value);
 
 
 class parameterPack{
@@ -79,6 +88,7 @@ paramWrapper* param(std::string tag, std::string value);
 paramWrapper* param(std::string tag, vec3* value);
 paramWrapper* param(std::string tag, quat* value);
 paramWrapper* param(std::string tag, vertexManager* value);
+paramWrapper* param(std::string tag, elementManager* value);
 
 
 template <typename... ARGS>

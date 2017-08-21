@@ -3,11 +3,6 @@
 
 class elementManager;
 
-#include "vertexmanager.hpp"
-#include "elementNode.hpp"
-#include "utilities/utilities.hpp"
-#include "bodyGenerator.hpp"
-
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -18,6 +13,11 @@ class elementManager;
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <bullet/btBulletDynamicsCommon.h>
+
+#include "utilities/utilities.hpp"
+#include "elementNode.hpp"
+#include "bodyGenerator.hpp"
+#include "vertexmanager.hpp"
 
 class elementManager_interface{
 	public:

@@ -43,6 +43,13 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelVal
 	contain = MODEL;
 }
 
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue){
+	this->tag = std::move(tag);
+	this->data.emValue = emValue;
+
+	contain = EM;
+}
+
 //-------------------------------------------------------------------
 
 
@@ -76,6 +83,11 @@ vertexManager* paramWrapper::getModel(){
 	return data.modelValue;
 }
 
+elementManager* paramWrapper::getEm(){
+	assert(contain == EM);
+	return data.emValue;
+}
+
 
 //-------------------------------------------------------------------
 
@@ -107,6 +119,11 @@ paramWrapper* createQuatParam(univStr *tag, quat *value){
 
 extern "C"
 paramWrapper* createModelParam(univStr *tag, vertexManager *value){
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);//XXX 未確認
+}
+
+extern "C"
+paramWrapper* createEmParam(univStr *tag, elementManager *value){
 	return new paramWrapper(std::unique_ptr<univStr>(tag), value);//XXX 未確認
 }
 
@@ -174,6 +191,10 @@ paramWrapper* param(std::string tag, quat* value){
 }
 
 paramWrapper* param(std::string tag, vertexManager* value){
+	return new paramWrapper(std::make_unique<univStr>(tag), value);//XXX 未確認
+}
+
+paramWrapper* param(std::string tag, elementManager* value){
 	return new paramWrapper(std::make_unique<univStr>(tag), value);//XXX 未確認
 }
 
