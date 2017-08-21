@@ -4,7 +4,9 @@ import std.math;
 import std.json;
 import std.random;
 
-import japariSDK.japarilib;
+import japarilib;
+import dlib.math.vector;
+import dlib.math.quaternion;
 
 Random rnd;
 
@@ -14,35 +16,35 @@ vertexManager trunkVertices;
 elementManager leaf;
 elementManager trunk;
 
-vec3 leafPosition;
-vec3 leafScale;
-quat leafRotation;
+Vector3f leafPosition;
+Vector3f leafScale;
+Quaternionf leafRotation;
 
-vec3 trunkPosition;
-vec3 trunkScale;
-quat trunkRotation;
+Vector3f trunkPosition;
+Vector3f trunkScale;
+Quaternionf trunkRotation;
 
 class tree{
 
 	this(float x, float y, float z) {
-		spawn(createVec3(x, y, z));
+		spawn(Vector3f(x, y, z));
 	}
 
-	void spawn(vec3 position){
+	void spawn(Vector3f position){
 
 		leaf.generate(paramWrap(
-							param("position", addVec(leafPosition, position)),
+							param("position", leafPosition + position),
 							param("scale",    leafScale),
 							param("face",     leafRotation),
-							param("rotation", createQuat(1, 0, 0, 0)),
+							param("rotation", Quaternionf(0, 0, 0, 1)),
 							param("model",    leafVertices),
 							param("mass",     0.0f)));
 
 		trunk.generate(paramWrap(
-							param("position", addVec(trunkPosition, position)),
+							param("position", trunkPosition + position),
 							param("scale",    trunkScale),
 							param("face",     trunkRotation),
-							param("rotation", createQuat(1, 0, 0, 0)),
+							param("rotation", Quaternionf(0, 0, 0, 1)),
 							param("model",    trunkVertices),
 							param("mass",     0.0f)));
 
@@ -71,9 +73,9 @@ extern (C) void init(){
 		if(elem["objectType"].str == "MESH"){
 			if(elem["name"].str == "leaf"){
 
-				leafPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				leafScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				leafRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
+				leafPosition = Vector3f(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				leafScale    = Vector3f(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				leafRotation = Quaternionf(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					leafVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
@@ -85,9 +87,9 @@ extern (C) void init(){
 
 			}else if(elem["name"].str == "trunk"){
 
-				trunkPosition = createVec3(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				trunkScale    = createVec3(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				trunkRotation = createQuat(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
+				trunkPosition = Vector3f(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
+				trunkScale    = Vector3f(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
+				trunkRotation = Quaternionf(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
 					trunkVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
