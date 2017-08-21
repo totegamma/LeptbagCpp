@@ -1,4 +1,4 @@
-module japarilib;
+module japariSDK.japarilib;
 
 import dlib.math.vector;
 import dlib.math.quaternion;

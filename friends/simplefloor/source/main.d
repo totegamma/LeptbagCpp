@@ -6,7 +6,7 @@ import std.math;
 import std.algorithm;
 
 
-import japarilib;
+import japariSDK.japarilib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 

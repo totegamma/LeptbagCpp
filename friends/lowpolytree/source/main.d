@@ -4,7 +4,7 @@ import std.math;
 import std.json;
 import std.random;
 
-import japarilib;
+import japariSDK.japarilib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 
