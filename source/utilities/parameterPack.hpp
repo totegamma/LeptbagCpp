@@ -33,7 +33,7 @@ class paramWrapper{
 	public:
 	std::unique_ptr<univStr> tag;
 
-	paramWrapper() = default;
+	paramWrapper() = delete;
 	paramWrapper(std::unique_ptr<univStr>, int intValue);
 	paramWrapper(std::unique_ptr<univStr>, float floatValue);
 	paramWrapper(std::unique_ptr<univStr>, univStr* stringValue);
@@ -58,14 +58,14 @@ extern "C" paramWrapper* createModelParam (univStr *tag, vertexManager *value);
 
 
 class parameterPack{
-	paramWrapper **paramList;
-	int length;
+
+	std::vector<std::shared_ptr<paramWrapper>> paramList;
 
 	public:
 	parameterPack() = default;
 	parameterPack(int count, va_list arguments);
 	~parameterPack();
-	paramWrapper* search(std::string input);
+	std::shared_ptr<paramWrapper> search(std::string input);
 
 
 };
