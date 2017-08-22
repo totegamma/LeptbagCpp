@@ -1,4 +1,5 @@
 #include "universalVector.hpp"
+#include <iostream>
 
 int vec3::count = 0;
 
@@ -7,10 +8,11 @@ vec3::vec3(){
 	count++;
 }
 
-vec3::vec3(float x, float y, float z){
-	this->x = x;
-	this->y = y;
-	this->z = z;
+vec3::vec3(float x, float y, float z): x(x), y(y), z(z){
+	count++;
+}
+
+vec3::vec3(const vec3& rhs): x(rhs.x), y(rhs.y), z(rhs.z){
 	count++;
 }
 
@@ -49,6 +51,10 @@ quat::quat(float w, float x, float y, float z){
 	this->y = y;
 	this->z = z;
 	
+	count++;
+}
+
+quat::quat(const quat& rhs): w(rhs.w), x(rhs.x), y(rhs.y), z(rhs.z){
 	count++;
 }
 

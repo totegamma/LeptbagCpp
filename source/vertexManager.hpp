@@ -30,9 +30,12 @@ class vertex{
 	GLfloat colorG;
 	GLfloat colorB;
 
+	vertex();
 	vertex(	GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 			GLfloat normalX, GLfloat normalY, GLfloat normalZ,
 			GLfloat colorR, GLfloat colorG, GLfloat colorB);
+    vertex(const vertex &rhs);
+
 
 	~vertex();
 

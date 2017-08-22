@@ -27,6 +27,7 @@ class vec3{
 
 	vec3();
 	vec3(float x, float y, float z);
+	vec3(const vec3& rhs);
 	~vec3();
 
 	btVector3 toBullet();
@@ -53,6 +54,7 @@ class quat{
 
 	quat();
 	quat(float w, float x, float y, float z);
+	quat(const quat& rhs);
 	~quat();
 	virtual float getw();
 	virtual float getx();

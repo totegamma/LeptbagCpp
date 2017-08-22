@@ -3,6 +3,10 @@
 
 int vertex::count = 0;
 
+vertex::vertex(){
+	count++;
+}
+
 vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				GLfloat normalX, GLfloat normalY, GLfloat normalZ,
 				GLfloat colorR, GLfloat colorG, GLfloat colorB)
@@ -11,10 +15,21 @@ vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				 colorR(colorR), colorG(colorG), colorB(colorB){
 	
 	count++;
+	//std::cout << "vertex constructed(" << count << ")" << std::endl;
+}
+
+vertex::vertex(const vertex& rhs)
+				:positionX(rhs.positionX), positionY(rhs.positionY), positionZ(rhs.positionZ),
+				 normalX(rhs.normalX), normalY(rhs.normalY), normalZ(rhs.normalZ),
+				 colorR(rhs.colorR), colorG(rhs.colorG), colorB(rhs.colorB){
+	
+	count++;
+	//std::cout << "vertex copied     (" << count << ")" << std::endl;
 }
 
 vertex::~vertex(){
 	count--;
+	//std::cout << "vertex destructed (" << count << ")" << std::endl;
 }
 
 GLuint vertexBufferObject;
