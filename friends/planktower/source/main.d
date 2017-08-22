@@ -62,7 +62,7 @@ extern (C) void init(){
 	plankVertex.addVertex(createVertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
 	plankVertex.addVertex(createVertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  r,  g,  b));
 
-	plank = createElementManager(plankVertex, &createBoxBody);
+	plank = new elementManager(plankVertex, &createBoxBody);
 
 
 
