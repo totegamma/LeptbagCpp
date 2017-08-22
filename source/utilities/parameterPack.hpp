@@ -37,6 +37,7 @@ class paramWrapper{
 	type contain;
 
 	public:
+	static int count;
 	std::unique_ptr<univStr> tag;
 
 	paramWrapper() = delete;
@@ -47,6 +48,8 @@ class paramWrapper{
 	paramWrapper(std::unique_ptr<univStr>, quat* quatValue);
 	paramWrapper(std::unique_ptr<univStr>, vertexManager* modelValue);
 	paramWrapper(std::unique_ptr<univStr>, elementManager* emValue);
+
+	~paramWrapper();
 
 	int getInt();
 	float getFloat();
@@ -71,6 +74,7 @@ class parameterPack{
 	std::vector<std::shared_ptr<paramWrapper>> paramList;
 
 	public:
+	static int count;
 	parameterPack() = default;
 	parameterPack(int count, va_list arguments);
 	~parameterPack();

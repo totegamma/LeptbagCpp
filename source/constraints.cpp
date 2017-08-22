@@ -2,13 +2,18 @@
 
 //hingeConstraint------------------------------------------
 
+int hingeConstraint::count = 0;
+
 hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
 
 	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axisA.toBullet(), axisB.toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
+
+	count++;
 }
 
 hingeConstraint::~hingeConstraint(){
+	count--;
 }
 
 void hingeConstraint::enableMotor(bool flag){
@@ -42,6 +47,7 @@ hingeConstraint* createHingeConstraint(elementNode* elemA, elementNode* elemB, v
 
 //generic6dofConstraint-------------------------------------
 
+int generic6DofConstraint::count = 0;
 
 generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
 
@@ -72,9 +78,12 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* el
 
 	dynamicsWorld->addConstraint(gen6Dof);
 
+	count++;
+
 }
 
 generic6DofConstraint::~generic6DofConstraint(){
+	count--;
 }
 
 

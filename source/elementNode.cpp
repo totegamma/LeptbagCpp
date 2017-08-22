@@ -1,14 +1,18 @@
 #include "elementNode.hpp"
 
+int elementNode::count = 0;
 
 elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation)
 	: id(id), parent(parent), body(body), initialPosition(position), initialScale(scale), initialRotation(rotation) {
+		count++;
 }
 
 elementNode::~elementNode(){
 	dynamicsWorld->removeRigidBody(body);
 	delete body->getMotionState();
 	delete body;
+
+	count--;
 }
 
 float elementNode::getXpos() const {

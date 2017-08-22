@@ -35,6 +35,7 @@ class elementManager : public elementManager_interface {
 	std::vector<elementNode*> elements;
 
 	public:
+	static int count;
 	static std::vector<elementManager*> elementManagerList;
 	std::shared_ptr<std::vector<vertex>> elementData;
 	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);

@@ -19,7 +19,7 @@
 class vertex{
 
 	public:
-
+	static int count;
 	GLfloat positionX;
 	GLfloat positionY;
 	GLfloat positionZ;
@@ -32,17 +32,10 @@ class vertex{
 
 	vertex(	GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 			GLfloat normalX, GLfloat normalY, GLfloat normalZ,
-			GLfloat colorR, GLfloat colorG, GLfloat colorB){
-		this->positionX = positionX;
-		this->positionY = positionY;
-		this->positionZ = positionZ;
-		this->normalX = normalX;
-		this->normalY = normalY;
-		this->normalZ = normalZ;
-		this->colorR = colorR;
-		this->colorG = colorG;
-		this->colorB = colorB;
-	}
+			GLfloat colorR, GLfloat colorG, GLfloat colorB);
+
+	~vertex();
+
 
 	bool operator==(const vertex& v) {
 		return (	this->positionX == v.positionX
@@ -73,6 +66,7 @@ extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float co
 class vertexManager{
 	std::shared_ptr<std::vector<vertex>> vertexList;
 	public:
+	static int count;
 	virtual void addVertex(vertex& input);
 	std::shared_ptr<std::vector<vertex>> getList();
 

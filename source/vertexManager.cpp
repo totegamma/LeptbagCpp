@@ -1,10 +1,23 @@
 #include "vertexManager.hpp"
 #include <iostream>
 
+int vertex::count = 0;
+
+vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
+				GLfloat normalX, GLfloat normalY, GLfloat normalZ,
+				GLfloat colorR, GLfloat colorG, GLfloat colorB)
+				:positionX(positionX), positionY(positionY), positionZ(positionZ),
+				 normalX(normalX), normalY(normalY), normalZ(normalZ),
+				 colorR(colorR), colorG(colorG), colorB(colorB){
+	
+	count++;
+}
+
+vertex::~vertex(){
+	count--;
+}
 
 GLuint vertexBufferObject;
-
-
 std::vector <vertex> vertexBufferArray;
 
 void initVBO(){
@@ -33,6 +46,9 @@ vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z,
 }
 
 
+int vertexManager::count = 0;
+
+
 void vertexManager::addVertex(vertex& input){
 	vertexList->push_back(input);
 }
@@ -49,9 +65,9 @@ extern "C" vertexManager* createVertexManager(){
 
 vertexManager::vertexManager(){
 	vertexList = std::make_shared<std::vector<vertex>>();
-	std::cout << "vertexManager constructed" << std::endl;
+	count++;
 }
 
 vertexManager::~vertexManager(){
-	std::cout << "vertexManager destructed" << std::endl;
+	count--;
 }

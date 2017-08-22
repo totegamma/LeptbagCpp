@@ -468,16 +468,10 @@ int main(){
 	dlclose(lh);
 
 
-	std::cout << "delete elementLists" << std::endl;
-
-
 	while(elementManager::elementManagerList.empty() == false){
 		delete elementManager::elementManagerList.back();
 		elementManager::elementManagerList.pop_back();
 	}
-
-
-	std::cout << "delete bullet world" << std::endl;
 
 	delete dynamicsWorld;
 	delete solver;
@@ -485,14 +479,32 @@ int main(){
 	delete collisionConfiguration;
 	delete broadphase;
 
-
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 
-	std::cout << "end of main function" << std::endl;
+
+
+	std::cout << "paramWrapper: " << paramWrapper::count << std::endl;
+	std::cout << "parameterPack: " << parameterPack::count << std::endl;
+	std::cout << "univStr: " << univStr::count << std::endl;
+	std::cout << "vec3: " << vec3::count << std::endl;
+	std::cout << "quat: " << quat::count << std::endl;
+	std::cout << "vertex: " << vertex::count << std::endl;
+	std::cout << "vertexManager: " << vertexManager::count << std::endl;
+	std::cout << "hingeConstraint: " << hingeConstraint::count << std::endl;
+	std::cout << "generic6DofConstraint: " << generic6DofConstraint::count << std::endl;
+	std::cout << "elementManager: " << elementManager::count << std::endl;
+	std::cout << "elementNode: " << elementNode::count << std::endl;
+
+
+
+
+
+
+
 
 	return 0;
 }

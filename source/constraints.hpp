@@ -20,6 +20,7 @@ class hingeConstraint_interface{
 class hingeConstraint: public hingeConstraint_interface{
 	btHingeConstraint* hinge;
 	public:
+	static int count;
 	hingeConstraint() = delete;
 	hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
 	virtual void enableMotor(bool flag);
@@ -47,6 +48,7 @@ class generic6DofConstraint_interface{
 class generic6DofConstraint: public generic6DofConstraint_interface{
 	btGeneric6DofConstraint* gen6Dof;
 	public:
+	static int count;
 	generic6DofConstraint() = delete;
 	generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
 	virtual float getAngle(int index);
