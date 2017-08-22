@@ -111,7 +111,7 @@ parameterPack paramWrap(ARGS...)(ARGS args){
 
 
 extern (C++) {
-	interface hingeConstraint{
+	interface hingeConstraint_interface{
 		void enableMotor(bool flag);
 		void setLimit(float lower, float upper);
 		void setMaxMotorImpulse(float power);
@@ -119,7 +119,7 @@ extern (C++) {
 		void destroy();
 	}
 
-	interface generic6DofConstraint{
+	interface generic6DofConstraint_interface{
 		float getAngle(int index);
 		void setAngularLimit(vec3 lower, vec3 upper);
 		void setLinearLimit(vec3 lower, vec3 upper);
@@ -134,6 +134,39 @@ extern (C++) {
 }
 
 extern (C) {
-	hingeConstraint hingeConstraint_create(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
-	generic6DofConstraint generic6DofConstraint_create(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB, quat rotation);
+	hingeConstraint_interface createHingeConstraint(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
+	generic6DofConstraint_interface createGeneric6DofConstraint(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB, quat rotation);
 }
+
+vec3 toVec3(Vector3f input){
+	return createVec3(input.x, input.y, input.z);
+}
+
+class hingeConstraint{
+
+	hingeConstraint_interface realHingeConstraint;
+
+	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axis){
+		realHingeConstraint = createHingeConstraint(cubeA, cubeB, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
+	}
+
+	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axisA, Vector3f axisB){
+		realHingeConstraint = createHingeConstraint(cubeA, cubeB, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
+	}
+	void enableMotor(bool flag){
+		realHingeConstraint.enableMotor(flag);
+	}
+	void setLimit(float lower, float upper){
+		realHingeConstraint.setLimit(lower, upper);
+	}
+	void setMaxMotorImpulse(float power){
+		realHingeConstraint.setMaxMotorImpulse(power);
+	}
+	void setMotorTarget(float angle, float duration){
+		realHingeConstraint.setMotorTarget(angle, duration);
+	}
+	void destroy(){
+		realHingeConstraint.destroy();
+	}
+}
+
