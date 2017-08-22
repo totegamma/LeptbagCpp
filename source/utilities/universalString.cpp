@@ -1,16 +1,25 @@
 #include "universalString.hpp"
 
+int univStr::count = 0;
 
 univStr::univStr(std::string input){
 	char *cstr = new char[input.length()];//XXX 未確認
 	strcpy(cstr, input.c_str());
 	this->str = cstr;
 	this->length = input.length();
+
+	count++;
 }
 
 univStr::univStr(char* str, int length){
 	this->str = str;
 	this->length = length;
+	
+	count++;
+}
+
+univStr::~univStr(){
+	count--;
 }
 
 std::string univStr::getString(){

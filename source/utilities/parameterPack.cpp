@@ -1,11 +1,14 @@
 #include "parameterPack.hpp"
 #include <iostream>
 
+int paramWrapper::count = 0;
+
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, int intValue){
 	this->tag = std::move(tag);
 	this->data.intValue = intValue;
 
 	contain = INT;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, float floatValue){
@@ -13,6 +16,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, float floatValue){
 	this->data.floatValue = floatValue;
 
 	contain = FLOAT;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, univStr* stringValue){
@@ -20,6 +24,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, univStr* stringValue){
 	this->data.stringValue = stringValue;
 
 	contain = STRING;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vec3* vec3Value){
@@ -27,6 +32,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vec3* vec3Value){
 	this->data.vec3Value = vec3Value;
 
 	contain = VEC3;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, quat* quatValue){
@@ -34,6 +40,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, quat* quatValue){
 	this->data.quatValue = quatValue;
 
 	contain = QUAT;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelValue){
@@ -41,6 +48,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelVal
 	this->data.modelValue = modelValue;
 
 	contain = MODEL;
+	count ++;
 }
 
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue){
@@ -48,6 +56,11 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue
 	this->data.emValue = emValue;
 
 	contain = EM;
+	count ++;
+}
+
+paramWrapper::~paramWrapper(){
+	count --;
 }
 
 //-------------------------------------------------------------------
@@ -130,15 +143,18 @@ paramWrapper* createEmParam(univStr *tag, elementManager *value){
 
 //-------------------------------------------------------------------
 
+int parameterPack::count = 0;
 
 parameterPack::parameterPack(int count, va_list arguments){
 	for(int i = 0; i < count; i++){
 		paramList.push_back(std::shared_ptr<paramWrapper>(va_arg(arguments, paramWrapper*)));
 	}
 	va_end(arguments);
+	count ++;
 }
 
 parameterPack::~parameterPack(){
+	count --;
 }
 
 std::shared_ptr<paramWrapper> parameterPack::search(std::string input){

@@ -9,7 +9,9 @@ class univStr{
 	int length;
 
 	public:
+	static int count;
 	univStr() = delete;
+	~univStr();
 	univStr(std::string input);
 
 	univStr(char* str, int length);

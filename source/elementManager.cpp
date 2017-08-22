@@ -1,6 +1,6 @@
 #include "elementManager.hpp"
-#include <iostream>
 
+int elementManager::count = 0;
 
 std::vector<elementManager*> elementManager::elementManagerList;
 
@@ -8,7 +8,6 @@ std::vector<elementManager*> elementManager::elementManagerList;
 elementManager::elementManager(std::shared_ptr<std::vector<vertex>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
 	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
-	std::cout << "elementManager constructed" << std::endl;
 
 	registervertex(elementData, &indexBufferArray);
 
@@ -21,15 +20,17 @@ elementManager::elementManager(std::shared_ptr<std::vector<vertex>> elementData,
 
 
 	elementManagerList.push_back(this);
+
+	count++;
 }
 
 elementManager::~elementManager(){
-	std::cout << "start destructing elements..." << std::endl;
 	while(elements.empty() == false){
 		delete elements.back();
 		elements.pop_back();
 	}
-	std::cout << "elements successfully destructed" << std::endl;
+
+	count--;
 }
 
 void elementManager::destroySelf(){
