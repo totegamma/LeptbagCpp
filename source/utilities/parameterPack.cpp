@@ -145,16 +145,26 @@ paramWrapper* createEmParam(univStr *tag, elementManager *value){
 
 int parameterPack::count = 0;
 
+parameterPack::parameterPack(){
+	count++;
+}
+
 parameterPack::parameterPack(int count, va_list arguments){
 	for(int i = 0; i < count; i++){
 		paramList.push_back(std::shared_ptr<paramWrapper>(va_arg(arguments, paramWrapper*)));
 	}
 	va_end(arguments);
-	count ++;
+	count++;
 }
 
+/*
+parameterPack::parameterPack(const parameterPack& rhs): paramList(rhs.paramList){
+	count++;
+}
+*/
+
 parameterPack::~parameterPack(){
-	count --;
+	count--;
 }
 
 std::shared_ptr<paramWrapper> parameterPack::search(std::string input){

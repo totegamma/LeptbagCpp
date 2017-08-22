@@ -75,8 +75,9 @@ class parameterPack{
 
 	public:
 	static int count;
-	parameterPack() = default;
+	parameterPack();
 	parameterPack(int count, va_list arguments);
+	parameterPack(const parameterPack& rhs) = delete;
 	~parameterPack();
 	std::shared_ptr<paramWrapper> search(std::string input);
 	void add(paramWrapper* input);

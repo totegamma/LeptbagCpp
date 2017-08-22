@@ -6,9 +6,6 @@
 #include "vertexManager.hpp"
 #include "elementManager.hpp"
 
-extern std::vector<vertex> cubeShapeVertices;
-extern std::vector<vertex> planeShapeVertices;
-
 void initPrimitives();
 
 elementManager* getCubeshape();
