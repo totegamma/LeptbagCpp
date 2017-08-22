@@ -32,7 +32,7 @@ void hingeConstraint::destroy(){
 	delete this;
 }
 
-hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
+hingeConstraint* createHingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
 	return new hingeConstraint(elemA, elemB, positionA, positionB, axisA, axisB);//XXX 未確認
 }
 
@@ -133,7 +133,7 @@ void generic6DofConstraint::destroy(){
 }
 
 
-generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
+generic6DofConstraint* createGeneric6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
 	return new generic6DofConstraint(elemA, elemB, positionA, positionB, rotation);//XXX 未確認
 }
 

@@ -63,8 +63,8 @@ class generic6DofConstraint: public generic6DofConstraint_interface{
 };
 
 
-extern "C" hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
-extern "C" generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
+extern "C" hingeConstraint* createHingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB);
+extern "C" generic6DofConstraint* createGeneric6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation);
 
 
 
