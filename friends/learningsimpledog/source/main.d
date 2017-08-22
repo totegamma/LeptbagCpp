@@ -65,61 +65,61 @@ class dog{
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 
-		chest = getCubeshape().generate(paramWrap(
+		chest = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(    x,     y,     z)),
 					param("scale",    Vector3f(  1, 0.5, 0.5)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 2.0f)));
 
-		head = getCubeshape().generate(paramWrap(
+		head = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+1.4,     y,     z)),
 					param("scale", Vector3f(0.4, 0.4, 0.4)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.5f)));
 
-		muzzle = getCubeshape().generate(paramWrap(
+		muzzle = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+2.1, y-0.2,     z)),
 					param("scale", Vector3f(0.3, 0.2, 0.2)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.1f)));
 
-		earLeft = getCubeshape().generate(paramWrap(
+		earLeft = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+1.4, y+0.5, z-0.2)),
 					param("scale", Vector3f(0.1, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
-		earRight = getCubeshape().generate(paramWrap(
+		earRight = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+1.4, y+0.5, z+0.2)),
 					param("scale", Vector3f(0.1, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
-		legFrontLeft = getCubeshape().generate(paramWrap(
+		legFrontLeft = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+0.5,   y-1, z-0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legFrontRight = getCubeshape().generate(paramWrap(
+		legFrontRight = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x+0.5,   y-1, z+0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legBackLeft = getCubeshape().generate(paramWrap(
+		legBackLeft = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x-0.5,   y-1, z-0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legBackRight = getCubeshape().generate(paramWrap(
+		legBackRight = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x-0.5,   y-1, z+0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		tail = getCubeshape().generate(paramWrap(
+		tail = getCubeShape().generate(paramWrap(
 					param("position", Vector3f(x-1.5, y+0.4,     z)),
 					param("scale", Vector3f(0.5, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
@@ -193,8 +193,8 @@ class dog{
 //ApplicationInterface----------------------
 
 extern (C) void init(){
-try{
 	rt_init();
+try{
 	Random(unpredictableSeed);
 
 	doglist.length = 100;
@@ -232,7 +232,7 @@ extern (C) void tick(){
 	if(time == 30 + generation*2){
 
 		//成績順にソート
-		sort!((a,b)=>a.muzzle.getXpos() < b.muzzle.getXpos())(doglist);
+		sort!((a,b)=>a.muzzle.getPos().x < b.muzzle.getPos().x)(doglist);
 
 
 		//優秀なDNAをコピー
@@ -240,8 +240,8 @@ extern (C) void tick(){
 		float[4][20] secondDNA = doglist[$-2].dna;
 
 		//新記録を更新したDNAを表示
-		if(topRecord < doglist[$-1].muzzle.getXpos()){
-			topRecord = doglist[$-1].muzzle.getXpos();
+		if(topRecord < doglist[$-1].muzzle.getPos().x){
+			topRecord = doglist[$-1].muzzle.getPos().x;
 			writeln("New Record!: " ~ to!string(topRecord));
 			writeln("dna:");
 			foreach(float[4] elem; doglist[$-1].dna){
@@ -284,11 +284,6 @@ extern (C) void tick(){
 
 		writeln("generation: " ~ to!string(generation));
 	}
-
-
-
-
-
 }
 
 

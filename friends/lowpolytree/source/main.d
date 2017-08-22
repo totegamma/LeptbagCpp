@@ -83,7 +83,7 @@ extern (C) void init(){
 												objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
 
-				leaf = createElementManager(leafVertices, &createConvexHullShapeBody);
+				leaf = new elementManager(leafVertices, &createConvexHullShapeBody);
 
 			}else if(elem["name"].str == "trunk"){
 
@@ -97,7 +97,7 @@ extern (C) void init(){
 													objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
 				}
 				
-				trunk = createElementManager(trunkVertices, &createConvexHullShapeBody);
+				trunk = new elementManager(trunkVertices, &createConvexHullShapeBody);
 
 			}
 		}

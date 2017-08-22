@@ -3,24 +3,82 @@ module japariSDK.japarilib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 
+elementManager getCubeShape(){
+	static elementManager instance;
+	if(!instance) instance = new elementManager(getCubeshape());
+	return instance;
+}
+
+elementManager getPlaneShape(){
+	static elementManager instance;
+	if(!instance) instance = new elementManager(getPlaneshape());
+	return instance;
+}
+
 extern (C++) {
-	interface elementManager{
-		elementNode generate(parameterPack input);
+	interface elementManager_interface{
+		elementNode_interface generate(parameterPack input);
 	}
-	interface elementNode{
+	interface elementNode_interface{
 		float getXpos();
 		float getYpos();
 		float getZpos();
 		float getBasis(int row, int column);
 		float getFriction();
-		float setFriction(float coef);
+		void setFriction(float coef);
 		void destroy();
 	}
 	interface btRigidBody{
 	}
 
-	elementManager getCubeshape();
-	elementManager getPlaneshape();
+	elementManager_interface getCubeshape();
+	elementManager_interface getPlaneshape();
+}
+
+class elementManager{
+
+	elementManager_interface realElementManager;
+
+	this(elementManager_interface input){
+		realElementManager = input;
+	}
+
+	extern(C)
+	this(vertexManager vm, btRigidBody function(parameterPack) func){
+		realElementManager = createElementManager(vm, func);
+	}
+
+	elementNode generate(parameterPack input){
+		return new elementNode(realElementManager.generate(input));
+	}
+}
+
+
+class elementNode{
+
+	elementNode_interface realElementNode;
+
+	this(elementNode_interface input){
+		realElementNode = input;
+	}
+
+	Vector3f getPos(){
+		return Vector3f(realElementNode.getXpos(), realElementNode.getYpos(), realElementNode.getZpos());
+		
+	}
+	float getBasis(int row, int column){
+		return realElementNode.getBasis(row, column);
+	}
+	float getFriction(){
+		return realElementNode.getFriction();
+	}
+	void setFriction(float coef){
+		realElementNode.setFriction(coef);
+	}
+	void destroy(){
+		realElementNode.destroy();
+	}
+
 }
 
 extern (C){
@@ -62,7 +120,7 @@ extern (C) {
 	univStr createUnivStr(char* str, int length);
 	vertex createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 	vertexManager createVertexManager();
-	elementManager createElementManager(vertexManager vm, btRigidBody function(parameterPack));
+	elementManager_interface createElementManager(vertexManager vm, btRigidBody function(parameterPack));
 }
 
 extern (C){
@@ -134,8 +192,8 @@ extern (C++) {
 }
 
 extern (C) {
-	hingeConstraint_interface createHingeConstraint(elementNode cubeA, elementNode cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
-	generic6DofConstraint_interface createGeneric6DofConstraint(elementNode elemA, elementNode elemB, vec3 positionA, vec3 positionB, quat rotation);
+	hingeConstraint_interface createHingeConstraint(elementNode_interface cubeA, elementNode_interface cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
+	generic6DofConstraint_interface createGeneric6DofConstraint(elementNode_interface elemA, elementNode_interface elemB, vec3 positionA, vec3 positionB, quat rotation);
 }
 
 vec3 toVec3(Vector3f input){
@@ -147,11 +205,11 @@ class hingeConstraint{
 	hingeConstraint_interface realHingeConstraint;
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axis){
-		realHingeConstraint = createHingeConstraint(cubeA, cubeB, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
+		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
 	}
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axisA, Vector3f axisB){
-		realHingeConstraint = createHingeConstraint(cubeA, cubeB, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
+		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
 	}
 	void enableMotor(bool flag){
 		realHingeConstraint.enableMotor(flag);

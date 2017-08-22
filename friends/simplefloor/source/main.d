@@ -17,12 +17,12 @@ import dlib.math.quaternion;
 extern (C) void init(){
 	rt_init();
 
-	getPlaneshape().generate(paramWrap(
-										param("position", Vector3f(0, 0, 0)),
-										param("scale",    Vector3f(1, 1, 1)),
-										param("face",     Vector3f(0, 1, 0)),
-										param("rotation", Quaternionf(0, 0, 0, 1)),
-										param("mass",     0.0)));
+	getPlaneShape().generate(paramWrap(
+									param("position", Vector3f(0, 0, 0)),
+									param("scale",    Vector3f(1, 1, 1)),
+									param("face",     Vector3f(0, 1, 0)),
+									param("rotation", Quaternionf(0, 0, 0, 1)),
+									param("mass",     0.0f)));
 
 
 }
