@@ -1,7 +1,7 @@
 {
 
 	"targetName": "simpledog",
-	"name": "dimpledog",
+	"name": "simpledog",
 	"authors": [
 		"thotgamma"
 	],
@@ -12,7 +12,8 @@
 	"copyright": "Copyright © 2017, thotgamma",
 	"license": "proprietary",
 
-	"sourcePaths": ["source/", "japariSDK/"],
+	"sourcePaths": ["source/", "lib/"],
+	"importPaths": ["source/", "lib/"],
 	"targetType": "dynamicLibrary",
 	"dflags": ["-defaultlib=libphobos2.so"],
 	"lflags": ["-undefined", "dynamic_lookup"],

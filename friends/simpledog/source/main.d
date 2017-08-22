@@ -6,7 +6,9 @@ import std.math;
 import std.algorithm;
 
 
-import japarilib;
+import japariSDK.japarilib;
+import dlib.math.vector;
+import dlib.math.quaternion;
 
 
 dog mydog;
@@ -77,75 +79,75 @@ class dog{
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 
 		chest = getCubeshape().generate(paramWrap(
-					param("position", createVec3(    x,     y,     z)),
-					param("scale", createVec3(  1, 0.5, 0.5)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(    x,     y,     z)),
+					param("scale",    Vector3f(  1, 0.5, 0.5)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 2.0f)));
 
 		head = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+1.4,     y,     z)),
-					param("scale", createVec3(0.4, 0.4, 0.4)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+1.4,     y,     z)),
+					param("scale", Vector3f(0.4, 0.4, 0.4)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.5f)));
 
 		muzzle = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+2.1, y-0.2,     z)),
-					param("scale", createVec3(0.3, 0.2, 0.2)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+2.1, y-0.2,     z)),
+					param("scale", Vector3f(0.3, 0.2, 0.2)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.1f)));
 
 		earLeft = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+1.4, y+0.5, z-0.2)),
-					param("scale", createVec3(0.1, 0.1, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+1.4, y+0.5, z-0.2)),
+					param("scale", Vector3f(0.1, 0.1, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
 		earRight = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+1.4, y+0.5, z+0.2)),
-					param("scale", createVec3(0.1, 0.1, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+1.4, y+0.5, z+0.2)),
+					param("scale", Vector3f(0.1, 0.1, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
 		legFrontLeft = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+0.5,   y-1, z-0.4)),
-					param("scale", createVec3(0.1, 0.5, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+0.5,   y-1, z-0.4)),
+					param("scale", Vector3f(0.1, 0.5, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
 		legFrontRight = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x+0.5,   y-1, z+0.4)),
-					param("scale", createVec3(0.1, 0.5, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x+0.5,   y-1, z+0.4)),
+					param("scale", Vector3f(0.1, 0.5, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
 		legBackLeft = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x-0.5,   y-1, z-0.4)),
-					param("scale", createVec3(0.1, 0.5, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x-0.5,   y-1, z-0.4)),
+					param("scale", Vector3f(0.1, 0.5, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
 		legBackRight = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x-0.5,   y-1, z+0.4)),
-					param("scale", createVec3(0.1, 0.5, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x-0.5,   y-1, z+0.4)),
+					param("scale", Vector3f(0.1, 0.5, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
 		tail = getCubeshape().generate(paramWrap(
-					param("position", createVec3(x-1.5, y+0.4,     z)),
-					param("scale", createVec3(0.5, 0.1, 0.1)),
-					param("rotation", createQuat(1, 0, 0, 0)),
+					param("position", Vector3f(x-1.5, y+0.4,     z)),
+					param("scale", Vector3f(0.5, 0.1, 0.1)),
+					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.2f)));
 
 
-		hinge_body_head			= hingeConstraint_create(chest   , head         , createVec3(   1,    0,    0), createVec3(-0.4,   0,    0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_head_muzzle		= hingeConstraint_create(head    , muzzle       , createVec3( 0.4, -0.2,    0), createVec3(-0.3,   0,    0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_earLeft_head		= hingeConstraint_create(earLeft , head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4, -0.2), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_earRight_head		= hingeConstraint_create(earRight, head         , createVec3(   0, -0.1,    0), createVec3(   0, 0.4,  0.2), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_body_legFrontLeft = hingeConstraint_create(chest   , legFrontLeft , createVec3( 0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_body_legFrontRight= hingeConstraint_create(chest   , legFrontRight, createVec3( 0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_body_legBackLeft	= hingeConstraint_create(chest   , legBackLeft  , createVec3(-0.5, -0.5, -0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_body_legBackRight	= hingeConstraint_create(chest   , legBackRight , createVec3(-0.5, -0.5,  0.4), createVec3(   0, 0.5,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
-		hinge_body_tail			= hingeConstraint_create(chest   , tail         , createVec3(  -1,  0.4,    0), createVec3( 0.5,   0,  0.0), createVec3(0, 0, 1), createVec3(0, 0, 1));
+		hinge_body_head			= new hingeConstraint(chest   , head         , Vector3f(   1,    0,    0), Vector3f(-0.4,   0,    0), Vector3f(0, 0, 1));
+		hinge_head_muzzle		= new hingeConstraint(head    , muzzle       , Vector3f( 0.4, -0.2,    0), Vector3f(-0.3,   0,    0), Vector3f(0, 0, 1));
+		hinge_earLeft_head		= new hingeConstraint(earLeft , head         , Vector3f(   0, -0.1,    0), Vector3f(   0, 0.4, -0.2), Vector3f(0, 0, 1));
+		hinge_earRight_head		= new hingeConstraint(earRight, head         , Vector3f(   0, -0.1,    0), Vector3f(   0, 0.4,  0.2), Vector3f(0, 0, 1));
+		hinge_body_legFrontLeft = new hingeConstraint(chest   , legFrontLeft , Vector3f( 0.5, -0.5, -0.4), Vector3f(   0, 0.5,  0.0), Vector3f(0, 0, 1));
+		hinge_body_legFrontRight= new hingeConstraint(chest   , legFrontRight, Vector3f( 0.5, -0.5,  0.4), Vector3f(   0, 0.5,  0.0), Vector3f(0, 0, 1));
+		hinge_body_legBackLeft	= new hingeConstraint(chest   , legBackLeft  , Vector3f(-0.5, -0.5, -0.4), Vector3f(   0, 0.5,  0.0), Vector3f(0, 0, 1));
+		hinge_body_legBackRight	= new hingeConstraint(chest   , legBackRight , Vector3f(-0.5, -0.5,  0.4), Vector3f(   0, 0.5,  0.0), Vector3f(0, 0, 1));
+		hinge_body_tail			= new hingeConstraint(chest   , tail         , Vector3f(  -1,  0.4,    0), Vector3f( 0.5,   0,  0.0), Vector3f(0, 0, 1));
 
 		hinge_body_head.setLimit(-PI/6, PI/6);
 		hinge_head_muzzle.setLimit(0, 0);
