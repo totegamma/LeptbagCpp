@@ -28,7 +28,7 @@ class vec3{
 	vec3();
 	vec3(float x, float y, float z);
 	vec3(const vec3& rhs);
-	~vec3();
+	virtual ~vec3();
 
 	btVector3 toBullet();
 	glm::vec3 toGlm();
@@ -55,7 +55,7 @@ class quat{
 	quat();
 	quat(float w, float x, float y, float z);
 	quat(const quat& rhs);
-	~quat();
+	virtual ~quat();
 	virtual float getw();
 	virtual float getx();
 	virtual float gety();
