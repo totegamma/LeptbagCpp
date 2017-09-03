@@ -60,6 +60,31 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue
 }
 
 paramWrapper::~paramWrapper(){
+
+	switch(contain){
+		case INT:
+			//do nothing.
+			break;
+		case FLOAT:
+			//do nothing.
+			break;
+		case STRING:
+			delete data.stringValue;
+			break;
+		case VEC3:
+			delete data.vec3Value;
+			break;
+		case QUAT:
+			delete data.quatValue;
+			break;
+		case MODEL:
+			//do nothing.
+			break;
+		case EM:
+			//do nothing.
+			break;
+	}
+
 	count --;
 }
 
@@ -164,6 +189,7 @@ parameterPack::parameterPack(const parameterPack& rhs): paramList(rhs.paramList)
 */
 
 parameterPack::~parameterPack(){
+
 	count--;
 }
 
