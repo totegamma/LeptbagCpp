@@ -4,6 +4,7 @@
 class paramWrapper;
 class parameterPack;
 
+#include <iostream>
 #include <assert.h>
 #include <memory>
 
@@ -11,6 +12,7 @@ class parameterPack;
 #include "universalVector.hpp"
 #include "../vertexManager.hpp"
 #include "../elementManager.hpp"
+
 
 class paramWrapper{
 
@@ -77,10 +79,14 @@ class parameterPack{
 	static int count;
 	parameterPack();
 	parameterPack(int count, va_list arguments);
-	parameterPack(const parameterPack& rhs) = delete;
+	parameterPack(const parameterPack& rhs);
 	~parameterPack();
 	std::shared_ptr<paramWrapper> search(std::string input);
 	void add(paramWrapper* input);
+
+	parameterPack& operator=(const parameterPack& rhs){
+		return *this;
+	}
 
 
 };
