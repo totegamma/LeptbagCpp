@@ -1,5 +1,4 @@
 #include "parameterPack.hpp"
-#include <iostream>
 
 int paramWrapper::count = 0;
 
@@ -179,14 +178,12 @@ parameterPack::parameterPack(int count, va_list arguments){
 		paramList.push_back(std::shared_ptr<paramWrapper>(va_arg(arguments, paramWrapper*)));
 	}
 	va_end(arguments);
-	count++;
+	this->count++;
 }
 
-/*
 parameterPack::parameterPack(const parameterPack& rhs): paramList(rhs.paramList){
 	count++;
 }
-*/
 
 parameterPack::~parameterPack(){
 
