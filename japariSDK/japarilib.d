@@ -1,4 +1,5 @@
 module japariSDK.japarilib;
+import std.stdio;
 
 import dlib.math.vector;
 import dlib.math.quaternion;
@@ -211,6 +212,11 @@ class hingeConstraint{
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axisA, Vector3f axisB){
 		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
 	}
+	
+	~this(){
+		writeln("bye");
+	}
+
 	void enableMotor(bool flag){
 		realHingeConstraint.enableMotor(flag);
 	}
