@@ -20,7 +20,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 
-#include "vertexmanager.hpp"
+#include "vertexManager.hpp"
 #include "shader.hpp"
 #include "constraints.hpp"
 #include "utilities/utilities.hpp"
@@ -323,7 +323,7 @@ int main(){
 
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
+	GLuint programID = LoadShaders( "main.vert", "main.frag" );
 	// Get a handle for our "MVP" uniform
 	uniform_viewMatrix = glGetUniformLocation(programID, "V");
 	uniform_projectionMatrix = glGetUniformLocation(programID, "P");
