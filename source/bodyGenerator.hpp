@@ -1,7 +1,7 @@
 #ifndef BODYGENERATOR_HPP
 #define BODYGENERATOR_HPP
 
-#include "vertexmanager.hpp"
+#include "vertexManager.hpp"
 #include "utilities/utilities.hpp"
 #include <algorithm>
 #include <bullet/btBulletDynamicsCommon.h>
