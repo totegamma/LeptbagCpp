@@ -17,7 +17,7 @@ class elementManager;
 #include "utilities/utilities.hpp"
 #include "elementNode.hpp"
 #include "bodyGenerator.hpp"
-#include "vertexmanager.hpp"
+#include "vertexManager.hpp"
 
 class elementManager_interface{
 	public:

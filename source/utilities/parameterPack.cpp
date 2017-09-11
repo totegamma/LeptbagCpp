@@ -1,4 +1,6 @@
 #include "parameterPack.hpp"
+#include <iostream>
+#include <stdarg.h>
 
 int paramWrapper::count = 0;
 
