@@ -20,7 +20,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 
-#include "vertexmanager.hpp"
+#include "vertexManager.hpp"
 #include "shader.hpp"
 #include "constraints.hpp"
 #include "utilities/utilities.hpp"

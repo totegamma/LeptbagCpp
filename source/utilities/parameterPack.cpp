@@ -1,5 +1,6 @@
 #include "parameterPack.hpp"
 #include <iostream>
+#include <stdarg.h>
 
 paramWrapper::paramWrapper(univStr tag, int intValue){
 	this->tag = tag;

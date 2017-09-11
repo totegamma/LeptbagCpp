@@ -3,7 +3,7 @@
 
 class elementManager;
 
-#include "vertexmanager.hpp"
+#include "vertexManager.hpp"
 #include "elementNode.hpp"
 #include "utilities/utilities.hpp"
 #include "bodyGenerator.hpp"
