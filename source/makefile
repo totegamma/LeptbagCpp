@@ -9,7 +9,7 @@ UNAME := $(shell uname)
 
 # Linuxの場合
 ifeq ($(UNAME),Linux)
-CC := g++-7
+CC := g++
 CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0
 INCLUDEPATH :=
 LIBPATH :=
