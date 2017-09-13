@@ -357,9 +357,7 @@ int main(){
 	initPrimitives();
 
 
-
-	std::vector<void*> dllList;
-
+	void *lh;
 	const char* path = "./friends/";
 	DIR *dp;       // ディレクトリへのポインタ
 	dirent* entry; // readdir() で返されるエントリーポイント
@@ -371,7 +369,7 @@ int main(){
 		std::string filename(entry->d_name);
 		if(split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends"){
 
-			void* lh = dlopen((path + filename).c_str(), RTLD_LAZY);
+			lh = dlopen((path + filename).c_str(), RTLD_LAZY);
 			if (!lh) {
 				fprintf(stderr, "dlopen error: %s\n", dlerror());
 				exit(1);
@@ -393,7 +391,6 @@ int main(){
 			}
 			pluginTickVector.push_back(*pluginTick);
 
-			dllList.push_back(lh);
 
 
 		}
@@ -468,11 +465,7 @@ int main(){
 	glDisableVertexAttribArray(6);
 
 	printf("unloading libdll.so\n");
-
-	while(dllList.empty() == false){
-		dlclose(dllList.back());
-		dllList.pop_back();
-	}
+	//dlclose(lh);
 
 
 	while(elementManager::elementManagerList.empty() == false){
