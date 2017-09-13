@@ -4,17 +4,23 @@
 #include <string>
 #include <string.h>
 
-class univStr{
+class univStr_interface{
+	virtual void destroy() = 0;
+};
+
+class univStr final: public univStr_interface{
 	char* str;
 	int length;
 
 	public:
 	static int count;
 	univStr() = delete;
-	~univStr();
 	univStr(std::string input);
-
 	univStr(char* str, int length);
+	~univStr();
+
+	virtual void destroy();
+
 	std::string getString();
 
 	bool operator==(univStr& rv) {
