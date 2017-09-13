@@ -214,7 +214,7 @@ class hingeConstraint{
 	}
 	
 	~this(){
-		writeln("bye");
+		realHingeConstraint.destroy();
 	}
 
 	void enableMotor(bool flag){
