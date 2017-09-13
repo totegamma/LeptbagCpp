@@ -62,6 +62,7 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue
 
 paramWrapper::~paramWrapper(){
 
+	/*
 	switch(contain){
 		case INT:
 			//do nothing.
@@ -85,8 +86,13 @@ paramWrapper::~paramWrapper(){
 			//do nothing.
 			break;
 	}
+	*/
 
 	count --;
+}
+
+void paramWrapper::destroy(){
+	delete this;
 }
 
 //-------------------------------------------------------------------
@@ -190,6 +196,10 @@ parameterPack::parameterPack(const parameterPack& rhs): paramList(rhs.paramList)
 parameterPack::~parameterPack(){
 
 	count--;
+}
+
+void parameterPack::destroy(){
+	delete this;
 }
 
 std::shared_ptr<paramWrapper> parameterPack::search(std::string input){
