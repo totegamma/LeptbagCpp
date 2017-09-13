@@ -24,6 +24,10 @@ float vec3::getx(){return x;};
 float vec3::gety(){return y;};
 float vec3::getz(){return z;};
 
+void vec3::destroy(){
+	delete this;
+}
+
 btVector3 vec3::toBullet(){
 	return btVector3(x, y, z);
 }
@@ -67,6 +71,9 @@ float quat::getx(){return x;};
 float quat::gety(){return y;};
 float quat::getz(){return z;};
 
+void quat::destroy(){
+	delete this;
+}
 
 btQuaternion quat::toBullet(){
 	return btQuaternion(x, y, z, w);
