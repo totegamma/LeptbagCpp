@@ -13,8 +13,12 @@ class parameterPack;
 #include "../vertexManager.hpp"
 #include "../elementManager.hpp"
 
+class paramWrapper_interface{
+	virtual void destroy() = 0;
+};
 
-class paramWrapper{
+
+class paramWrapper final: public paramWrapper_interface{
 
 	union data_t{
 		int intValue;
@@ -53,6 +57,8 @@ class paramWrapper{
 
 	~paramWrapper();
 
+	virtual void destroy();
+
 	int getInt();
 	float getFloat();
 	univStr* getString();
@@ -70,17 +76,25 @@ extern "C" paramWrapper* createQuatParam  (univStr *tag, quat *value);
 extern "C" paramWrapper* createModelParam (univStr *tag, vertexManager *value);
 extern "C" paramWrapper* createEmParam    (univStr *tag, elementManager *value);
 
+class parameterPack_interface{
+	virtual void destroy() = 0;
+};
 
-class parameterPack{
+
+class parameterPack final: public parameterPack_interface{
 
 	std::vector<std::shared_ptr<paramWrapper>> paramList;
 
 	public:
 	static int count;
+
 	parameterPack();
 	parameterPack(int count, va_list arguments);
 	parameterPack(const parameterPack& rhs);
 	~parameterPack();
+
+	virtual void destroy();
+
 	std::shared_ptr<paramWrapper> search(std::string input);
 	void add(paramWrapper* input);
 
