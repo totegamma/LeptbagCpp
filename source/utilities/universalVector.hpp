@@ -12,56 +12,87 @@
 #include <GLFW/glfw3.h>
 #include <bullet/btBulletDynamicsCommon.h>
 
-
-class vec3{
-
+class vec3_interface{
 	public:
-	static int count;
-	virtual float getx();
-	virtual float gety();
-	virtual float getz();
+	virtual float getx() = 0;
+	virtual float gety() = 0;
+	virtual float getz() = 0;
+	virtual void destroy() = 0;
+};
+
+
+class vec3 final: public vec3_interface{
 
 	float x;
 	float y;
 	float z;
 
+	public:
+	static int count;
+
 	vec3();
 	vec3(float x, float y, float z);
 	vec3(const vec3& rhs);
+
+	virtual float getx();
+	virtual float gety();
+	virtual float getz();
+	virtual void destroy();
 	virtual ~vec3();
 
 	btVector3 toBullet();
 	glm::vec3 toGlm();
 
-	vec3& operator= (const vec3& R){
-		this->x = R.x;
-		this->y = R.y;
-		this->z = R.z;
+	vec3& operator= (const vec3& rhs){
+		this->x = rhs.x;
+		this->y = rhs.y;
+		this->z = rhs.z;
 		return *this;
 	}
 };
 
 extern "C" vec3* createVec3(float x, float y, float z);
 
-class quat{
-
+class quat_interface{
 	public:
-	static int count;
+	virtual float getw() = 0;
+	virtual float getx() = 0;
+	virtual float gety() = 0;
+	virtual float getz() = 0;
+	virtual void destroy() = 0;
+};
+
+class quat final: quat_interface{
+
 	float w;
 	float x;
 	float y;
 	float z;
 
+	public:
+	static int count;
+
 	quat();
 	quat(float w, float x, float y, float z);
 	quat(const quat& rhs);
-	virtual ~quat();
+
 	virtual float getw();
 	virtual float getx();
 	virtual float gety();
 	virtual float getz();
+	virtual void destroy();
+	virtual ~quat();
+
 	btQuaternion toBullet();
 	glm::quat toGlm();
+
+	quat& operator= (const quat& rhs){
+		this->w = rhs.w;
+		this->x = rhs.x;
+		this->y = rhs.y;
+		this->z = rhs.z;
+		return *this;
+	}
 };
 
 
