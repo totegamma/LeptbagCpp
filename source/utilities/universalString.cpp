@@ -22,6 +22,10 @@ univStr::~univStr(){
 	count--;
 }
 
+void univStr::destroy(){
+	delete this;
+}
+
 std::string univStr::getString(){
 	return std::string(str, length);
 }
