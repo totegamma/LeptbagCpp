@@ -63,6 +63,12 @@ class vec3{
 	float getz(){
 		return entity.getz();
 	}
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
+	}
 }
 
 vec3_interface toVec3(Vector3f input){
@@ -107,6 +113,12 @@ class quat{
 	float getz(){
 		return entity.getz();
 	}
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
+	}
 }
 
 quat_interface toQuat(Quaternionf input){
@@ -132,6 +144,12 @@ class vertex{
 		exported = false;
 	}
 
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
+	}
 
 }
 
@@ -183,6 +201,12 @@ class univStr{
 		char* cstr = &input.dup[0];
 		entity = createUnivStr(cstr, cast(int)input.length);
 		exported = false;
+	}
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
 	}
 }
 
@@ -254,13 +278,19 @@ class parameterPack{
 		entity = createParameterPack(args.length, args);
 		exported = false;
 	}
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
+	}
 }
 
 
 //========[elementManager]========
 extern (C++){
 	interface elementManager_interface{
-		elementNode_interface generate(parameterPack input);
+		elementNode_interface generate(parameterPack_interface input);
 		void destroy();
 	}
 }
@@ -269,7 +299,6 @@ extern (C) elementManager_interface createElementManager(vertexManager vm, btRig
 class elementManager{
 
 	elementManager_interface entity;
-	bool exported = false;
 
 	this(elementManager_interface input){
 		entity = input;
@@ -282,7 +311,7 @@ class elementManager{
 
 	elementNode generate(parameterPack input){
 		input.exported = true;
-		return new elementNode(entity.generate(input));
+		return new elementNode(entity.generate(input.entity));
 	}
 }
 
@@ -326,6 +355,12 @@ class elementNode{
 		entity.destroy();
 	}
 
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
+	}
+
 }
 
 //========[hingeConstraint]========
@@ -357,9 +392,6 @@ class hingeConstraint{
 		exported = false;
 	}
 	
-	~this(){
-		entity.destroy();
-	}
 
 	void enableMotor(bool flag){
 		entity.enableMotor(flag);
@@ -375,6 +407,12 @@ class hingeConstraint{
 	}
 	void destroy(){
 		entity.destroy();
+	}
+
+	~this(){
+		if(exported == false){
+			entity.destroy();
+		}
 	}
 }
 
