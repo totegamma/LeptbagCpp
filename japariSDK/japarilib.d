@@ -152,8 +152,8 @@ class vertexManager{
 	}
 
 	void addVertex(vertex input){
+		vertex.exported = true;
 		entity.addVertex(input.entity);
-		
 	}
 }
 
@@ -174,13 +174,13 @@ class univStr{
 		entity = createUnivStr(str, length);
 		exported = false;
 	}
+
+	this(string input){
+		char* cstr = &input.dup[0];
+		return createUnivStr(cstr, cast(int)input.length);
+	}
 }
 
-
-univStr mksh(string input){
-	char* cstr = &input.dup[0];
-	return createUnivStr(cstr, cast(int)input.length);
-}
 
 
 //========[paramWrapper]========
@@ -203,33 +203,47 @@ class paramWrapper{
 	paramWrapper_interface entity;
 	bool exported;
 
-	paramWrapper(string tag, int value){
-		entity = createIntParam(mksh(tag), value);
+	this(string tag, int value){
+		univStr tag_tmp = univStr(tag);
+		entity = createIntParam(tag_tmp, value);
+		tag_tmp.exported = true;
 		exported = false;
 	}
 
-	paramWrapper(string tag, float value){
-		entity = createFloatParam(mksh(tag), value);
+	this(string tag, float value){
+		univStr tag_tmp = univStr(tag);
+		entity = createFloatParam(tag_tmp, value);
+		tag_tmp.exported = true;
 		exported = false;
 	}
 
-	paramWrapper(string tag, string value){
-		entity = createStringParam(mksh(tag), mksh(value));
+	this(string tag, string value){
+		univStr tag_tmp = univStr(tag);
+		univStr value_tmp = univStr(value);
+		entity = createStringParam(tag_tmp, value_tmp);
+		tag_tmp.exported = true;
+		value_tmp.exported = true;
 		exported = false;
 	}
 
-	paramWrapper(string tag, Vector3f value){
-		entity = createVec3Param(mksh(tag), createVec3(value.x, value.y, value.z));
+	this(string tag, Vector3f value){
+		univStr tag_tmp = univStr(tag);
+		entity = createVec3Param(tag_tmp, value);
+		tag_tmp.exported = true;
 		exported = false;
 	}
 
-	paramWrapper(string tag, Quaternionf value){
-		entity = createQuatParam(mksh(tag), createQuat(value.w, value.x, value.y, value.z));
+	this(string tag, Quaternionf value){
+		univStr tag_tmp = univStr(tag);
+		entity = createQuatParam(tag_tmp, value);
+		tag_tmp.exported = true;
 		exported = false;
 	}
 
-	paramWrapper(string tag, vertexManager value){
-		entity = createModelParam(mksh(tag), value);
+	this(string tag, vertexManager value){
+		univStr tag_tmp = univStr(tag);
+		entity = createModelParam(tag_tmp, value);
+		tag_tmp.exported = true;
 		exported = false;
 	}
 }
@@ -243,13 +257,22 @@ extern (C++){
 	}
 }
 
+void makeAllExported()(){
+}
+
+void makeAllExported(paramWrapper...)(paramWrapper first, paramWrapper args){
+	first.exported = false;
+	makeAllExported(args);
+}
+
 extern (C) parameterPack_interface createParameterPack(int count, ...);
 
 class parameterPack{
 	parameterPack_interface entity;
 	bool exported;
 
-	this(ARGS...)(ARGS args){
+	this(paramWrapper...)(paramWrapper args){
+		makeAllexported(args);
 		entity = createParameterPack(args.length, args);
 		exported = false;
 	}
@@ -280,6 +303,7 @@ class elementManager{
 	}
 
 	elementNode generate(parameterPack input){
+		input.exported = true;
 		return new elementNode(realElementManager.generate(input));
 	}
 }
@@ -345,10 +369,17 @@ class hingeConstraint{
 	hingeConstraint_interface realHingeConstraint;
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axis){
+		positionA.exported = true;
+		positionB.exported = true;
+		axis.exported = true;
 		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
 	}
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axisA, Vector3f axisB){
+		positionA.exported = true;
+		positionB.exported = true;
+		axisA.exported = true;
+		axisB.exported = true;
 		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
 	}
 	
