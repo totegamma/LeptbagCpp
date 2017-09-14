@@ -65,7 +65,7 @@ class vec3{
 	}
 }
 
-vec3 toVec3(Vector3f input){
+vec3_interface toVec3(Vector3f input){
 	return createVec3(input.x, input.y, input.z);
 }
 
@@ -109,6 +109,10 @@ class quat{
 	}
 }
 
+quat_interface toQuat(Quaternionf input){
+	return createQuat(input.w, input.x, input.y, input.z);
+}
+
 
 //========[vertex]========
 extern (C++){
@@ -124,7 +128,7 @@ class vertex{
 	bool exported;
 
 	this(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b){
-		entity = createVertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_Z, color_r, color_g, color_b);
+		entity = createVertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_z, color_r, color_g, color_b);
 		exported = false;
 	}
 
@@ -152,8 +156,8 @@ class vertexManager{
 	}
 
 	void addVertex(vertex input){
-		vertex.exported = true;
-		entity.addVertex(input.entity);
+		input.exported = true;
+		entity.addVertex(input);
 	}
 }
 
@@ -177,75 +181,57 @@ class univStr{
 
 	this(string input){
 		char* cstr = &input.dup[0];
-		return createUnivStr(cstr, cast(int)input.length);
+		entity = createUnivStr(cstr, cast(int)input.length);
+		exported = false;
 	}
+}
+
+univStr_interface str2unis(string input){
+	char* cstr = &input.dup[0];
+	return createUnivStr(cstr, cast(int)input.length);
 }
 
 
 
 //========[paramWrapper]========
 extern (C++){
-	interface paramWrapper_interface{
-		void destroy();
+	interface paramWrapper{
 	}
 }
 
 extern (C){
-	paramWrapper createIntParam(univStr tag, int value);
-	paramWrapper createFloatParam(univStr tag, float value);
-	paramWrapper createStringParam(univStr tag, univStr value);
-	paramWrapper createVec3Param(univStr tag, vec3 value);
-	paramWrapper createQuatParam(univStr tag, quat value);
-	paramWrapper createModelParam(univStr tag, vertexManager value);
+	paramWrapper createIntParam(univStr_interface tag, int value);
+	paramWrapper createFloatParam(univStr_interface tag, float value);
+	paramWrapper createStringParam(univStr_interface tag, univStr_interface value);
+	paramWrapper createVec3Param(univStr_interface tag, vec3_interface value);
+	paramWrapper createQuatParam(univStr_interface tag, quat_interface value);
+	paramWrapper createModelParam(univStr_interface tag, vertexManager_interface value);
 }
 
-class paramWrapper{
-	paramWrapper_interface entity;
-	bool exported;
 
-	this(string tag, int value){
-		univStr tag_tmp = univStr(tag);
-		entity = createIntParam(tag_tmp, value);
-		tag_tmp.exported = true;
-		exported = false;
-	}
 
-	this(string tag, float value){
-		univStr tag_tmp = univStr(tag);
-		entity = createFloatParam(tag_tmp, value);
-		tag_tmp.exported = true;
-		exported = false;
-	}
+paramWrapper param(string tag, int value){
+	return createIntParam(str2unis(tag), value);
+}
 
-	this(string tag, string value){
-		univStr tag_tmp = univStr(tag);
-		univStr value_tmp = univStr(value);
-		entity = createStringParam(tag_tmp, value_tmp);
-		tag_tmp.exported = true;
-		value_tmp.exported = true;
-		exported = false;
-	}
+paramWrapper param(string tag, float value){
+	return createFloatParam(str2unis(tag), value);
+}
 
-	this(string tag, Vector3f value){
-		univStr tag_tmp = univStr(tag);
-		entity = createVec3Param(tag_tmp, value);
-		tag_tmp.exported = true;
-		exported = false;
-	}
+paramWrapper param(string tag, string value){
+	return createStringParam(str2unis(tag), str2unis(value));
+}
 
-	this(string tag, Quaternionf value){
-		univStr tag_tmp = univStr(tag);
-		entity = createQuatParam(tag_tmp, value);
-		tag_tmp.exported = true;
-		exported = false;
-	}
+paramWrapper param(string tag, Vector3f value){
+	return createVec3Param(str2unis(tag), toVec3(value));
+}
 
-	this(string tag, vertexManager value){
-		univStr tag_tmp = univStr(tag);
-		entity = createModelParam(tag_tmp, value);
-		tag_tmp.exported = true;
-		exported = false;
-	}
+paramWrapper param(string tag, Quaternionf value){
+	return createQuatParam(str2unis(tag), toQuat(value));
+}
+
+paramWrapper param(string tag, vertexManager value){
+	return createModelParam(str2unis(tag), value.entity);
 }
 
 
@@ -257,13 +243,6 @@ extern (C++){
 	}
 }
 
-void makeAllExported()(){
-}
-
-void makeAllExported(paramWrapper...)(paramWrapper first, paramWrapper args){
-	first.exported = false;
-	makeAllExported(args);
-}
 
 extern (C) parameterPack_interface createParameterPack(int count, ...);
 
@@ -271,8 +250,7 @@ class parameterPack{
 	parameterPack_interface entity;
 	bool exported;
 
-	this(paramWrapper...)(paramWrapper args){
-		makeAllexported(args);
+	this(T...)(T args){
 		entity = createParameterPack(args.length, args);
 		exported = false;
 	}
@@ -294,17 +272,17 @@ class elementManager{
 	bool exported = false;
 
 	this(elementManager_interface input){
-		realElementManager = input;
+		entity = input;
 	}
 
 	extern(C)
 	this(vertexManager vm, btRigidBody function(parameterPack) func){
-		realElementManager = createElementManager(vm, func);
+		entity = createElementManager(vm, func);
 	}
 
 	elementNode generate(parameterPack input){
 		input.exported = true;
-		return new elementNode(realElementManager.generate(input));
+		return new elementNode(entity.generate(input));
 	}
 }
 
@@ -333,19 +311,19 @@ class elementNode{
 	}
 
 	Vector3f getPos(){
-		return Vector3f(realElementNode.getXpos(), realElementNode.getYpos(), realElementNode.getZpos());
+		return Vector3f(entity.getXpos(), entity.getYpos(), entity.getZpos());
 	}
 	float getBasis(int row, int column){
-		return realElementNode.getBasis(row, column);
+		return entity.getBasis(row, column);
 	}
 	float getFriction(){
-		return realElementNode.getFriction();
+		return entity.getFriction();
 	}
 	void setFriction(float coef){
-		realElementNode.setFriction(coef);
+		entity.setFriction(coef);
 	}
 	void destroy(){
-		realElementNode.destroy();
+		entity.destroy();
 	}
 
 }
@@ -362,45 +340,41 @@ extern(C++){
 	}
 }
 
-extern (C) hingeConstraint_interface createHingeConstraint(elementNode_interface cubeA, elementNode_interface cubeB, vec3 positionA, vec3 positionB, vec3 axisA, vec3 axisB);
+extern (C) hingeConstraint_interface createHingeConstraint(elementNode_interface cubeA, elementNode_interface cubeB, vec3_interface positionA, vec3_interface positionB, vec3_interface axisA, vec3_interface axisB);
 
 class hingeConstraint{
 
-	hingeConstraint_interface realHingeConstraint;
+	hingeConstraint_interface entity;
+	bool exported;
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axis){
-		positionA.exported = true;
-		positionB.exported = true;
-		axis.exported = true;
-		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
+		entity = createHingeConstraint(cubeA.entity, cubeB.entity, toVec3(positionA), toVec3(positionB), toVec3(axis), toVec3(axis));
+		exported = false;
 	}
 
 	this(elementNode cubeA, elementNode cubeB, Vector3f positionA, Vector3f positionB, Vector3f axisA, Vector3f axisB){
-		positionA.exported = true;
-		positionB.exported = true;
-		axisA.exported = true;
-		axisB.exported = true;
-		realHingeConstraint = createHingeConstraint(cubeA.realElementNode, cubeB.realElementNode, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
+		entity = createHingeConstraint(cubeA.entity, cubeB.entity, toVec3(positionA), toVec3(positionB), toVec3(axisA), toVec3(axisB));
+		exported = false;
 	}
 	
 	~this(){
-		realHingeConstraint.destroy();
+		entity.destroy();
 	}
 
 	void enableMotor(bool flag){
-		realHingeConstraint.enableMotor(flag);
+		entity.enableMotor(flag);
 	}
 	void setLimit(float lower, float upper){
-		realHingeConstraint.setLimit(lower, upper);
+		entity.setLimit(lower, upper);
 	}
 	void setMaxMotorImpulse(float power){
-		realHingeConstraint.setMaxMotorImpulse(power);
+		entity.setMaxMotorImpulse(power);
 	}
 	void setMotorTarget(float angle, float duration){
-		realHingeConstraint.setMotorTarget(angle, duration);
+		entity.setMotorTarget(angle, duration);
 	}
 	void destroy(){
-		realHingeConstraint.destroy();
+		entity.destroy();
 	}
 }
 

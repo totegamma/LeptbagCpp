@@ -13,12 +13,7 @@ class parameterPack;
 #include "../vertexManager.hpp"
 #include "../elementManager.hpp"
 
-class paramWrapper_interface{
-	virtual void destroy() = 0;
-};
-
-
-class paramWrapper final: public paramWrapper_interface{
+class paramWrapper{
 
 	union data_t{
 		int intValue;
@@ -55,9 +50,8 @@ class paramWrapper final: public paramWrapper_interface{
 	paramWrapper(std::unique_ptr<univStr>, vertexManager* modelValue);
 	paramWrapper(std::unique_ptr<univStr>, elementManager* emValue);
 
-	~paramWrapper();
-
 	virtual void destroy();
+	virtual ~paramWrapper();
 
 	int getInt();
 	float getFloat();
