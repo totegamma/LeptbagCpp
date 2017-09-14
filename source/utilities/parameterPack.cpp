@@ -62,7 +62,6 @@ paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue
 
 paramWrapper::~paramWrapper(){
 
-	/*
 	switch(contain){
 		case INT:
 			//do nothing.
@@ -86,7 +85,6 @@ paramWrapper::~paramWrapper(){
 			//do nothing.
 			break;
 	}
-	*/
 
 	count --;
 }
