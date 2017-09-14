@@ -15,8 +15,13 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 
+class vertex_interface{
+	virtual void destroy() = 0;
+};
 
-class vertex{
+
+
+class vertex final: public vertex_interface{
 
 	public:
 	static int count;
@@ -36,9 +41,8 @@ class vertex{
 			GLfloat colorR, GLfloat colorG, GLfloat colorB);
     vertex(const vertex &rhs);
 
-
-	~vertex();
-
+	virtual void destroy();
+	virtual ~vertex();
 
 	bool operator==(const vertex& v) {
 		return (	this->positionX == v.positionX
@@ -65,16 +69,21 @@ extern void registervertex(std::shared_ptr<std::vector<vertex>> input, std::vect
 
 extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 
+class vertexManager_interface{
+	virtual void addVertex(vertex& input) = 0;
+	virtual void destroy() = 0;
+};
+
 
 class vertexManager{
 	std::shared_ptr<std::vector<vertex>> vertexList;
 	public:
 	static int count;
 	virtual void addVertex(vertex& input);
+	virtual void destroy();
+	virtual ~vertexManager();
 	std::shared_ptr<std::vector<vertex>> getList();
-
 	vertexManager();
-	~vertexManager();
 };
 
 extern "C" vertexManager* createVertexManager();
