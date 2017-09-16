@@ -27,10 +27,6 @@ vertex::vertex(const vertex& rhs)
 	//std::cout << "vertex copied     (" << count << ")" << std::endl;
 }
 
-void vertex::destroy(){
-	delete this;
-}
-
 vertex::~vertex(){
 	count--;
 	//std::cout << "vertex destructed (" << count << ")" << std::endl;

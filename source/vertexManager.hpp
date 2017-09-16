@@ -15,13 +15,9 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 
-class vertex_interface{
-	virtual void destroy() = 0;
-};
 
 
-
-class vertex final: public vertex_interface{
+class vertex final{
 
 	public:
 	static int count;
@@ -41,8 +37,7 @@ class vertex final: public vertex_interface{
 			GLfloat colorR, GLfloat colorG, GLfloat colorB);
     vertex(const vertex &rhs);
 
-	virtual void destroy();
-	virtual ~vertex();
+	~vertex();
 
 	bool operator==(const vertex& v) {
 		return (	this->positionX == v.positionX
