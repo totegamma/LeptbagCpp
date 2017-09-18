@@ -407,8 +407,6 @@ int main(){
 	}
 
 	//NOTE testcode
-	
-	getPlaneshape()->generate(paramWrap(param("position",new vec3(0, 0, 0)), param("scale",new vec3(1, 1, 1)), param("face",new vec3(0, 1, 0)), param("rotation",new quat(1, 0, 0, 0)), param("mass", 0.0f)));
 
 	//-------------
 
