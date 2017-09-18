@@ -47,11 +47,6 @@ elementNode* elementManager::generate(parameterPack* raw_input){
 	vec3 scale    = *input->search("scale")->getVec3();
 	quat rotation = *input->search("rotation")->getQuat();
 
-	std::cout << "w:" << rotation.getw() << std::endl;
-	std::cout << "x:" << rotation.getx() << std::endl;
-	std::cout << "y:" << rotation.gety() << std::endl;
-	std::cout << "z:" << rotation.getz() << std::endl;
-
 	instanceMatrixArray.push_back(
 					glm::translate(glm::mat4(1.0f), position.toGlm())
 					* glm::toMat4(rotation.toGlm())
