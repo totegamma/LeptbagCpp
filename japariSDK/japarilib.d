@@ -43,7 +43,7 @@ extern (C++){
 
 extern (C) vec3_interface createVec3(float x, float y, float z);
 
-class vec3{
+struct vec3{
 	vec3_interface entity;
 	bool exported;
 
@@ -89,7 +89,7 @@ extern (C++){
 
 extern (C) quat_interface createQuat(float w, float x, float y, float z);
 
-class quat{
+struct quat{
 	quat_interface entity;
 	bool exported;
 
@@ -127,6 +127,7 @@ quat_interface toQuat(Quaternionf input){
 
 
 //========[vertex]========
+/*
 extern (C++){
 	interface vertex_interface{
 		void destroy();
@@ -152,12 +153,13 @@ class vertex{
 	}
 
 }
+*/
 
 
 //========[vertexManager]========
 extern (C++){
 	interface vertexManager_interface{
-		void addVertex(vertex input);
+		void addVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 		void destroy();
 	}
 }
@@ -173,9 +175,8 @@ class vertexManager{
 		exported = false;
 	}
 
-	void addVertex(vertex input){
-		input.exported = true;
-		entity.addVertex(input);
+	void addVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b){
+		entity.addVertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_z, color_r, color_g, color_b);
 	}
 }
 
@@ -188,7 +189,7 @@ extern (C++){
 }
 extern (C) univStr_interface createUnivStr(char* str, int length);
 
-class univStr{
+struct univStr{
 	univStr_interface entity;
 	bool exported;
 
@@ -270,7 +271,7 @@ extern (C++){
 
 extern (C) parameterPack_interface createParameterPack(int count, ...);
 
-class parameterPack{
+struct parameterPack{
 	parameterPack_interface entity;
 	bool exported;
 
@@ -294,7 +295,7 @@ extern (C++){
 		void destroy();
 	}
 }
-extern (C) elementManager_interface createElementManager(vertexManager vm, btRigidBody function(parameterPack));
+extern (C) elementManager_interface createElementManager(vertexManager_interface vm, btRigidBody function(parameterPack));
 
 class elementManager{
 
@@ -306,7 +307,7 @@ class elementManager{
 
 	extern(C)
 	this(vertexManager vm, btRigidBody function(parameterPack) func){
-		entity = createElementManager(vm, func);
+		entity = createElementManager(vm.entity, func);
 	}
 
 	elementNode generate(parameterPack input){

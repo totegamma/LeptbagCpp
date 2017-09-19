@@ -32,7 +32,7 @@ class tree{
 
 	void spawn(Vector3f position){
 
-		leaf.generate(paramWrap(
+		leaf.generate(parameterPack(
 							param("position", leafPosition + position),
 							param("scale",    leafScale),
 							param("face",     leafRotation),
@@ -40,7 +40,7 @@ class tree{
 							param("model",    leafVertices),
 							param("mass",     0.0f)));
 
-		trunk.generate(paramWrap(
+		trunk.generate(parameterPack(
 							param("position", trunkPosition + position),
 							param("scale",    trunkScale),
 							param("face",     trunkRotation),
@@ -61,8 +61,8 @@ extern (C) void init(){
 	writeln("lowPolyTree.d loaded");
 
 
-	leafVertices = createVertexManager();
-	trunkVertices = createVertexManager();
+	leafVertices = new vertexManager();
+	trunkVertices = new vertexManager();
 
 	//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
 	auto jsonString = import("lowPolyTree.fpm");
@@ -78,9 +78,9 @@ extern (C) void init(){
 				leafRotation = Quaternionf(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
-					leafVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
-												objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
-												objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
+					leafVertices.addVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+											objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
+											objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating);
 				}
 
 				leaf = new elementManager(leafVertices, &createConvexHullShapeBody);
@@ -92,9 +92,9 @@ extern (C) void init(){
 				trunkRotation = Quaternionf(elem["wqat"].floating, elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating);
 
 				foreach(objvertex; elem["vertex"].array){
-					trunkVertices.addVertex(createVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
-													objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
-													objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating));
+					trunkVertices.addVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
+												objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
+												objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating);
 				}
 				
 				trunk = new elementManager(trunkVertices, &createConvexHullShapeBody);

@@ -78,61 +78,61 @@ class dog{
 		//犬の体の構造を定義している
 		//キューブで肉体を作る cubeshape::create(位置, 大きさ, 傾き, 重さ, 追加先物理世界);
 
-		chest = getCubeShape().generate(paramWrap(
+		chest = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(    x,     y,     z)),
 					param("scale",    Vector3f(  1, 0.5, 0.5)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 2.0f)));
 
-		head = getCubeShape().generate(paramWrap(
+		head = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+1.4,     y,     z)),
 					param("scale", Vector3f(0.4, 0.4, 0.4)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.5f)));
 
-		muzzle = getCubeShape().generate(paramWrap(
+		muzzle = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+2.1, y-0.2,     z)),
 					param("scale", Vector3f(0.3, 0.2, 0.2)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.1f)));
 
-		earLeft = getCubeShape().generate(paramWrap(
+		earLeft = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+1.4, y+0.5, z-0.2)),
 					param("scale", Vector3f(0.1, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
-		earRight = getCubeShape().generate(paramWrap(
+		earRight = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+1.4, y+0.5, z+0.2)),
 					param("scale", Vector3f(0.1, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.05f)));
 
-		legFrontLeft = getCubeShape().generate(paramWrap(
+		legFrontLeft = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+0.5,   y-1, z-0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legFrontRight = getCubeShape().generate(paramWrap(
+		legFrontRight = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x+0.5,   y-1, z+0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legBackLeft = getCubeShape().generate(paramWrap(
+		legBackLeft = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x-0.5,   y-1, z-0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		legBackRight = getCubeShape().generate(paramWrap(
+		legBackRight = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x-0.5,   y-1, z+0.4)),
 					param("scale", Vector3f(0.1, 0.5, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
 					param("mass", 0.3f)));
 
-		tail = getCubeShape().generate(paramWrap(
+		tail = getCubeShape().generate(parameterPack(
 					param("position", Vector3f(x-1.5, y+0.4,     z)),
 					param("scale", Vector3f(0.5, 0.1, 0.1)),
 					param("rotation", Quaternionf(0, 0, 0, 1)),
