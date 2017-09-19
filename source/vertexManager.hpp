@@ -62,7 +62,7 @@ extern void initVBO();
 
 extern void registervertex(std::shared_ptr<std::vector<vertex>> input, std::vector<GLuint>* arrayaddr);
 
-extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
+//extern "C" vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 
 class vertexManager_interface{
 	virtual void addVertex(vertex& input) = 0;
@@ -74,7 +74,7 @@ class vertexManager{
 	std::shared_ptr<std::vector<vertex>> vertexList;
 	public:
 	static int count;
-	virtual void addVertex(vertex& input);
+	virtual void addVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b);
 	virtual void destroy();
 	virtual ~vertexManager();
 	std::shared_ptr<std::vector<vertex>> getList();
