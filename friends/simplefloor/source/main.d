@@ -17,7 +17,7 @@ import dlib.math.quaternion;
 extern (C) void init(){
 	rt_init();
 
-	getPlaneShape().generate(new parameterPack(
+	getPlaneShape().generate(parameterPack(
 									param("position", Vector3f(0, 0, 0)),
 									param("scale",    Vector3f(1, 1, 1)),
 									param("face",     Vector3f(0, 1, 0)),

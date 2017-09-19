@@ -15,7 +15,7 @@ vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				 colorR(colorR), colorG(colorG), colorB(colorB){
 	
 	count++;
-	//std::cout << "vertex constructed(" << count << ")" << std::endl;
+	std::cout << "vertex constructed(" << count << ")" << std::endl;
 }
 
 vertex::vertex(const vertex& rhs)
@@ -24,12 +24,12 @@ vertex::vertex(const vertex& rhs)
 				 colorR(rhs.colorR), colorG(rhs.colorG), colorB(rhs.colorB){
 	
 	count++;
-	//std::cout << "vertex copied     (" << count << ")" << std::endl;
+	std::cout << "vertex copied     (" << count << ")" << std::endl;
 }
 
 vertex::~vertex(){
 	count--;
-	//std::cout << "vertex destructed (" << count << ")" << std::endl;
+	std::cout << "vertex destructed (" << count << ")" << std::endl;
 }
 
 GLuint vertexBufferObject;
@@ -39,14 +39,14 @@ void initVBO(){
 	glGenBuffers(1, &vertexBufferObject);
 }
 
-void registervertex(std::shared_ptr<std::vector<vertex>> input, std::vector<GLuint>* arrayaddr){
+void registervertex(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> input, std::vector<GLuint>* arrayaddr){
 
 	for(auto elem: *input){
-		auto itr = std::find(vertexBufferArray.begin(), vertexBufferArray.end(), elem);
+		auto itr = std::find(vertexBufferArray.begin(), vertexBufferArray.end(), *elem);
 		if( itr != vertexBufferArray.end() ){
 			arrayaddr->push_back(std::distance(vertexBufferArray.begin(), itr));
 		}else{
-			vertexBufferArray.push_back(elem);
+			vertexBufferArray.push_back(*elem);
 			arrayaddr->push_back(vertexBufferArray.size() -1);
 		}
 	}
@@ -69,10 +69,10 @@ int vertexManager::count = 0;
 void vertexManager::addVertex(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				GLfloat normalX, GLfloat normalY, GLfloat normalZ,
 				GLfloat colorR, GLfloat colorG, GLfloat colorB){
-	vertexList->push_back(vertex(positionX, positionY, positionZ, normalX, normalY, normalZ, colorR, colorG, colorB));
+	vertexList->push_back(std::make_shared<vertex>(positionX, positionY, positionZ, normalX, normalY, normalZ, colorR, colorG, colorB));
 }
 
-std::shared_ptr<std::vector<vertex>> vertexManager::getList(){
+std::shared_ptr<std::vector<std::shared_ptr<vertex>>> vertexManager::getList(){
 	return vertexList;
 }
 
@@ -83,7 +83,8 @@ extern "C" vertexManager* createVertexManager(){
 
 
 vertexManager::vertexManager(){
-	vertexList = std::make_shared<std::vector<vertex>>();
+	vertexList = std::make_shared<std::vector<std::shared_ptr<vertex>>>();
+	std::cout << "vertexManager constructed" << std::endl;
 	count++;
 }
 
@@ -93,5 +94,6 @@ void vertexManager::destroy(){
 
 vertexManager::~vertexManager(){
 	count--;
+	std::cout << "vertexManager destructed" << std::endl;
 }
 
