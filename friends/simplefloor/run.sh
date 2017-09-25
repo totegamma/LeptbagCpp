@@ -1,12 +1,5 @@
 #!/bin/bash
-
-TARGET=$1
-
-mv "lib"$TARGET".so" $TARGET".friends"
-
-if [ $# = 1 ]; then
-	exit
-fi
+TARGET="simpleFloor"
 
 cp $TARGET".friends" "../../source/friends/"
 cd ../../source
