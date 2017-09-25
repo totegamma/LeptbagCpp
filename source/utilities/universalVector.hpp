@@ -28,7 +28,6 @@ class vec3 final: public vec3_interface{
 	float z;
 
 	public:
-	static int count;
 
 	vec3();
 	vec3(float x, float y, float z);
@@ -70,7 +69,6 @@ class quat final: quat_interface{
 	float z;
 
 	public:
-	static int count;
 
 	quat();
 	quat(float w, float x, float y, float z);

@@ -2,8 +2,6 @@
 
 //hingeConstraint------------------------------------------
 
-int hingeConstraint::count = 0;
-
 hingeConstraint::hingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, vec3* axisA_rawp, vec3* axisB_rawp){
 
 	auto positionA = std::unique_ptr<vec3>(positionA_rawp);
@@ -18,12 +16,9 @@ hingeConstraint::hingeConstraint(elementNode* elemA_rawp, elementNode* elemB_raw
 									axisA->toBullet(),
 									axisB->toBullet());
 	dynamicsWorld->addConstraint(hinge, true);
-
-	count++;
 }
 
 hingeConstraint::~hingeConstraint(){
-	count--;
 }
 
 void hingeConstraint::enableMotor(bool flag){
@@ -48,7 +43,7 @@ void hingeConstraint::destroy(){
 }
 
 hingeConstraint* createHingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, vec3* axisA_rawp, vec3* axisB_rawp){
-	return new hingeConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, axisA_rawp, axisB_rawp);//XXX 未確認
+	return new hingeConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, axisA_rawp, axisB_rawp);
 }
 
 //----------------------------------------------------------
@@ -56,8 +51,6 @@ hingeConstraint* createHingeConstraint(elementNode* elemA_rawp, elementNode* ele
 
 
 //generic6dofConstraint-------------------------------------
-
-int generic6DofConstraint::count = 0;
 
 generic6DofConstraint::generic6DofConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, quat* rotation_rawp){
 
@@ -92,12 +85,9 @@ generic6DofConstraint::generic6DofConstraint(elementNode* elemA_rawp, elementNod
 
 	dynamicsWorld->addConstraint(gen6Dof);
 
-	count++;
-
 }
 
 generic6DofConstraint::~generic6DofConstraint(){
-	count--;
 }
 
 
@@ -174,7 +164,7 @@ void generic6DofConstraint::destroy(){
 
 
 generic6DofConstraint* createGeneric6DofConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, quat* rotation_rawp){
-	return new generic6DofConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, rotation_rawp);//XXX 未確認
+	return new generic6DofConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, rotation_rawp);
 }
 
 //----------------------------------------------------------

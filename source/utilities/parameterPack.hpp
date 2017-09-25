@@ -38,7 +38,6 @@ class paramWrapper{
 	type contain;
 
 	public:
-	static int count;
 	std::unique_ptr<univStr> tag;
 
 	paramWrapper() = delete;
@@ -80,7 +79,6 @@ class parameterPack final: public parameterPack_interface{
 	std::vector<std::shared_ptr<paramWrapper>> paramList;
 
 	public:
-	static int count;
 
 	parameterPack();
 	parameterPack(int count, va_list arguments);

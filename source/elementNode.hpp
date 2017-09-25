@@ -29,7 +29,6 @@ class elementNode : public elementNode_interface{
 
 
 	public:
-	static int count;
 	elementNode() = delete;
 	elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
 	virtual float getXpos() const;
