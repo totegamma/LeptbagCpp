@@ -1,11 +1,11 @@
 #include "bodyGenerator.hpp"
 
 extern "C"
-btRigidBody* createBoxBody(parameterPack* input){
+btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input){
 
-	vec3 position = input->search("position")->getVec3();
-	vec3 scale = input->search("scale")->getVec3();
-	quat rotation = input->search("rotation")->getQuat();
+	vec3 position = *input->search("position")->getVec3();
+	vec3 scale    = *input->search("scale")->getVec3();
+	quat rotation = *input->search("rotation")->getQuat();
 	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
@@ -23,11 +23,11 @@ btRigidBody* createBoxBody(parameterPack* input){
 }
 
 extern "C"
-btRigidBody* createPlaneBody(parameterPack* input){
+btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input){
 
-	vec3 position = input->search("position")->getVec3();
-	vec3 face = input->search("face")->getVec3();
-	quat rotation = input->search("rotation")->getQuat();
+	vec3 position = *input->search("position")->getVec3();
+	vec3 face     = *input->search("face")->getVec3();
+	quat rotation = *input->search("rotation")->getQuat();
 	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
@@ -46,18 +46,18 @@ btRigidBody* createPlaneBody(parameterPack* input){
 }
 
 extern "C"
-btRigidBody* createConvexHullShapeBody(parameterPack* input){
+btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 
-	vec3 position = input->search("position")->getVec3();
-	vec3 scale = input->search("scale")->getVec3();
-	quat rotation = input->search("rotation")->getQuat();
+	vec3 position = *input->search("position")->getVec3();
+	vec3 scale    = *input->search("scale")->getVec3();
+	quat rotation = *input->search("rotation")->getQuat();
 	btScalar mass = btScalar(input->search("mass")->getFloat());
-	std::vector<vertex> objectData = input->search("model")->getModel().getList();
+	auto objectDataPtr = input->search("caller")->getEm()->getElementDataPtr();
 
 	std::vector<btVector3> convexHullShapePoints;
 
-	for(auto elem: objectData){
-		btVector3 co = btVector3(elem.positionX, elem.positionY, elem.positionZ);
+	for(auto elem: *objectDataPtr){
+		btVector3 co = btVector3(elem->positionX, elem->positionY, elem->positionZ);
 		auto itr = std::find(convexHullShapePoints.begin(), convexHullShapePoints.end(), co);
 		if( itr == convexHullShapePoints.end() ){
 			glm::vec4 target = glm::scale(glm::mat4(1.0f), scale.toGlm()) * glm::vec4(co.x(), co.y(), co.z(), 1);

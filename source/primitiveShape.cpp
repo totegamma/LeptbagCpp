@@ -1,77 +1,63 @@
 #include "primitiveShape.hpp"
 
-std::vector<vertex> cubeShapeVertices = {
+elementManager* cubeshape;
+elementManager* planeshape;
 
-	vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-	vertex(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f),
-	vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
-
-	vertex(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-	vertex(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
-	vertex(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-
-
-	vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-	vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-	vertex( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-
-	vertex( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-	vertex(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f),
-	vertex(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
-
-
-	vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
-	vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
-	vertex(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f),
-
-	vertex( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
-	vertex( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f),
-	vertex(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
-
-
-	vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-	vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-	vertex( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f),
-
-	vertex( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
-	vertex( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-	vertex( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f),
-
-
-	vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-	vertex( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f),
-	vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-
-	vertex( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
-	vertex(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
-	vertex(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f),
+void initPrimitives(){
+	cubeshape = new elementManager(std::make_shared<std::vector<std::shared_ptr<vertex>>>(std::vector<std::shared_ptr<vertex>>{
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
+					std::make_shared<vertex>( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f)
+				}), createBoxBody);
 
 
-	vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
-	vertex(-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f),
-	vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f),
+	planeshape = new elementManager(std::make_shared<std::vector<std::shared_ptr<vertex>>>(std::vector<std::shared_ptr<vertex>>{
+					std::make_shared<vertex>(-100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
+					std::make_shared<vertex>(-100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
+					std::make_shared<vertex>( 100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
+					std::make_shared<vertex>( 100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
+					std::make_shared<vertex>( 100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
+					std::make_shared<vertex>(-100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f)
+				}), createPlaneBody);
+}
 
-	vertex( 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,  1.0f),
-	vertex(-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f),
-	vertex( 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f)
-
-};
-
-std::vector<vertex> planeShapeVertices = {
-	vertex(-100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
-	vertex(-100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
-	vertex( 100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
-	vertex( 100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
-	vertex( 100.0f,  0.0f, -100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f),
-	vertex(-100.0f,  0.0f,  100.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.35f, 0.3f)
-};
-
-elementManager& getCubeshape(){
-	static elementManager cubeshape =  elementManager(cubeShapeVertices, createBoxBody);
+elementManager* getCubeshape(){
 	return cubeshape;
 }
 
-elementManager& getPlaneshape(){
-	static elementManager planeshape =  elementManager(planeShapeVertices, createPlaneBody);
+elementManager* getPlaneshape(){
 	return planeshape;
 }

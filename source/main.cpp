@@ -354,19 +354,12 @@ int main(){
 	initVBO();
 
 
-	//<Test Code>
-
-
-	//getCubeshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("rotation", quat(1, 0, 0, 0)), param("mass", 1)));
-	//getPlaneshape().generate(paramWrap(param("position",vec3(0, 0, 0)), param("scale", vec3(1, 1, 1)), param("face", vec3(0, 1, 0)), param("rotation", quat(1, 0, 0, 0)), param("mass", 0)));
+	initPrimitives();
 
 
 
-	//<\Test Code>
+	std::vector<void*> dllList;
 
-
-
-	void *lh;
 	const char* path = "./friends/";
 	DIR *dp;       // ディレクトリへのポインタ
 	dirent* entry; // readdir() で返されるエントリーポイント
@@ -378,7 +371,7 @@ int main(){
 		std::string filename(entry->d_name);
 		if(split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends"){
 
-			lh = dlopen((path + filename).c_str(), RTLD_LAZY);
+			void* lh = dlopen((path + filename).c_str(), RTLD_LAZY);
 			if (!lh) {
 				fprintf(stderr, "dlopen error: %s\n", dlerror());
 				exit(1);
@@ -400,6 +393,7 @@ int main(){
 			}
 			pluginTickVector.push_back(*pluginTick);
 
+			dllList.push_back(lh);
 
 
 		}
@@ -411,6 +405,7 @@ int main(){
 	for(auto elem: pluginInitVector){
 		(elem)();
 	}
+
 
 
 	glEnableVertexAttribArray(0);
@@ -463,6 +458,8 @@ int main(){
 		glfwPollEvents();
 	}
 
+	std::cout << "stopping program..." << std::endl;
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
@@ -472,14 +469,30 @@ int main(){
 	glDisableVertexAttribArray(6);
 
 	printf("unloading libdll.so\n");
-	dlclose(lh);
 
+	while(dllList.empty() == false){
+		dlclose(dllList.back());
+		dllList.pop_back();
+	}
+
+
+	while(elementManager::elementManagerList.empty() == false){
+		delete elementManager::elementManagerList.back();
+		elementManager::elementManagerList.pop_back();
+	}
+
+	delete dynamicsWorld;
+	delete solver;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
 
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
+
 
 
 	return 0;

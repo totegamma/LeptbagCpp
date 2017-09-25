@@ -2,13 +2,23 @@
 
 //hingeConstraint------------------------------------------
 
-hingeConstraint::hingeConstraint(){
+hingeConstraint::hingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, vec3* axisA_rawp, vec3* axisB_rawp){
+
+	auto positionA = std::unique_ptr<vec3>(positionA_rawp);
+	auto positionB = std::unique_ptr<vec3>(positionB_rawp);
+	auto axisA = std::unique_ptr<vec3>(axisA_rawp);
+	auto axisB = std::unique_ptr<vec3>(axisB_rawp);
+
+	hinge = new btHingeConstraint(	*(elemA_rawp->getBody()),
+									*(elemB_rawp->getBody()),
+									positionA->toBullet(),
+									positionB->toBullet(),
+									axisA->toBullet(),
+									axisB->toBullet());
+	dynamicsWorld->addConstraint(hinge, true);
 }
 
-hingeConstraint::hingeConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
-
-	hinge = new btHingeConstraint(*(elemA->getBody()), *(elemB->getBody()), positionA.toBullet(), positionB.toBullet(), axisA.toBullet(), axisB.toBullet());
-	dynamicsWorld->addConstraint(hinge, true);
+hingeConstraint::~hingeConstraint(){
 }
 
 void hingeConstraint::enableMotor(bool flag){
@@ -29,10 +39,11 @@ void hingeConstraint::setMotorTarget(float angle, float duration){
 
 void hingeConstraint::destroy(){
 	dynamicsWorld->removeConstraint(hinge);
+	delete this;
 }
 
-hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, vec3 &axisA, vec3 &axisB){
-	return new hingeConstraint(elemA, elemB, positionA, positionB, axisA, axisB);
+hingeConstraint* createHingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, vec3* axisA_rawp, vec3* axisB_rawp){
+	return new hingeConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, axisA_rawp, axisB_rawp);
 }
 
 //----------------------------------------------------------
@@ -41,38 +52,42 @@ hingeConstraint* hingeConstraint_create(elementNode* elemA, elementNode* elemB, 
 
 //generic6dofConstraint-------------------------------------
 
-generic6DofConstraint::generic6DofConstraint(){
-}
+generic6DofConstraint::generic6DofConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, quat* rotation_rawp){
 
-generic6DofConstraint::generic6DofConstraint(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
+	auto positionA = std::unique_ptr<vec3>(positionA_rawp);
+	auto positionB = std::unique_ptr<vec3>(positionB_rawp);
+	auto rotation = std::unique_ptr<quat>(rotation_rawp);
 
 
 
 	// それぞれの物体の重心を原点としてローカル座標をとる。
 	btTransform frameInA, frameInB;
-	frameInA = elemA->getBody()->getCenterOfMassTransform();
-	frameInB = elemB->getBody()->getCenterOfMassTransform();
+	frameInA = elemA_rawp->getBody()->getCenterOfMassTransform();
+	frameInB = elemB_rawp->getBody()->getCenterOfMassTransform();
 
 	btQuaternion quatToBullet = btQuaternion(sin(-M_PI/4),0,0,cos(-M_PI/4));
-	frameInA.setRotation(frameInA.getRotation().inverse() * rotation.toBullet() * quatToBullet);
-	frameInB.setRotation(frameInB.getRotation().inverse() * rotation.toBullet() * quatToBullet);
+	frameInA.setRotation(frameInA.getRotation().inverse() * rotation->toBullet() * quatToBullet);
+	frameInB.setRotation(frameInB.getRotation().inverse() * rotation->toBullet() * quatToBullet);
 
 	// デフォルトの関節の接点をローカル座標で指定する
-	frameInA.setOrigin(positionA.toBullet());
-	frameInB.setOrigin(positionB.toBullet());
+	frameInA.setOrigin(positionA->toBullet());
+	frameInB.setOrigin(positionB->toBullet());
 
 	// 6Dofを生成
 	//最後のboolはangularLimit, linearLimtitをAのローカル座標内で規定するならtrue．B内ならfalse．(たぶん．以下参照)
 	//https://gamedev.stackexchange.com/questions/54349/what-are-frame-a-and-frame-b-in-btgeneric6dofconstraints-constructor-for
-	gen6Dof = new btGeneric6DofConstraint(*(elemA->getBody()), *(elemB->getBody()), frameInA, frameInB, false);
+	gen6Dof = new btGeneric6DofConstraint(*(elemA_rawp->getBody()), *(elemB_rawp->getBody()), frameInA, frameInB, false);
 
 	//elemAとelemBの衝突判定を無効にする
 	//new btGeneric6dofConstraintの後に実行しないと働かない
 	//void btRigidBody*->setIgnoreCollisionCheck( btRigidBody*, bool );
-	elemA->getBody()->setIgnoreCollisionCheck( elemB->getBody(), true );
+	elemA_rawp->getBody()->setIgnoreCollisionCheck(elemB_rawp->getBody(), true );
 
 	dynamicsWorld->addConstraint(gen6Dof);
 
+}
+
+generic6DofConstraint::~generic6DofConstraint(){
 }
 
 
@@ -82,16 +97,24 @@ float generic6DofConstraint::getAngle(int index){
 }
 
 
-void generic6DofConstraint::setAngularLimit(vec3 &lower, vec3 &upper){
+void generic6DofConstraint::setAngularLimit(vec3* lower_rawp, vec3* upper_rawp){
 	//lower == upperでロック
 	//lower > upperで制限なし．Linearも同様．
-	gen6Dof->setAngularLowerLimit(lower.toBullet());
-	gen6Dof->setAngularUpperLimit(upper.toBullet());
+
+	auto lower = std::unique_ptr<vec3>(lower_rawp);
+	auto upper= std::unique_ptr<vec3>(upper_rawp);
+
+	gen6Dof->setAngularLowerLimit(lower->toBullet());
+	gen6Dof->setAngularUpperLimit(upper->toBullet());
 }
 
-void generic6DofConstraint::setLinearLimit(vec3 &lower, vec3 &upper){
-	gen6Dof->setLinearLowerLimit(lower.toBullet());
-	gen6Dof->setLinearUpperLimit(upper.toBullet());
+void generic6DofConstraint::setLinearLimit(vec3* lower_rawp, vec3* upper_rawp){
+
+	auto lower = std::unique_ptr<vec3>(lower_rawp);
+	auto upper= std::unique_ptr<vec3>(upper_rawp);
+
+	gen6Dof->setLinearLowerLimit(lower->toBullet());
+	gen6Dof->setLinearUpperLimit(upper->toBullet());
 }
 
 void generic6DofConstraint::setRotationalMotor(int index){
@@ -107,18 +130,27 @@ void generic6DofConstraint::setMaxRotationalMotorForce(int index, float force){
 	gen6Dof->getRotationalLimitMotor(index)->m_maxMotorForce = force;
 }
 
-void generic6DofConstraint::setMaxLinearMotorForce(vec3 &force){
-	gen6Dof->getTranslationalLimitMotor()->m_maxMotorForce = force.toBullet();
+void generic6DofConstraint::setMaxLinearMotorForce(vec3* force_rawp){
+
+	auto force = std::unique_ptr<vec3>(force_rawp);
+
+	gen6Dof->getTranslationalLimitMotor()->m_maxMotorForce = force->toBullet();
 }
 
-void generic6DofConstraint::setRotationalTargetVelocity(vec3 &velocity){
-	gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity = velocity.getx();
-	gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity = velocity.gety();
-	gen6Dof->getRotationalLimitMotor(2)->m_targetVelocity = velocity.getz();
+void generic6DofConstraint::setRotationalTargetVelocity(vec3* velocity_rawp){
+
+	auto velocity = std::unique_ptr<vec3>(velocity_rawp);
+
+	gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity = velocity->getx();
+	gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity = velocity->gety();
+	gen6Dof->getRotationalLimitMotor(2)->m_targetVelocity = velocity->getz();
 }
 
-void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
-	gen6Dof->getTranslationalLimitMotor()->m_targetVelocity = velocity.toBullet();
+void generic6DofConstraint::setLinearTargetVelocity(vec3* velocity_rawp){
+
+	auto velocity = std::unique_ptr<vec3>(velocity_rawp);
+
+	gen6Dof->getTranslationalLimitMotor()->m_targetVelocity = velocity->toBullet();
 }
 
 
@@ -127,10 +159,12 @@ void generic6DofConstraint::setLinearTargetVelocity(vec3 &velocity){
 
 void generic6DofConstraint::destroy(){
 	dynamicsWorld->removeConstraint(gen6Dof);
+	delete this;
 }
 
-generic6DofConstraint* generic6DofConstraint_create(elementNode* elemA, elementNode* elemB, vec3 &positionA, vec3 &positionB, quat &rotation){
-	return new generic6DofConstraint(elemA, elemB, positionA, positionB, rotation);
+
+generic6DofConstraint* createGeneric6DofConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, vec3* positionA_rawp, vec3* positionB_rawp, quat* rotation_rawp){
+	return new generic6DofConstraint(elemA_rawp, elemB_rawp, positionA_rawp, positionB_rawp, rotation_rawp);
 }
 
 //----------------------------------------------------------
