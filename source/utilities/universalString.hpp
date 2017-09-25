@@ -4,13 +4,22 @@
 #include <string>
 #include <string.h>
 
-class univStr{
+class univStr_interface{
+	virtual void destroy() = 0;
+};
+
+class univStr final: public univStr_interface{
 	char* str;
 	int length;
 
 	public:
-	univStr() = default;
+	univStr() = delete;
+	univStr(std::string input);
 	univStr(char* str, int length);
+	~univStr();
+
+	virtual void destroy();
+
 	std::string getString();
 
 	bool operator==(univStr& rv) {
@@ -21,7 +30,6 @@ class univStr{
 };
 
 
-univStr makeUnivStr(std::string in);
 extern "C" univStr* createUnivStr(char*str, int length);
 
 #endif

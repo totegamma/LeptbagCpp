@@ -2,61 +2,123 @@
 #include <iostream>
 #include <stdarg.h>
 
-paramWrapper::paramWrapper(univStr tag, int intValue){
-	this->tag = tag;
-	this->intValue = intValue;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, int intValue){
+	this->tag = std::move(tag);
+	this->data.intValue = intValue;
+
+	contain = INT;
 }
 
-paramWrapper::paramWrapper(univStr tag, float floatValue){
-	this->tag = tag;
-	this->floatValue = floatValue;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, float floatValue){
+	this->tag = std::move(tag);
+	this->data.floatValue = floatValue;
+
+	contain = FLOAT;
 }
 
-paramWrapper::paramWrapper(univStr tag, univStr stringValue){
-	this->tag = tag;
-	this->stringValue = stringValue;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, univStr* stringValue){
+	this->tag = std::move(tag);
+	this->data.stringValue = stringValue;
+
+	contain = STRING;
 }
 
-paramWrapper::paramWrapper(univStr tag, vec3 vec3Value){
-	this->tag = tag;
-	this->vec3Value = vec3Value;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vec3* vec3Value){
+	this->tag = std::move(tag);
+	this->data.vec3Value = vec3Value;
+
+	contain = VEC3;
 }
 
-paramWrapper::paramWrapper(univStr tag, quat quatValue){
-	this->tag = tag;
-	this->quatValue = quatValue;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, quat* quatValue){
+	this->tag = std::move(tag);
+	this->data.quatValue = quatValue;
+
+	contain = QUAT;
 }
 
-paramWrapper::paramWrapper(univStr tag, vertexManager modelValue){
-	this->tag = tag;
-	this->modelValue = modelValue;
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, vertexManager* modelValue){
+	this->tag = std::move(tag);
+	this->data.modelValue = modelValue;
+
+	contain = MODEL;
+}
+
+paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, elementManager* emValue){
+	this->tag = std::move(tag);
+	this->data.emValue = emValue;
+
+	contain = EM;
+}
+
+paramWrapper::~paramWrapper(){
+
+	switch(contain){
+		case INT:
+			//do nothing.
+			break;
+		case FLOAT:
+			//do nothing.
+			break;
+		case STRING:
+			delete data.stringValue;
+			break;
+		case VEC3:
+			delete data.vec3Value;
+			break;
+		case QUAT:
+			delete data.quatValue;
+			break;
+		case MODEL:
+			//do nothing.
+			break;
+		case EM:
+			//do nothing.
+			break;
+	}
+
+}
+
+void paramWrapper::destroy(){
+	delete this;
 }
 
 //-------------------------------------------------------------------
 
 
 int paramWrapper::getInt(){
-	return intValue;
+	assert(contain == INT);
+	return data.intValue;
 }
 
 float paramWrapper::getFloat(){
-	return floatValue;
+	assert(contain == FLOAT);
+	return data.floatValue;
 }
 
-univStr paramWrapper::getString(){
-	return stringValue;
+univStr* paramWrapper::getString(){
+	assert(contain == STRING);
+	return data.stringValue;
 }
 
-vec3 paramWrapper::getVec3(){
-	return vec3Value;
+vec3* paramWrapper::getVec3(){
+	assert(contain == VEC3);
+	return data.vec3Value;
 }
 
-quat paramWrapper::getQuat(){
-	return quatValue;
+quat* paramWrapper::getQuat(){
+	assert(contain == QUAT);
+	return data.quatValue;
 }
 
-vertexManager paramWrapper::getModel(){
-	return modelValue;
+vertexManager* paramWrapper::getModel(){
+	assert(contain == MODEL);
+	return data.modelValue;
+}
+
+elementManager* paramWrapper::getEm(){
+	assert(contain == EM);
+	return data.emValue;
 }
 
 
@@ -65,64 +127,76 @@ vertexManager paramWrapper::getModel(){
 
 extern "C"
 paramWrapper* createIntParam(univStr *tag, int value){
-	return new paramWrapper(*tag, value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 extern "C"
 paramWrapper* createFloatParam(univStr *tag, float value){
-	return new paramWrapper(*tag, value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 extern "C"
 paramWrapper* createStringParam(univStr *tag, univStr *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 extern "C"
 paramWrapper* createVec3Param(univStr *tag, vec3 *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 extern "C"
 paramWrapper* createQuatParam(univStr *tag, quat *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 extern "C"
 paramWrapper* createModelParam(univStr *tag, vertexManager *value){
-	return new paramWrapper(*tag, *value);
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
+}
+
+extern "C"
+paramWrapper* createEmParam(univStr *tag, elementManager *value){
+	return new paramWrapper(std::unique_ptr<univStr>(tag), value);
 }
 
 
 //-------------------------------------------------------------------
 
 
-parameterPack::parameterPack(int count, va_list arguments){
-	paramList = new paramWrapper*[count];
-	length = count;
+parameterPack::parameterPack(){
+}
 
+parameterPack::parameterPack(int count, va_list arguments){
 	for(int i = 0; i < count; i++){
-		paramList[i] = va_arg(arguments, paramWrapper*);
+		paramList.push_back(std::shared_ptr<paramWrapper>(va_arg(arguments, paramWrapper*)));
 	}
 	va_end(arguments);
 }
 
-parameterPack::~parameterPack(){
-	for(int i = 0; i < length; i++){
-		delete paramList[i];
-	}
-	delete[] paramList;
+parameterPack::parameterPack(const parameterPack& rhs): paramList(rhs.paramList){
 }
 
-paramWrapper* parameterPack::search(std::string input){
-	univStr in = makeUnivStr(input);
-	for(int i = 0; i < length; i++){
-		if(paramList[i]->tag == in){
-			return paramList[i];
+parameterPack::~parameterPack(){
+
+}
+
+void parameterPack::destroy(){
+	delete this;
+}
+
+std::shared_ptr<paramWrapper> parameterPack::search(std::string input){
+	for(auto elem: paramList){
+		if(elem->tag->getString() == input){
+			return elem;
 		}
 	}
-	std::cout << "404: " << input << std::endl;
+	std::cout << "404: " << input << std::endl; //TODO ここは例外処理にしたい
 	return nullptr;
+}
+
+void parameterPack::add(paramWrapper* input){
+	paramList.push_back(std::shared_ptr<paramWrapper>(input));
 }
 
 
@@ -141,49 +215,32 @@ parameterPack* createParameterPack(int count, ...){
 
 
 paramWrapper* param(std::string tag, int value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
 }
 
 paramWrapper* param(std::string tag, float value){
-	return new paramWrapper(makeUnivStr(tag), value);
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
 }
 
 paramWrapper* param(std::string tag, std::string value){
-	return new paramWrapper(makeUnivStr(tag), makeUnivStr(value));
+	return new paramWrapper(std::make_unique<univStr>(tag), new univStr(value));
 }
 
-paramWrapper* param(std::string tag, vec3 value){
-	return new paramWrapper(makeUnivStr(tag), value);
+paramWrapper* param(std::string tag, vec3* value){
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
 }
 
-paramWrapper* param(std::string tag, quat value){
-	return new paramWrapper(makeUnivStr(tag), value);
+paramWrapper* param(std::string tag, quat* value){
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
 }
 
-paramWrapper* param(std::string tag, vertexManager value){
-	return new paramWrapper(makeUnivStr(tag), value);
+paramWrapper* param(std::string tag, vertexManager* value){
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
+}
+
+paramWrapper* param(std::string tag, elementManager* value){
+	return new paramWrapper(std::make_unique<univStr>(tag), value);
 }
 
 //-------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

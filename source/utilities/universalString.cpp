@@ -1,22 +1,32 @@
 #include "universalString.hpp"
 
 
+univStr::univStr(std::string input){
+	char *cstr = new char[input.length()];
+	strcpy(cstr, input.c_str());
+	this->str = cstr;
+	this->length = input.length();
+
+}
+
 univStr::univStr(char* str, int length){
 	this->str = str;
 	this->length = length;
+	
+}
+
+univStr::~univStr(){
+}
+
+void univStr::destroy(){
+	delete this;
 }
 
 std::string univStr::getString(){
 	return std::string(str, length);
 }
 
-univStr makeUnivStr(std::string in){
-	char *cstr = new char[in.length()];
-	strcpy(cstr, in.c_str());
-	return univStr(cstr, in.length());
-}
 
-//TODO 名前が最悪
 extern "C"
 univStr* createUnivStr(char *str, int length){
 	return new univStr(str, length);

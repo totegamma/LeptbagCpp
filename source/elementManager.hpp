@@ -3,10 +3,7 @@
 
 class elementManager;
 
-#include "vertexManager.hpp"
-#include "elementNode.hpp"
-#include "utilities/utilities.hpp"
-#include "bodyGenerator.hpp"
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,31 +14,43 @@ class elementManager;
 #include <GLFW/glfw3.h>
 #include <bullet/btBulletDynamicsCommon.h>
 
-class elementManager{
-	GLuint indexBufferObject;
-	GLuint instanceMatrixBuffer;
+#include "utilities/utilities.hpp"
+#include "elementNode.hpp"
+#include "bodyGenerator.hpp"
+#include "vertexManager.hpp"
 
-	std::vector<GLuint> indexBufferArray;
-	std::vector<glm::mat4> instanceMatrixArray;
-	std::vector<vertex> elementData;
-	std::vector<elementNode*> elements;
-
-	btRigidBody* (*bodyGenerator)(parameterPack*);
-
-
+class elementManager_interface{
 	public:
-
-	static std::vector<elementManager*> elementManagerList;
-
-	elementManager();
-	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(parameterPack*));
-	~elementManager();
-
-	virtual elementNode* generate(parameterPack* input);
-	void destroy(int id);
-	void render();
+	virtual elementNode* generate(parameterPack* raw_input) = 0;
+	virtual void destroySelf() = 0;
+	virtual void destroyElement(int id) = 0;
 };
 
-extern "C" elementManager* createElementManager(vertexManager& vm, btRigidBody* (*bodyGenerator)(parameterPack*));
+class elementManager : public elementManager_interface {
+
+	GLuint indexBufferObject;
+	GLuint instanceMatrixBuffer;
+	std::vector<GLuint> indexBufferArray;
+	std::vector<glm::mat4> instanceMatrixArray;
+	std::vector<elementNode*> elements;
+
+	public:
+	static std::vector<elementManager*> elementManagerList;
+	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData;
+	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);
+
+	elementManager(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
+
+	virtual elementNode* generate(parameterPack* input);
+	virtual void destroySelf();
+	virtual void destroyElement(int id);
+	virtual ~elementManager();
+	void render();
+	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> getElementDataPtr();
+
+
+};
+
+extern "C" elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 #endif
