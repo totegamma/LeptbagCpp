@@ -9,13 +9,13 @@ btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input){
 	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
-	btCollisionShape* shape = new btBoxShape(scale.toBullet()); //XXX 未確認
+	btCollisionShape* shape = new btBoxShape(scale.toBullet());
 
-	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));//XXX 未確認
+	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
 	btVector3 inertia(0, 0, 0);
 	shape->calculateLocalInertia(mass, inertia);
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
-	btRigidBody* body = new btRigidBody(bodyCI);//XXX 未確認
+	btRigidBody* body = new btRigidBody(bodyCI);
 
 	dynamicsWorld->addRigidBody(body);
 
@@ -31,11 +31,11 @@ btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input){
 	btScalar mass = btScalar(input->search("mass")->getFloat());
 
 
-	btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);//XXX 未確認
+	btCollisionShape* shape = new btStaticPlaneShape(face.toBullet(), 0);
 
-	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));//XXX 未確認
+	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, btVector3(0, 0, 0));
-	btRigidBody* body = new btRigidBody(bodyCI);//XXX 未確認
+	btRigidBody* body = new btRigidBody(bodyCI);
 
 	btScalar friction = btScalar(0.7);
 	body->setFriction(friction);
@@ -72,13 +72,13 @@ btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 		}
 	}
 
-	btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));//XXX 未確認
+	btCollisionShape* shape = new btConvexHullShape( &convexHullShapePoints[0][0], convexHullShapePoints.size(), sizeof(btVector3));
 
-	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));//XXX 未確認
+	btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation.toBullet(), position.toBullet()));
 	btVector3 inertia(0, 0, 0);
 	shape->calculateLocalInertia(mass, inertia);
 	btRigidBody::btRigidBodyConstructionInfo bodyCI(mass, motionState, shape, inertia);
-	btRigidBody* body = new btRigidBody(bodyCI);//XXX 未確認
+	btRigidBody* body = new btRigidBody(bodyCI);
 
 	dynamicsWorld->addRigidBody(body);
 

@@ -13,7 +13,6 @@ class univStr final: public univStr_interface{
 	int length;
 
 	public:
-	static int count;
 	univStr() = delete;
 	univStr(std::string input);
 	univStr(char* str, int length);

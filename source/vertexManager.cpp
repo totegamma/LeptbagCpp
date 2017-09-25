@@ -1,10 +1,6 @@
 #include "vertexManager.hpp"
-#include <iostream>
-
-int vertex::count = 0;
 
 vertex::vertex(){
-	count++;
 }
 
 vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
@@ -13,23 +9,15 @@ vertex::vertex	(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				:positionX(positionX), positionY(positionY), positionZ(positionZ),
 				 normalX(normalX), normalY(normalY), normalZ(normalZ),
 				 colorR(colorR), colorG(colorG), colorB(colorB){
-	
-	count++;
-	std::cout << "vertex constructed(" << count << ")" << std::endl;
 }
 
 vertex::vertex(const vertex& rhs)
 				:positionX(rhs.positionX), positionY(rhs.positionY), positionZ(rhs.positionZ),
 				 normalX(rhs.normalX), normalY(rhs.normalY), normalZ(rhs.normalZ),
 				 colorR(rhs.colorR), colorG(rhs.colorG), colorB(rhs.colorB){
-	
-	count++;
-	std::cout << "vertex copied     (" << count << ")" << std::endl;
 }
 
 vertex::~vertex(){
-	count--;
-	std::cout << "vertex destructed (" << count << ")" << std::endl;
 }
 
 GLuint vertexBufferObject;
@@ -56,15 +44,6 @@ void registervertex(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> input,
 	glBufferData(GL_ARRAY_BUFFER, vertexBufferArray.size() * sizeof(vertex), &vertexBufferArray[0], GL_STATIC_DRAW);
 }
 
-/*
-vertex* createVertex(float coordinate_x, float coordinate_y, float coordinate_z, float normal_x, float normal_y, float normal_z, float color_r, float color_g, float color_b){
-	return new vertex(coordinate_x, coordinate_y, coordinate_z, normal_x, normal_y, normal_z, color_r, color_g, color_b);//XXX 未確認
-}
-*/
-
-
-int vertexManager::count = 0;
-
 
 void vertexManager::addVertex(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
 				GLfloat normalX, GLfloat normalY, GLfloat normalZ,
@@ -77,15 +56,12 @@ std::shared_ptr<std::vector<std::shared_ptr<vertex>>> vertexManager::getList(){
 }
 
 extern "C" vertexManager* createVertexManager(){
-	std::cout << "createVertexManager called" << std::endl;
-	return new vertexManager();//XXX 未確認
+	return new vertexManager();
 }
 
 
 vertexManager::vertexManager(){
 	vertexList = std::make_shared<std::vector<std::shared_ptr<vertex>>>();
-	std::cout << "vertexManager constructed" << std::endl;
-	count++;
 }
 
 void vertexManager::destroy(){
@@ -93,7 +69,5 @@ void vertexManager::destroy(){
 }
 
 vertexManager::~vertexManager(){
-	count--;
-	std::cout << "vertexManager destructed" << std::endl;
 }
 
