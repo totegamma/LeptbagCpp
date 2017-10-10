@@ -7,11 +7,18 @@ class parameterPack;
 #include <iostream>
 #include <assert.h>
 #include <memory>
+#include <exception>
 
 #include "universalString.hpp"
 #include "universalVector.hpp"
 #include "../vertexManager.hpp"
 #include "../elementManager.hpp"
+
+class parameterPackException : public std::exception {
+	public:
+	parameterPackException();
+	parameterPackException(std::string key);
+};
 
 class paramWrapper{
 

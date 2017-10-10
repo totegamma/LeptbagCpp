@@ -5,22 +5,20 @@ import std.random;
 import std.math;
 import std.algorithm;
 import std.conv;
+import std.array;
 
 import japariSDK.japarilib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 
-dog mydog;
 dog[] doglist;
 Random rnd;
 
-const int numofdog = 2;
+const int numofdog = 100;
 const int dnacol = 20;
 const int dnarow = 4;
 
 class dog{
-
-	int tag = 0;
 
 	float[4][20] dna;
 
@@ -126,7 +124,6 @@ class dog{
 					param("mass", 0.2f)));
 
 
-
 		hinge_body_head			= new hingeConstraint(chest   , head         , Vector3f(   1,    0,    0), Vector3f(-0.4,   0,    0), Vector3f(0, 0, 1));
 		hinge_head_muzzle		= new hingeConstraint(head    , muzzle       , Vector3f( 0.4, -0.2,    0), Vector3f(-0.3,   0,    0), Vector3f(0, 0, 1));
 		hinge_earLeft_head		= new hingeConstraint(earLeft , head         , Vector3f(   0, -0.1,    0), Vector3f(   0, 0.4, -0.2), Vector3f(0, 0, 1));
@@ -147,14 +144,20 @@ class dog{
 		hinge_body_legBackRight.setLimit(-PI/2, PI/2);
 		hinge_body_tail.setLimit(-PI/3, PI/3);
 
+
 		hinge_body_legFrontLeft.enableMotor(true);
-		hinge_body_legFrontLeft.setMaxMotorImpulse(2);
+		hinge_body_legFrontLeft.setMaxMotorImpulse(1);
 		hinge_body_legFrontRight.enableMotor(true);
-		hinge_body_legFrontRight.setMaxMotorImpulse(2);
+		hinge_body_legFrontRight.setMaxMotorImpulse(1);
 		hinge_body_legBackLeft.enableMotor(true);
-		hinge_body_legBackLeft.setMaxMotorImpulse(2);
+		hinge_body_legBackLeft.setMaxMotorImpulse(1);
 		hinge_body_legBackRight.enableMotor(true);
-		hinge_body_legBackRight.setMaxMotorImpulse(2);
+		hinge_body_legBackRight.setMaxMotorImpulse(1);
+
+		hinge_body_legFrontLeft.setMotorTarget(0, 0.1);
+		hinge_body_legFrontRight.setMotorTarget(0, 0.1);
+		hinge_body_legBackLeft.setMotorTarget(0, 0.1);
+		hinge_body_legBackRight.setMotorTarget(0, 0.1);
 	}
 
 	void move(int sequence){
@@ -166,16 +169,7 @@ class dog{
 
 
 	void despawn(){
-		chest.destroy();
-		head.destroy();
-		muzzle.destroy();
-		earLeft.destroy();
-		earRight.destroy();
-		legFrontLeft.destroy();
-		legFrontRight.destroy();
-		legBackLeft.destroy();
-		legBackRight.destroy();
-		tail.destroy();
+
 		hinge_body_head.destroy();
 		hinge_head_muzzle.destroy();
 		hinge_earLeft_head.destroy();
@@ -186,21 +180,30 @@ class dog{
 		hinge_body_legBackRight.destroy();
 		hinge_body_tail.destroy();
 
+		chest.destroy();
+		head.destroy();
+		muzzle.destroy();
+		earLeft.destroy();
+		earRight.destroy();
+		legFrontLeft.destroy();
+		legFrontRight.destroy();
+		legBackLeft.destroy();
+		legBackRight.destroy();
+		tail.destroy();
 	}
 }
 
 
 //ApplicationInterface----------------------
 
+
 extern (C) void init(){
 	rt_init();
 try{
 	Random(unpredictableSeed);
 
-	doglist.length = 100;
-
-	foreach(int i, ref elem; doglist){
-		elem = new dog(0, 1.5, -5*i, true);
+	for(int i = 0; i < numofdog; i++){
+		doglist ~= new dog(0, 1.5, -5*i, true);
 	}
 }
 catch (Exception ex){
@@ -231,20 +234,26 @@ extern (C) void tick(){
 	//世代終わり
 	if(time == 30 + generation*2){
 
-		//成績順にソート
-		sort!((a,b)=>a.muzzle.getPos().x < b.muzzle.getPos().x)(doglist);
+		foreach(ref elem; doglist){
+			if(isNaN(elem.muzzle.getPos().x)){
+				writeln("nan...だと...");
+			}
+		}
+		writeln();
 
+		//成績順にソート
+		doglist.sort!("a.muzzle.getPos().x >= b.muzzle.getPos().x");
 
 		//優秀なDNAをコピー
-		float[4][20] firstDNA = doglist[$-1].dna;
-		float[4][20] secondDNA = doglist[$-2].dna;
+		float[4][20] firstDNA = doglist[0].dna;
+		float[4][20] secondDNA = doglist[1].dna;
 
 		//新記録を更新したDNAを表示
-		if(topRecord < doglist[$-1].muzzle.getPos().x){
-			topRecord = doglist[$-1].muzzle.getPos().x;
+		if(topRecord < doglist[0].muzzle.getPos().x){
+			topRecord = doglist[0].muzzle.getPos().x;
 			writeln("New Record!: " ~ to!string(topRecord));
 			writeln("dna:");
-			foreach(float[4] elem; doglist[$-1].dna){
+			foreach(float[4] elem; doglist[0].dna){
 				writeln(to!string(elem[0]) ~ ", " ~ to!string(elem[1]) ~ ", " ~ to!string(elem[2]) ~ ", " ~ to!string(elem[3]));
 			}
 		}
@@ -255,12 +264,13 @@ extern (C) void tick(){
 			elem = new dog(0, 1.5, -5*i, false);
 		}
 
+
 		//最初の2個体はさっきの優秀個体をそのまま動かす
 		doglist[0].dna = firstDNA;
 		doglist[1].dna = secondDNA;
 
 		//残りの個体
-		foreach(i; 2..100){
+		foreach(i; 2..numofdog){
 			//交配
 			foreach(uint j, ref elem; doglist[i].dna[]){
 				if(uniform(0, 2, rnd) == 0){

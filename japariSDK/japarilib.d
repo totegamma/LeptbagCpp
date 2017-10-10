@@ -354,12 +354,11 @@ class elementNode{
 	}
 	void destroy(){
 		entity.destroy();
+		exported = true;
+		entity = null;
 	}
 
 	~this(){
-		if(exported == false){
-			entity.destroy();
-		}
 	}
 
 }
@@ -408,6 +407,8 @@ class hingeConstraint{
 	}
 	void destroy(){
 		entity.destroy();
+		exported = true;
+		entity = null;
 	}
 
 	~this(){

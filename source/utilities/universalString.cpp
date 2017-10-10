@@ -10,7 +10,8 @@ univStr::univStr(std::string input){
 }
 
 univStr::univStr(char* str, int length){
-	this->str = str;
+	this->str = new char[length];
+	strncpy(this->str, str, length);
 	this->length = length;
 	
 }

@@ -2,6 +2,13 @@
 #include <iostream>
 #include <stdarg.h>
 
+parameterPackException::parameterPackException() {
+}
+
+parameterPackException::parameterPackException(std::string key) {
+	std::cout << "Exception: key not found(" << key << ")" << std::endl;
+}
+
 paramWrapper::paramWrapper(std::unique_ptr<univStr> tag, int intValue){
 	this->tag = std::move(tag);
 	this->data.intValue = intValue;
@@ -191,8 +198,9 @@ std::shared_ptr<paramWrapper> parameterPack::search(std::string input){
 			return elem;
 		}
 	}
-	std::cout << "404: " << input << std::endl; //TODO ここは例外処理にしたい
-	return nullptr;
+
+	throw parameterPackException(input);
+
 }
 
 void parameterPack::add(paramWrapper* input){
