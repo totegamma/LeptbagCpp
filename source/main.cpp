@@ -62,25 +62,27 @@ std::vector<void (*)(double xpos, double ypos)> pluginMouseMoveCallbackVector;
 std::vector<void (*)(int button, int action, int mods)> pluginMouseButtonCallbackVector;
 
 // TODO:　unregister関数を作成すること!!!!!
-extern "C" void registerKeyCallback(void (*fcn)(int key, int scancode, int action, int mods)) {
-	pluginKeyCallbackVector.push_back(fcn);
+extern "C" void registerKeyCallback(void (*func)(int key, int scancode, int action, int mods)) {
+	pluginKeyCallbackVector.push_back(func);
 }
 
-extern "C" void registerMouseMoveCallback(void (*fcn)(double xpos, double ypos)) {
-	pluginMouseMoveCallbackVector.push_back(fcn);
+extern "C" void registerMouseMoveCallback(void (*func)(double xpos, double ypos)) {
+	pluginMouseMoveCallbackVector.push_back(func);
 }
 
-extern "C" void registerMouseButtonCallback(void (*fcn)(int button, int action, int mods)) {
-	pluginMouseButtonCallbackVector.push_back(fcn);
+extern "C" void registerMouseButtonCallback(void (*func)(int button, int action, int mods)) {
+	pluginMouseButtonCallbackVector.push_back(func);
 }
 
 
 //カメラの位置など
+/*
 glm::vec3 position = glm::vec3(0, 0, 0); 
 double horizontalAngle = 3.14f;
 double verticalAngle = 0.0f;
 
-float initialFoV = 45.0f;
+float FoV = 45.0f;
+*/
 
 float speed = 0.1f;
 float mouseSpeed = 0.001f;
@@ -92,6 +94,7 @@ glm::vec3 lightDirection = glm::vec3(-1, 1, 0);
 
 
 // Hoding any keys down?
+/*
 bool holdingForward     = false;
 bool holdingBackward    = false;
 bool holdingLeftStrafe  = false;
@@ -99,6 +102,7 @@ bool holdingRightStrafe = false;
 
 bool holdingSneek = false;
 bool holdingSpace = false;
+*/
 
 std::vector<std::string> split(const std::string &str, char sep) {
 	std::vector<std::string> v;
@@ -110,19 +114,29 @@ std::vector<std::string> split(const std::string &str, char sep) {
 	return v;
 }
 
+void (*cameraAccessAllowedFuncAddr)(void) = nullptr;
 
-void computeMatricesFromInputs() {
+extern "C" int requestCameraAccess(void (*func)(void)) {
+	if (!cameraAccessAllowedFuncAddr) {
+		return -1;
+	}
+
+	cameraAccessAllowedFuncAddr = func;
+	return 1;
+}
 
 
-	//カメラの向きを計算する
-	glm::vec3 direction(
-			cos(verticalAngle) * sin(horizontalAngle), 
-			sin(verticalAngle),
-			cos(verticalAngle) * cos(horizontalAngle)
-			);
+extern "C" void updateCamera(float posx, float posy, float posz, float horizAng, float vertAng, float FoV) {
+
+	Dl_info info;
+	dladdr(__builtin_return_address(0), &info);
+
+	if (info.dli_saddr != cameraAccessAllowedFuncAddr) {
+		return;
+	}
 
 
-	//カメラ移動
+	/*
 	if (holdingForward == true) {
 		position[0] += sin(horizontalAngle)* speed;
 		position[2] += cos(horizontalAngle)* speed;
@@ -150,9 +164,18 @@ void computeMatricesFromInputs() {
 	if (holdingSneek == true) {
 		position[1] -= speed;
 	}
+	*/
 
 
-	float FoV = initialFoV;
+	glm::vec3 position = glm::vec3(posx, posy, posz);
+
+	//カメラの向きを計算する
+	glm::vec3 direction(
+			cos(vertAng) * sin(horizAng), 
+			sin(vertAng),
+			cos(vertAng) * cos(horizAng)
+			);
+
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	ProjectionMatrix = glm::perspective(FoV, (float)windowWidth/(float)windowHeight, 0.1f, 300.0f);
@@ -474,14 +497,10 @@ int main() {
 	while (glfwWindowShouldClose(window) == GL_FALSE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//カメラ位置等を計算する
-		computeMatricesFromInputs();
 
 		for (auto elem: pluginTickVector) {
 			(elem)();
 		}
-
-
 
 		//物理演算1ステップ進める
 		dynamicsWorld->stepSimulation(1 / 60.f, 10);
