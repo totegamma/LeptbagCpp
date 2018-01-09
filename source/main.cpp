@@ -56,9 +56,23 @@ btDiscreteDynamicsWorld* dynamicsWorld;
 
 std::vector<void (*)()> pluginInitVector;
 std::vector<void (*)()> pluginTickVector;
+
 std::vector<void (*)(int key, int scancode, int action, int mods)> pluginKeyCallbackVector;
 std::vector<void (*)(double xpos, double ypos)> pluginMouseMoveCallbackVector;
 std::vector<void (*)(int button, int action, int mods)> pluginMouseButtonCallbackVector;
+
+// TODO:　unregister関数を作成すること!!!!!
+extern "C" void registerKeyCallback(void (*fcn)(int key, int scancode, int action, int mods)) {
+	pluginKeyCallbackVector.push_back(fcn);
+}
+
+extern "C" void registerMouseMoveCallback(void (*fcn)(double xpos, double ypos)) {
+	pluginMouseMoveCallbackVector.push_back(fcn);
+}
+
+extern "C" void registerMouseButtonCallback(void (*fcn)(int button, int action, int mods)) {
+	pluginMouseButtonCallbackVector.push_back(fcn);
+}
 
 
 //カメラの位置など
@@ -90,7 +104,7 @@ std::vector<std::string> split(const std::string &str, char sep) {
 	std::vector<std::string> v;
 	std::stringstream ss(str);
 	std::string buffer;
-	while( std::getline(ss, buffer, sep) ) {
+	while (std::getline(ss, buffer, sep)) {
 		v.push_back(buffer);
 	}
 	return v;
@@ -191,6 +205,7 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 		(elem)(key, scancode, action, mods);
 	}
 
+	// [esc]でマウスポインタを開放する
 	if (action == GLFW_PRESS) {
 		switch(key) {
 			case GLFW_KEY_ESCAPE:
@@ -282,6 +297,7 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 		(elem)(button, action, mods);
 	}
 
+	// 非フォーカスからの復帰
 	if (action == GLFW_PRESS) {
 		switch(button){
 			case GLFW_MOUSE_BUTTON_1:
@@ -319,6 +335,8 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 	double w = cos(RotationAngle / 2);
 	return btQuaternion(x, y, z, w);
 }
+
+
 
 int main() {
 
