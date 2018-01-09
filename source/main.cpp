@@ -100,7 +100,6 @@ std::vector<std::string> split(const std::string &str, char sep) {
 void (*cameraAccessAllowedFuncAddr)(void) = nullptr;
 
 extern "C" int requestCameraAccess(void (*func)(void)) {
-	std::cout << cameraAccessAllowedFuncAddr << std::endl;
 	if (cameraAccessAllowedFuncAddr != nullptr) {
 		return -1;
 	}
@@ -118,38 +117,6 @@ extern "C" void updateCamera(float posx, float posy, float posz, float horizAng,
 	if (info.dli_saddr != cameraAccessAllowedFuncAddr) {
 		return;
 	}
-
-
-	/*
-	if (holdingForward == true) {
-		position[0] += sin(horizontalAngle)* speed;
-		position[2] += cos(horizontalAngle)* speed;
-	}
-
-	if (holdingBackward == true) {
-		position[0] += sin(horizontalAngle+3.14)* speed;
-		position[2] += cos(horizontalAngle+3.14)* speed;
-	}
-
-	if (holdingRightStrafe == true) {
-		position[0] += sin(horizontalAngle-(3.14/2))* speed;
-		position[2] += cos(horizontalAngle-(3.14/2))* speed;
-	}
-
-	if (holdingLeftStrafe == true) {
-		position[0] += sin(horizontalAngle+(3.14/2)) * speed;
-		position[2] += cos(horizontalAngle+(3.14/2)) * speed;
-	}
-
-	if (holdingSpace == true) {
-		position[1] += speed;
-	}
-
-	if (holdingSneek == true) {
-		position[1] -= speed;
-	}
-	*/
-
 
 	glm::vec3 position = glm::vec3(posx, posy, posz);
 
@@ -181,28 +148,6 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos) {
 		(elem)(xpos, ypos);
 	}
 
-	/*
-	//カメラが一回転したら強制的に2PI回すことで無限に回れるようにする
-	if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) > 3.14){
-		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) - (3.14*2);
-	}else if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) < -3.14){
-		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) + (3.14*2);
-	}else{
-		horizontalAngle += mouseSpeed * float(midWindowX - xpos );
-	}
-
-	//カメラは真下から真上までの範囲しか動かない。頭は縦に一回転しない。
-	if(verticalAngle + mouseSpeed * float(midWindowY - ypos ) > 3.14/2){
-		verticalAngle = 3.14/2;
-	}else if(verticalAngle + mouseSpeed * float(midWindowY - ypos ) < -3.14/2){
-		verticalAngle = -3.14/2;
-	}else{
-		verticalAngle   += mouseSpeed * float(midWindowY - ypos );
-	}
-
-	//マウスを強制的に真ん中に戻す
-	glfwSetCursorPos(window, midWindowX, midWindowY);
-	*/
 }
 
 
@@ -226,76 +171,6 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 				break;
 		}
 	}
-
-	/*
-	if (action == GLFW_PRESS){
-		switch(key) {
-			case 'W':
-				holdingForward = true;
-				break;
-
-			case 'S':
-				holdingBackward = true;
-				break;
-
-			case 'A':
-				holdingLeftStrafe = true;
-				break;
-
-			case 'D':
-				holdingRightStrafe = true;
-				break;
-
-			case GLFW_KEY_LEFT_SHIFT:
-				holdingSneek = true;
-				break;
-
-			case GLFW_KEY_SPACE:
-				holdingSpace = true;
-				break;
-
-			case GLFW_KEY_ESCAPE:
-				glfwSetCursorPosCallback(window, NULL);
-				glfwSetKeyCallback(window, NULL);
-				glfwSetCursorPos(window, midWindowX, midWindowY);
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				break;
-
-			default:
-				break;
-		}
-	}else if(action == GLFW_RELEASE){
-		switch(key) {
-			case 'W':
-				holdingForward = false;
-				break;
-
-			case 'S':
-				holdingBackward = false;
-				break;
-
-			case 'A':
-				holdingLeftStrafe = false;
-				break;
-
-			case 'D':
-				holdingRightStrafe = false;
-				break;
-
-			case GLFW_KEY_LEFT_SHIFT :
-				holdingSneek = false;
-				break;
-
-			case GLFW_KEY_SPACE:
-				holdingSpace = false;
-				break;
-
-			default:
-				break;
-		}
-
-	}
-	*/
 }
 
 void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
@@ -315,7 +190,6 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 				break;
 		}
 	}
-
 }
 
 void handleWindowResize(GLFWwindow* window, int width, int height) {
