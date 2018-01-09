@@ -36,11 +36,6 @@ GLFWwindow* window;
 GLint windowWidth  = 1000;
 GLint windowHeight = 800;
 
-//半分の大きさを定義しておく。ポインタを固定する位置に使う。
-GLint midWindowX = windowWidth  / 2;
-GLint midWindowY = windowHeight / 2;
-
-
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
@@ -74,35 +69,23 @@ extern "C" void registerMouseButtonCallback(void (*func)(int button, int action,
 	pluginMouseButtonCallbackVector.push_back(func);
 }
 
+extern "C" int getWindowWidth() {
+	return windowWidth;
+}
 
-//カメラの位置など
-/*
-glm::vec3 position = glm::vec3(0, 0, 0); 
-double horizontalAngle = 3.14f;
-double verticalAngle = 0.0f;
+extern "C" int getWindowHeight() {
+	return windowHeight;
+}
 
-float FoV = 45.0f;
-*/
+extern "C" void setCursorPos(float x, float y) {
+	glfwSetCursorPos(window, x, y);
+}
 
-float speed = 0.1f;
-float mouseSpeed = 0.001f;
 
 glm::vec3 lightColor = glm::vec3(1, 1, 1);
 float lightPower = 1.0f;
 glm::vec3 lightDirection = glm::vec3(-1, 1, 0);
 
-
-
-// Hoding any keys down?
-/*
-bool holdingForward     = false;
-bool holdingBackward    = false;
-bool holdingLeftStrafe  = false;
-bool holdingRightStrafe = false;
-
-bool holdingSneek = false;
-bool holdingSpace = false;
-*/
 
 std::vector<std::string> split(const std::string &str, char sep) {
 	std::vector<std::string> v;
@@ -117,7 +100,8 @@ std::vector<std::string> split(const std::string &str, char sep) {
 void (*cameraAccessAllowedFuncAddr)(void) = nullptr;
 
 extern "C" int requestCameraAccess(void (*func)(void)) {
-	if (!cameraAccessAllowedFuncAddr) {
+	std::cout << cameraAccessAllowedFuncAddr << std::endl;
+	if (cameraAccessAllowedFuncAddr != nullptr) {
 		return -1;
 	}
 
@@ -234,7 +218,7 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 			case GLFW_KEY_ESCAPE:
 				glfwSetCursorPosCallback(window, NULL);
 				glfwSetKeyCallback(window, NULL);
-				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetCursorPos(window, windowWidth/2, windowHeight/2);
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
 
@@ -325,7 +309,7 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 		switch(button){
 			case GLFW_MOUSE_BUTTON_1:
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetCursorPos(window, windowWidth/2, windowHeight/2);
 				glfwSetCursorPosCallback(window, handleMouseMove);
 				glfwSetKeyCallback(window, handleKeypress);
 				break;
@@ -337,8 +321,6 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 void handleWindowResize(GLFWwindow* window, int width, int height) {
 	windowWidth  = width;
 	windowHeight = height;
-	midWindowX = windowWidth  / 2;
-	midWindowY = windowHeight / 2;
 }
 
 
