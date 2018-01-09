@@ -54,13 +54,15 @@ GLuint uniform_LightDirection;
 btDiscreteDynamicsWorld* dynamicsWorld;
 
 
-typedef void (*pluginfunc_t)();
-std::vector<pluginfunc_t> pluginInitVector;
-std::vector<pluginfunc_t> pluginTickVector;
+std::vector<void (*)()> pluginInitVector;
+std::vector<void (*)()> pluginTickVector;
+std::vector<void (*)(int key, int scancode, int action, int mods)> pluginKeyCallbackVector;
+std::vector<void (*)(double xpos, double ypos)> pluginMouseMoveCallbackVector;
+std::vector<void (*)(int button, int action, int mods)> pluginMouseButtonCallbackVector;
 
 
 //カメラの位置など
-glm::vec3 position = glm::vec3( 0, 0, 0 ); 
+glm::vec3 position = glm::vec3(0, 0, 0); 
 double horizontalAngle = 3.14f;
 double verticalAngle = 0.0f;
 
@@ -84,7 +86,7 @@ bool holdingRightStrafe = false;
 bool holdingSneek = false;
 bool holdingSpace = false;
 
-std::vector<std::string> split(const std::string &str, char sep){
+std::vector<std::string> split(const std::string &str, char sep) {
 	std::vector<std::string> v;
 	std::stringstream ss(str);
 	std::string buffer;
@@ -95,7 +97,7 @@ std::vector<std::string> split(const std::string &str, char sep){
 }
 
 
-void computeMatricesFromInputs(){
+void computeMatricesFromInputs() {
 
 
 	//カメラの向きを計算する
@@ -107,31 +109,31 @@ void computeMatricesFromInputs(){
 
 
 	//カメラ移動
-	if (holdingForward == true){
+	if (holdingForward == true) {
 		position[0] += sin(horizontalAngle)* speed;
 		position[2] += cos(horizontalAngle)* speed;
 	}
 
-	if (holdingBackward == true){
+	if (holdingBackward == true) {
 		position[0] += sin(horizontalAngle+3.14)* speed;
 		position[2] += cos(horizontalAngle+3.14)* speed;
 	}
 
-	if (holdingRightStrafe == true){
+	if (holdingRightStrafe == true) {
 		position[0] += sin(horizontalAngle-(3.14/2))* speed;
 		position[2] += cos(horizontalAngle-(3.14/2))* speed;
 	}
 
-	if (holdingLeftStrafe == true){
+	if (holdingLeftStrafe == true) {
 		position[0] += sin(horizontalAngle+(3.14/2)) * speed;
 		position[2] += cos(horizontalAngle+(3.14/2)) * speed;
 	}
 
-	if (holdingSpace == true){
+	if (holdingSpace == true) {
 		position[1] += speed;
 	}
 
-	if (holdingSneek == true){
+	if (holdingSneek == true) {
 		position[1] -= speed;
 	}
 
@@ -152,8 +154,13 @@ void computeMatricesFromInputs(){
 
 
 
-void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
+void handleMouseMove(GLFWwindow* window, double xpos, double ypos) {
 
+	for (auto elem: pluginMouseMoveCallbackVector) {
+		(elem)(xpos, ypos);
+	}
+
+	/*
 	//カメラが一回転したら強制的に2PI回すことで無限に回れるようにする
 	if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) > 3.14){
 		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) - (3.14*2);
@@ -174,11 +181,31 @@ void handleMouseMove(GLFWwindow* window, double xpos, double ypos){
 
 	//マウスを強制的に真ん中に戻す
 	glfwSetCursorPos(window, midWindowX, midWindowY);
+	*/
 }
 
 
-void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods){
+void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
+	for(auto elem: pluginKeyCallbackVector) {
+		(elem)(key, scancode, action, mods);
+	}
+
+	if (action == GLFW_PRESS) {
+		switch(key) {
+			case GLFW_KEY_ESCAPE:
+				glfwSetCursorPosCallback(window, NULL);
+				glfwSetKeyCallback(window, NULL);
+				glfwSetCursorPos(window, midWindowX, midWindowY);
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	/*
 	if (action == GLFW_PRESS){
 		switch(key) {
 			case 'W':
@@ -246,10 +273,16 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 		}
 
 	}
+	*/
 }
 
-void handleMouseButton(GLFWwindow* window, int button, int action, int mods){
-	if(action == GLFW_PRESS){
+void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
+
+	for (auto elem: pluginMouseButtonCallbackVector) {
+		(elem)(button, action, mods);
+	}
+
+	if (action == GLFW_PRESS) {
 		switch(button){
 			case GLFW_MOUSE_BUTTON_1:
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -259,9 +292,10 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods){
 				break;
 		}
 	}
+
 }
 
-void handleWindowResize(GLFWwindow* window, int width, int height){
+void handleWindowResize(GLFWwindow* window, int width, int height) {
 	windowWidth  = width;
 	windowHeight = height;
 	midWindowX = windowWidth  / 2;
@@ -270,7 +304,7 @@ void handleWindowResize(GLFWwindow* window, int width, int height){
 
 
 //オイラー角から４次元数を計算する。opengl-math用とbullet用で2つある。
-glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
+glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ) {
 	double x = RotationAxisX * sin(RotationAngle / 2);
 	double y = RotationAxisY * sin(RotationAngle / 2);
 	double z = RotationAxisZ * sin(RotationAngle / 2);
@@ -278,7 +312,7 @@ glm::quat createq(double RotationAngle, double RotationAxisX, double RotationAxi
 	return glm::quat(w, x, y, z);
 }
 
-btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ){
+btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double RotationAxisY, double RotationAxisZ) {
 	double x = RotationAxisX * sin(RotationAngle / 2);
 	double y = RotationAxisY * sin(RotationAngle / 2);
 	double z = RotationAxisZ * sin(RotationAngle / 2);
@@ -286,9 +320,9 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 	return btQuaternion(x, y, z, w);
 }
 
-int main(){
+int main() {
 
-	if (!glfwInit()){
+	if (!glfwInit()) {
 		std::cout << "glfw init failed...." << std::endl;
 	}
 
@@ -298,13 +332,13 @@ int main(){
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	window = glfwCreateWindow(windowWidth, windowHeight, "Japari", NULL, NULL);
-	if (!window){
+	if (!window) {
 		std::cout << "cannot open OpenGL window" << std::endl;
 	}
 	glfwMakeContextCurrent(window);
 
 	glewExperimental = GL_TRUE;
-	if(glewInit () != GLEW_OK){
+	if (glewInit () != GLEW_OK) {
 		std::cout << "glew init failed...." << std::endl;
 	}
 
@@ -367,9 +401,9 @@ int main(){
 	dp = opendir(path);
 	if (dp==NULL) exit(1);
 	entry = readdir(dp);
-	while (entry != NULL){
+	while (entry != NULL) {
 		std::string filename(entry->d_name);
-		if(split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends"){
+		if (split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends") {
 
 			void* lh = dlopen((path + filename).c_str(), RTLD_LAZY);
 			if (!lh) {
@@ -402,7 +436,7 @@ int main(){
 	}
 
 
-	for(auto elem: pluginInitVector){
+	for (auto elem: pluginInitVector) {
 		(elem)();
 	}
 
@@ -419,13 +453,13 @@ int main(){
 
 
 	//毎フレームごとにこの中が実装される。
-	while (glfwWindowShouldClose(window) == GL_FALSE){
+	while (glfwWindowShouldClose(window) == GL_FALSE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//カメラ位置等を計算する
 		computeMatricesFromInputs();
 
-		for(auto elem: pluginTickVector){
+		for (auto elem: pluginTickVector) {
 			(elem)();
 		}
 
@@ -450,7 +484,7 @@ int main(){
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
 
 
-		for(auto elem: elementManager::elementManagerList){
+		for (auto elem: elementManager::elementManagerList) {
 			elem->render();
 		}
 
@@ -470,13 +504,13 @@ int main(){
 
 	printf("unloading libdll.so\n");
 
-	while(dllList.empty() == false){
+	while (dllList.empty() == false) {
 		dlclose(dllList.back());
 		dllList.pop_back();
 	}
 
 
-	while(elementManager::elementManagerList.empty() == false){
+	while (elementManager::elementManagerList.empty() == false) {
 		delete elementManager::elementManagerList.back();
 		elementManager::elementManagerList.pop_back();
 	}
