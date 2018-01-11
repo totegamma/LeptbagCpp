@@ -139,7 +139,6 @@ extern (C) void init(){
 
 
 extern (C) void tick(){
-	_updateCamera();
 
 	if (holdingForward == true) {
 		posx += sin(horizontalAngle)* speed;
@@ -169,7 +168,8 @@ extern (C) void tick(){
 		posy -= speed;
 	}
 
-	updateCamera(posx, posy, posz, horizontalAngle, verticalAngle, FoV);
+	_updateCamera();
+
 }
 
 //------------------------------------------
