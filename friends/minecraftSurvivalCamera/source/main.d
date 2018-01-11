@@ -4,6 +4,7 @@ import core.runtime;
 import std.random;
 import std.math;
 import std.algorithm;
+import std.conv;
 
 
 import japariSDK.japarilib;
@@ -23,7 +24,8 @@ float velz = 0.0f;
 float speed = 1f;
 float mouseSpeed = 0.001f;
 
-float horizontalAngle = 3.14f;
+float horizontalDiff = 0.0f;
+float horizontalAngle = 0.0f;
 float verticalAngle = 0.0f;
 
 float FoV = 45.0f;
@@ -40,17 +42,10 @@ bool holdingSpace = false;
 
 extern (C) void handleMouseMove(double xpos, double ypos) {
 
-	//カメラが一回転したら強制的に2PI回すことで無限に回れるようにする
 	float midWindowX = getWindowWidth()/2;
 	float midWindowY = getWindowHeight()/2;
 
-	if (horizontalAngle + mouseSpeed * float(midWindowX - xpos) > 3.14) {
-		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) - (3.14*2);
-	} else if(horizontalAngle + mouseSpeed * float(midWindowX - xpos) < -3.14) {
-		horizontalAngle = (horizontalAngle + mouseSpeed * float(midWindowX - xpos)) + (3.14*2);
-	} else {
-		horizontalAngle += mouseSpeed * float(midWindowX - xpos );
-	}
+	horizontalDiff = mouseSpeed * float(midWindowX - xpos);
 
 	//カメラは真下から真上までの範囲しか動かない。頭は縦に一回転しない。
 	if (verticalAngle + mouseSpeed * float(midWindowY - ypos) > 3.14/2) {
@@ -160,13 +155,19 @@ extern (C) void tick() {
 	kaban.activate();
 
 	Vector3f pos = kaban.getPos();
+	Quaternionf rotq = kaban.getRot();
+
+	Vector3f rot = rotq.toEulerAngles();
 
 	posx = pos.x;
 	posy = pos.y;
 	posz = pos.z;
 
-	
-
+	if (rot.x < 3.14/2 && -3.14/2 < rot.x) {
+		horizontalAngle = rot.y;
+	} else {
+		horizontalAngle = 3.14-rot.y;
+	}
 
 	bool isGrounded = false;
 
@@ -202,7 +203,6 @@ extern (C) void tick() {
 		velz /= 2;
 	}
 
-
 	if (holdingSpace == true) {
 		vely += 10;
 	}
@@ -210,6 +210,9 @@ extern (C) void tick() {
 	if (isGrounded == true) {
 		kaban.setLinearVelocity(Vector3f(velx, vely, velz));
 	}
+
+	kaban.setAngularVelocity(Vector3f(0, horizontalDiff*30, 0));
+	horizontalDiff = 0;
 
 
 	_updateCamera();
