@@ -21,6 +21,7 @@ class elementNode_interface{
 	virtual void setFriction(float coef) = 0;
 	virtual void setLinearVelocity(float x, float y, float z) = 0;
 	virtual void setAngularVelocity(float x, float y, float z) = 0;
+	virtual void activate() = 0;
 	virtual void destroy() = 0;
 };
 
@@ -49,6 +50,7 @@ class elementNode : public elementNode_interface{
 	virtual void setFriction(float coef);
 	virtual void setLinearVelocity(float x, float y, float z);
 	virtual void setAngularVelocity(float x, float y, float z);
+	virtual void activate();
 	virtual void destroy();
 
 	virtual~elementNode();
