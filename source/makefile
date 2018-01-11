@@ -1,6 +1,6 @@
 
 PROG := japari_park
-SRCS := main.cpp elementNode.cpp elementManager.cpp bodyGenerator.cpp vertexManager.cpp constraints.cpp shader.cpp primitiveShape.cpp utilities/universalVector.cpp utilities/universalString.cpp utilities/parameterPack.cpp
+SRCS := main.cpp elementNode.cpp elementManager.cpp bodyGenerator.cpp vertexManager.cpp constraints.cpp shader.cpp primitiveShape.cpp misc.cpp utilities/universalVector.cpp utilities/universalString.cpp utilities/parameterPack.cpp
 OBJS := $(SRCS:%.cpp=%.o)
 
 DEPS := $(SRCS:%.cpp=%.depend)
