@@ -155,6 +155,7 @@ extern (C) {
 
 	int  requestCameraAccess(void function());
 	void updateCamera(float posx, float posy, float posz, float horizAng, float vertAng, float FoV);
+	float closestRayTest(float fromx, float fromy, float fromz, float tox, float toy, float toz);
 }
 
 
@@ -474,6 +475,8 @@ extern (C++) {
 		void setFriction(float coef);
 		void setLinearVelocity(float x, float y, float z);
 		void setAngularVelocity(float x, float y, float z);
+		void activate();
+		bool isCollision();
 		void destroy();
 	}
 }
@@ -514,6 +517,14 @@ class elementNode {
 
 	void setAngularVelocity(Vector3f angularVelocity) {
 		entity.setAngularVelocity(angularVelocity.x, angularVelocity.y, angularVelocity.z);
+	}
+
+	void activate() {
+		entity.activate();
+	}
+
+	bool isCollision() {
+		return entity.isCollision();
 	}
 
 	void destroy() {
