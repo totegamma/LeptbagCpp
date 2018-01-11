@@ -496,7 +496,7 @@ class elementNode {
 	}
 
 	Quaternionf getRot() {
-		return Quaternionf(entity.getWrot(), entity.getXrot(), entity.getYrot(), entity.getZrot());
+		return Quaternionf(entity.getXrot(), entity.getYrot(), entity.getZrot(), entity.getWrot());
 	}
 
 	float getBasis(int row, int column) {
