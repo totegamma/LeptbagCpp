@@ -59,6 +59,7 @@ float elementNode::getWrot() const {
 	return rot.getW();
 }
 
+
 float elementNode::getBasis(int row, int column) const {
 	btTransform transform;
 	//transform = body->getCenterOfMassTransform();
@@ -95,6 +96,10 @@ void elementNode::loadMatrix(std::vector<glm::mat4> *input) {
 	input->at(id) = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ()))
 		* glm::toMat4(glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ()))
 		* glm::scale(glm::mat4(1.0f), initialScale.toGlm());
+}
+
+void elementNode::activate() {
+	body->activate();
 }
 
 
