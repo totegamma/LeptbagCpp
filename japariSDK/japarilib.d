@@ -8,6 +8,15 @@ const int GLFW_RELEASE = 0;
 const int GLFW_PRESS   = 1;
 const int GLFW_REPEAT  = 2;
 
+const int GLFW_MOUSE_BUTTON_1 = 0;
+const int GLFW_MOUSE_BUTTON_2 = 1;
+const int GLFW_MOUSE_BUTTON_3 = 2;
+const int GLFW_MOUSE_BUTTON_4 = 3;
+const int GLFW_MOUSE_BUTTON_5 = 4;
+const int GLFW_MOUSE_BUTTON_6 = 5;
+const int GLFW_MOUSE_BUTTON_7 = 6;
+const int GLFW_MOUSE_BUTTON_8 = 7;
+
 const int GLFW_KEY_UNKNOWN = -1;
 const int GLFW_KEY_SPACE = 32;
 const int GLFW_KEY_APOSTROPHE = 39; /* ' */
