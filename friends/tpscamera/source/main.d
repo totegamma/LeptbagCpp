@@ -13,9 +13,14 @@ import dlib.math.vector;
 import dlib.math.quaternion;
 
 
-float posx = 0.0f;
-float posy = 0.0f;
-float posz = 0.0f;
+Vector3f foxPos;
+Quaternionf foxRot;
+
+float camXpos = 0.0f;
+float camYpos = 0.0f;
+float camZpos = 0.0f;
+float camHang = 0.0f;
+float camVang = 0.0f;
 
 
 float velx = 0.0f;
@@ -37,6 +42,8 @@ bool holdingBackward    = false;
 bool holdingLeftStrafe  = false;
 bool holdingRightStrafe = false;
 
+bool holdingR = false;
+
 bool holdingSneek = false;
 bool holdingSpace = false;
 
@@ -45,7 +52,7 @@ extern (C) void handleMouseButton(int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch(button) {
 			case GLFW_MOUSE_BUTTON_1:
-				new bullet(posx, posy, posz);
+				new bullet(foxPos.x, foxPos.y, foxPos.z);
 				break;
 			default:
 				break;
@@ -93,6 +100,14 @@ extern (C) void handleKeypress(int key, int scancode, int action, int mods) {
 				holdingRightStrafe = true;
 				break;
 
+			case 'R':
+				if (holdingR == false) {
+					gamma.destroy();
+					gamma = new fox(foxPos, Quaternionf(0, foxRot.y, 0, foxRot.w));
+				}
+				holdingR = true;
+				break;
+
 			case GLFW_KEY_LEFT_SHIFT:
 				holdingSneek = true;
 				break;
@@ -120,6 +135,10 @@ extern (C) void handleKeypress(int key, int scancode, int action, int mods) {
 
 			case 'D':
 				holdingRightStrafe = false;
+				break;
+
+			case 'R':
+				holdingR = false;
 				break;
 
 			case GLFW_KEY_LEFT_SHIFT :
@@ -159,18 +178,26 @@ class fox{
 	elementNode entity;
 
 	this(float x, float y, float z) {
-		spawn(Vector3f(x, y, z));
+		spawn(Vector3f(x, y, z), Quaternionf(0, 0, 0, 1));
 	}
 
-	void spawn(Vector3f position){
+	this(Vector3f position, Quaternionf rotation) {
+		spawn(position, rotation);
+	}
+
+	void spawn(Vector3f position, Quaternionf rotation){
 
 		entity = foxElementManager.generate(parameterPack(
-							param("position", foxPosition),
+							param("position", foxPosition + position),
 							param("scale",    foxScale),
-							param("rotation", foxRotation),
+							param("rotation", foxRotation * rotation),
 							param("model",    foxVertices),
 							param("mass",     foxMass)));
 
+	}
+
+	void destroy() {
+		entity.destroy();
 	}
 }
 
@@ -199,7 +226,7 @@ fox gamma;
 //ApplicationInterface----------------------
 
 extern (C) void _updateCamera() {
-	updateCamera(posx, posy, posz, horizontalAngle, verticalAngle, FoV);
+	updateCamera(camXpos, camYpos, camZpos, camHang, camVang, FoV);
 }
 
 
@@ -277,23 +304,27 @@ extern (C) void tick() {
 	gamma.entity.activate();
 
 	Vector3f pos = gamma.entity.getPos();
-	Quaternionf rotq = gamma.entity.getRot();
 
-	Vector3f rot = rotq.toEulerAngles();
+	Quaternionf origQuat = gamma.entity.getRot();
+	Quaternionf quat_xy = Quaternionf(origQuat.y, origQuat.x, origQuat.z, origQuat.w);
+	Vector3f eul = quat_xy.toEulerAngles();
+	horizontalAngle = eul.x;
 
-	posx = pos.x + cos(horizontalAngle);
-	posy = pos.y + 3;
-	posz = pos.z + sin(horizontalAngle);
+	foxPos = pos;
+	foxRot = origQuat;
 
-	if (rot.x < 3.14/2 && -3.14/2 < rot.x) {
-		horizontalAngle = rot.y;
-	} else {
-		horizontalAngle = 3.14-rot.y;
-	}
+
+	camXpos = pos.x - 3*cos(verticalAngle)*sin(horizontalAngle);
+	camYpos = pos.y - 3*sin(verticalAngle);
+	camZpos = pos.z - 3*cos(verticalAngle)*cos(horizontalAngle);
+
+	camHang = horizontalAngle;
+	camVang = verticalAngle;
+
 
 	bool isGrounded = false;
 
-	if (closestRayTest(pos.x, pos.y, pos.z, pos.x, pos.y - 100, pos.z) < 0.01) {
+	if (closestRayTest(pos.x, pos.y, pos.z, pos.x, pos.y - 100, pos.z) < 0.015) {
 		isGrounded = true;
 	}
 
