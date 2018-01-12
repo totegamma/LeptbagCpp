@@ -1,7 +1,6 @@
 import core.stdc.stdio;
 import std.stdio;
 import core.runtime;
-import std.random;
 import std.math;
 import std.algorithm;
 
