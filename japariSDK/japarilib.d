@@ -485,7 +485,6 @@ extern (C++) {
 		void setLinearVelocity(float x, float y, float z);
 		void setAngularVelocity(float x, float y, float z);
 		void activate();
-		bool isCollision();
 		void destroy();
 	}
 }
@@ -530,10 +529,6 @@ class elementNode {
 
 	void activate() {
 		entity.activate();
-	}
-
-	bool isCollision() {
-		return entity.isCollision();
 	}
 
 	void destroy() {
