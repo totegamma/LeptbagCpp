@@ -54,6 +54,7 @@ extern (C) void handleMouseButton(int button, int action, int mods) {
 }
 
 
+
 extern (C) void handleMouseMove(double xpos, double ypos) {
 
 	float midWindowX = getWindowWidth()/2;
@@ -138,41 +139,15 @@ extern (C) void handleKeypress(int key, int scancode, int action, int mods) {
 }
 
 
-vertexManager foxVertices;
 vertexManager bulletVertices;
 
-elementManager foxElementManager;
 elementManager bulletElementManager;
 
-Vector3f foxPosition;
-Vector3f foxScale;
-Quaternionf foxRotation;
-float foxMass;
 
 Vector3f bulletPosition;
 Vector3f bulletScale;
 Quaternionf bulletRotation;
 float bulletMass;
-
-class fox{
-
-	elementNode entity;
-
-	this(float x, float y, float z) {
-		spawn(Vector3f(x, y, z));
-	}
-
-	void spawn(Vector3f position){
-
-		entity = foxElementManager.generate(parameterPack(
-							param("position", foxPosition),
-							param("scale",    foxScale),
-							param("rotation", foxRotation),
-							param("model",    foxVertices),
-							param("mass",     foxMass)));
-
-	}
-}
 
 
 class bullet{
@@ -193,8 +168,7 @@ class bullet{
 	}
 }
 
-fox gamma;
-
+elementNode cube;
 
 //ApplicationInterface----------------------
 
@@ -208,32 +182,6 @@ extern (C) void init(){
 
 	JSONValue model;
 
-	// ## Foxのロード ##
-	foxVertices = new vertexManager();
-
-	//HACK コンパイル時にjsonStringにlowPolyTree.fpmの内容が代入される(要-Jオプション)
-	auto foxJsonString = import("lowPolyFox.fpm");
-
-	model = parseJSON(foxJsonString);
-
-	
-	foreach(elem; model.array){
-		if(elem["objectType"].str == "MESH"){
-			if(elem["name"].str == "Fox"){
-				foxPosition = Vector3f(elem["xpos"].floating, elem["ypos"].floating, elem["zpos"].floating);
-				foxScale    = Vector3f(elem["xscl"].floating, elem["yscl"].floating, elem["zscl"].floating);
-				foxRotation = Quaternionf(elem["xqat"].floating, elem["yqat"].floating, elem["zqat"].floating, elem["wqat"].floating);
-				foxMass     = elem["mass"].floating;
-
-				foreach(objvertex; elem["vertex"].array){
-					foxVertices.addVertex(objvertex.array[0].floating, objvertex.array[1].floating, objvertex.array[2].floating,
-											objvertex.array[3].floating, objvertex.array[4].floating, objvertex.array[5].floating,
-											objvertex.array[6].floating, objvertex.array[7].floating, objvertex.array[8].floating);
-				}
-				foxElementManager = new elementManager(foxVertices, &createConvexHullShapeBody);
-			}
-		}
-	}
 
 
 	// ## Bullet(弾丸の意味で)のロード ##
@@ -262,7 +210,11 @@ extern (C) void init(){
 		}
 	}
 
-	gamma = new fox(0, 0, 0);
+	cube = getCubeShape().generate(parameterPack(
+				param("position", Vector3f(0, 0.5, 0)),
+				param("scale", Vector3f(0.5, 0.5, 0.5)),
+				param("rotation", Quaternionf(0, 0, 0, 1)),
+				param("mass", 10.0f)));
 
 	requestCameraAccess(&_updateCamera);
 	registerMouseButtonCallback(&handleMouseButton);
@@ -274,16 +226,16 @@ extern (C) void init(){
 
 extern (C) void tick() {
 
-	gamma.entity.activate();
+	cube.entity.activate();
 
-	Vector3f pos = gamma.entity.getPos();
-	Quaternionf rotq = gamma.entity.getRot();
+	Vector3f pos = cube.getPos();
+	Quaternionf rotq = cube.getRot();
 
 	Vector3f rot = rotq.toEulerAngles();
 
-	posx = pos.x + cos(horizontalAngle);
-	posy = pos.y + 3;
-	posz = pos.z + sin(horizontalAngle);
+	posx = pos.x;
+	posy = pos.y;
+	posz = pos.z;
 
 	if (rot.x < 3.14/2 && -3.14/2 < rot.x) {
 		horizontalAngle = rot.y;
@@ -330,10 +282,10 @@ extern (C) void tick() {
 	}
 
 	if (isGrounded == true) {
-		gamma.entity.setLinearVelocity(Vector3f(velx, vely, velz));
+		cube.setLinearVelocity(Vector3f(velx, vely, velz));
 	}
 
-	gamma.entity.setAngularVelocity(Vector3f(0, horizontalDiff*30, 0));
+	cube.setAngularVelocity(Vector3f(0, horizontalDiff*30, 0));
 	horizontalDiff = 0;
 
 
