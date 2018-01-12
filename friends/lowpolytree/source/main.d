@@ -57,7 +57,7 @@ class tree{
 extern (C) void init(){
 	try{
 	rt_init();
-	Random(unpredictableSeed);
+	rnd = Random(unpredictableSeed);
 	writeln("lowPolyTree.d loaded");
 
 
