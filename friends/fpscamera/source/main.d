@@ -226,19 +226,15 @@ extern (C) void tick() {
 	cube.entity.activate();
 
 	Vector3f pos = cube.getPos();
-	Quaternionf rotq = cube.getRot();
 
-	Vector3f rot = rotq.toEulerAngles();
+	Quaternionf origQuat = cube.getRot();
+	Quaternionf quat_xy = Quaternionf(origQuat.y, origQuat.x, origQuat.z, origQuat.w);
+	Vector3f eul = quat_xy.toEulerAngles();
+	horizontalAngle = eul.x;
 
 	posx = pos.x;
 	posy = pos.y;
 	posz = pos.z;
-
-	if (rot.x < 3.14/2 && -3.14/2 < rot.x) {
-		horizontalAngle = rot.y;
-	} else {
-		horizontalAngle = 3.14-rot.y;
-	}
 
 	bool isGrounded = false;
 
