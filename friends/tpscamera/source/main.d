@@ -52,7 +52,11 @@ extern (C) void handleMouseButton(int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch(button) {
 			case GLFW_MOUSE_BUTTON_1:
-				new bullet(foxPos.x, foxPos.y, foxPos.z);
+
+				new bullet( foxPos.x + 1*cos(verticalAngle)*sin(horizontalAngle),
+							foxPos.y + 1*sin(verticalAngle), 
+							foxPos.z + 1*cos(verticalAngle)*cos(horizontalAngle));
+
 				break;
 			default:
 				break;
@@ -193,7 +197,6 @@ class fox{
 							param("rotation", foxRotation * rotation),
 							param("model",    foxVertices),
 							param("mass",     foxMass)));
-
 	}
 
 	void destroy() {
@@ -210,12 +213,17 @@ class bullet{
 
 	void spawn(Vector3f position){
 
-		bulletElementManager.generate(parameterPack(
+		elementNode entity = bulletElementManager.generate(parameterPack(
 							param("position", bulletPosition + position),
 							param("scale",    bulletScale),
 							param("rotation", bulletRotation),
 							param("model",    bulletVertices),
 							param("mass",     bulletMass)));
+
+		entity.setLinearVelocity(Vector3f(	50*cos(verticalAngle)*sin(horizontalAngle),
+											50*sin(verticalAngle),
+											50*cos(verticalAngle)*cos(horizontalAngle)
+				));
 
 	}
 }
@@ -314,9 +322,9 @@ extern (C) void tick() {
 	foxRot = origQuat;
 
 
-	camXpos = pos.x - 3*cos(verticalAngle)*sin(horizontalAngle);
-	camYpos = pos.y - 3*sin(verticalAngle);
-	camZpos = pos.z - 3*cos(verticalAngle)*cos(horizontalAngle);
+	camXpos = pos.x - 5*cos(verticalAngle)*sin(horizontalAngle);
+	camYpos = pos.y - 5*sin(verticalAngle);
+	camZpos = pos.z - 5*cos(verticalAngle)*cos(horizontalAngle);
 
 	camHang = horizontalAngle;
 	camVang = verticalAngle;
@@ -324,7 +332,7 @@ extern (C) void tick() {
 
 	bool isGrounded = false;
 
-	if (closestRayTest(pos.x, pos.y, pos.z, pos.x, pos.y - 100, pos.z) < 0.015) {
+	if (closestRayTest(pos.x, pos.y, pos.z, pos.x, pos.y - 100, pos.z) < 0.008) {
 		isGrounded = true;
 	}
 
@@ -361,7 +369,7 @@ extern (C) void tick() {
 	}
 
 	if (isGrounded == true) {
-		gamma.entity.setLinearVelocity(Vector3f(velx, vely, velz));
+		gamma.entity.setLinearVelocity(Vector3f(3*velx, vely, 3*velz));
 	}
 
 	gamma.entity.setAngularVelocity(Vector3f(0, horizontalDiff*30, 0));
