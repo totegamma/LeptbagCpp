@@ -65,37 +65,68 @@ extern (C) void init(){
 
 	plank = new elementManager(plankVertex, &createBoxBody);
 
-	for(int x = 0; x < 4; x++){
-		for(int z = 0; z < 4; z++){
-			for(int y = 0; y < 20; y++){
+	float mass = 0.3f;
+	float offsetx = 2;
+	float offsetz = 3;
+	float xcount = 4;
+	float ycount = 13;
+	float zcount = 4;
+	float plankLength = 1;
+	float plankWidth = 0.15;
 
+	for (int y = 0; y < ycount*2; y+=2) {
+		for (int x = 0; x < xcount; x++) {
+			//始点
+			plank.generate(parameterPack(
+						param("position", Vector3f(offsetx + x*plankLength*2, 0.2 + 0.4*y, offsetz - 1 + plankWidth)),
+						param("scale", Vector3f(1, 0.2, plankWidth)),
+						param("rotation", Quaternionf(0, 0, 0, 1)),
+						param("mass", mass)));
+
+			for (int i = 1; i < zcount; i++) {
 				plank.generate(parameterPack(
-							param("position", Vector3f(0.1 + 2*x, 0.2 + 0.8*y, 1 + 2*z)),
-							param("scale", Vector3f(0.1, 0.2, 1)),
+							param("position", Vector3f(offsetx + x*plankLength*2, 0.2 + 0.4*y, offsetz + (i * plankLength * 2) - 1)),
+							param("scale", Vector3f(1, 0.2, plankWidth)),
 							param("rotation", Quaternionf(0, 0, 0, 1)),
-							param("mass", 0.5f)));
-
-				plank.generate(parameterPack(
-							param("position", Vector3f(1.9 + 2*x, 0.2 + 0.8*y, 1 + 2*z)),
-							param("scale", Vector3f(0.1, 0.2, 1)),
-							param("rotation", Quaternionf(0, 0, 0, 1)),
-							param("mass", 0.5f)));
-
-				plank.generate(parameterPack(
-							param("position", Vector3f(1 + 2*x, 0.6 + 0.8*y, 0.1 + 2*z)),
-							param("scale", Vector3f(1, 0.2, 0.1)),
-							param("rotation", Quaternionf(0, 0, 0, 1)),
-							param("mass", 0.5f)));
-
-				plank.generate(parameterPack(
-							param("position", Vector3f(1 + 2*x, 0.6 + 0.8*y, 1.9 + 2*z)),
-							param("scale", Vector3f(1, 0.2, 0.1)),
-							param("rotation", Quaternionf(0, 0, 0, 1)),
-							param("mass", 0.5f)));
-
+							param("mass", mass)));
 			}
+
+			//終点
+			plank.generate(parameterPack(
+						param("position", Vector3f(offsetx + x*plankLength*2, 0.2 + 0.4*y, offsetz + zcount * plankLength * 2 - 1 - plankWidth)),
+						param("scale", Vector3f(1, 0.2, plankWidth)),
+						param("rotation", Quaternionf(0, 0, 0, 1)),
+						param("mass", mass)));
+
+		}
+
+
+		for (int z = 0; z < zcount; z++) {
+			//始点
+			plank.generate(parameterPack(
+						param("position", Vector3f(offsetx - 1 + plankWidth, 0.2 + 0.4*(y+1), offsetz + z*plankLength*2)),
+						param("scale", Vector3f(plankWidth, 0.2, 1)),
+						param("rotation", Quaternionf(0, 0, 0, 1)),
+						param("mass", mass)));
+
+			for (int i = 1; i < xcount; i++) {
+				plank.generate(parameterPack(
+							param("position", Vector3f(offsetx + (i * plankLength * 2)- 1, 0.2 + 0.4*(y+1), offsetz + z*plankLength*2)),
+							param("scale", Vector3f(plankWidth, 0.2, 1)),
+							param("rotation", Quaternionf(0, 0, 0, 1)),
+							param("mass", mass)));
+			}
+
+			//終点
+			plank.generate(parameterPack(
+						param("position", Vector3f(offsetx + xcount * plankLength * 2 - 1 - plankWidth, 0.2 + 0.4*(y+1), offsetz + z*plankLength*2)),
+						param("scale", Vector3f(plankWidth, 0.2, 1)),
+						param("rotation", Quaternionf(0, 0, 0, 1)),
+						param("mass", mass)));
+
 		}
 	}
+
 
 	}
 	catch (Exception ex){
