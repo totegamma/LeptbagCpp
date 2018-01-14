@@ -1,7 +1,6 @@
 import core.stdc.stdio;
 import std.stdio;
 import core.runtime;
-import std.random;
 import std.math;
 import std.algorithm;
 
@@ -13,7 +12,6 @@ import dlib.math.quaternion;
 
 dog mydog;
 dog[] doglist;
-Random rnd;
 
 const int numofdog = 5;
 const int dnacol = 20;
@@ -206,7 +204,6 @@ class dog{
 
 extern (C) void init(){
 	rt_init();
-	Random(unpredictableSeed);
 
 	doglist.length = numofdog;
 
