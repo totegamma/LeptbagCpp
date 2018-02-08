@@ -1,1 +1,0 @@
-g++ -I/usr/local/include/bullet/ -L/usr/local/lib/ -l BulletDynamics -l BulletCollision -l LinearMath hello_world.cpp
