@@ -1,7 +1,0 @@
-main.cpp:
-	g++ -c main.cpp
-	g++ -rdynamic main.o -o main -ldl
-
-dll.d
-	dmd -c dll.d -fPIC
-	dmd -oflibdll.so dll.o -shared -defaultlib=libphobos2.so -L-undefined -Ldynamic_lookup
