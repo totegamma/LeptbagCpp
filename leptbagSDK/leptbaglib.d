@@ -1,4 +1,4 @@
-module japariSDK.japarilib;
+module leptbagSDK.leptbaglib;
 import std.stdio;
 
 import dlib.math.vector;

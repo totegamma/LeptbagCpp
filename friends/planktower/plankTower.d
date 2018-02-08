@@ -4,7 +4,7 @@ import std.math;
 import std.json;
 import std.random;
 
-import japariSDK.japarilib;
+import leptbagSDK.leptbaglib;
 
 Random rnd;
 

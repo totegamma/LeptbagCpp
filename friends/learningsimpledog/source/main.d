@@ -7,7 +7,7 @@ import std.algorithm;
 import std.conv;
 import std.array;
 
-import japariSDK.japarilib;
+import leptbagSDK.leptbaglib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 

@@ -5,7 +5,7 @@ import std.json;
 import std.random;
 
 
-import japariSDK.japarilib;
+import leptbagSDK.leptbaglib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 
