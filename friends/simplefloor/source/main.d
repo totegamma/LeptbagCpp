@@ -3,7 +3,7 @@ import std.stdio;
 import core.runtime;
 
 
-import japariSDK.japarilib;
+import leptbagSDK.leptbaglib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 

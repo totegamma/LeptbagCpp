@@ -1,7 +1,7 @@
 *.o
 *.so
 *.depend
-source/japari_park
+source/LeptBag
 
 *.friends
 *.fpm
@@ -11,6 +11,6 @@ source/japari_park
 
 *.dub/
 
-source/japari_park.dSYM/Contents/Info.plist
-source/japari_park.dSYM/Contents/Resources/DWARF/japari_park
+source/LeptBag.dSYM/Contents/Info.plist
+source/LeptBag.dSYM/Contents/Resources/DWARF/LeptBag
 

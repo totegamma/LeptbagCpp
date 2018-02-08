@@ -5,7 +5,7 @@ import core.runtime;
 import std.json;
 
 
-import japariSDK.japarilib;
+import leptbagSDK.leptbaglib;
 import dlib.math.vector;
 import dlib.math.quaternion;
 
