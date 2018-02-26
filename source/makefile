@@ -20,9 +20,9 @@ endif
 ifeq ($(UNAME),Darwin)
 CC := g++-7
 CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0
-INCLUDEPATH := 
+INCLUDEPATH := -I/usr/local/include/freetype2
 LIBPATH := -L/usr/local/lib
-LIBS := -ldl -lBulletDynamics -lBulletCollision -lLinearMath -lglfw -lglew -framework OpenGL
+LIBS := -ldl -lfreetype -lBulletDynamics -lBulletCollision -lLinearMath -lglfw -lglew -framework OpenGL
 endif
 
 
