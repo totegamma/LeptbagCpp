@@ -28,6 +28,7 @@
 #include "elementManager.hpp"
 #include "bodyGenerator.hpp"
 #include "primitiveShape.hpp"
+#include "font.hpp"
 #include "misc.hpp"
 
 
@@ -290,6 +291,8 @@ int main() {
 
 
 
+
+	//ロードされるダイナミックライブラリのリスト
 	std::vector<void*> dllList;
 
 	const char* path = "./friends/";
@@ -340,6 +343,9 @@ int main() {
 
 
 
+	//フォント描画モジュールの初期化
+	font::setup();
+
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -349,8 +355,10 @@ int main() {
 	glEnableVertexAttribArray(6);
 
 
+	textbox hoge2 = textbox(L"これよこれ This is what I wanted.", 1000/2 - 500, 800/2 - 200, 60, 50, 255, 100);
 
-	//毎フレームごとにこの中が実装される。
+
+	//毎フレーム描画
 	while (glfwWindowShouldClose(window) == GL_FALSE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -381,6 +389,9 @@ int main() {
 		for (auto elem: elementManager::elementManagerList) {
 			elem->render();
 		}
+
+		//フォントの描画
+		font::draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
