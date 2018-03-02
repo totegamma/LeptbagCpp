@@ -355,8 +355,6 @@ int main() {
 	glEnableVertexAttribArray(6);
 
 
-	textbox hoge2 = textbox(L"これよこれ This is what I wanted.", 1000/2 - 500, 800/2 - 200, 60, 50, 255, 100);
-
 
 	//毎フレーム描画
 	while (glfwWindowShouldClose(window) == GL_FALSE) {

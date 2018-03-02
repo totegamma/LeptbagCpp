@@ -12,6 +12,13 @@ textbox::textbox(std::wstring text, int x, int y, int size, int r, int g, int b)
 	render();
 }
 
+extern "C" textbox_interface* createTextbox_interface(wchar_t* text, int length, int x, int y, int size, int r, int g, int b) {
+	for(int i = 0; i < length; i++) {
+		std::cout << text[i] << std::endl;
+	}
+	return new textbox(std::wstring(text, length), x, y, size, r, g, b);
+}
+
 // 要求のあった文字列を再現する為、一文字一文字をきれいに並べて描画リストに挿入する。
 void textbox::render() {
 	float originX         = ((float)x/(float)windowWidth)*2.0f - 1.0f;
@@ -66,10 +73,10 @@ void textbox::render() {
 
 // --以下テクストボックスの更新系。めんどくさいのでプロパティを適切に変更した後、--------┐
 // 文字を全部削除して追加し直している。(本当は一部のプロパティを書き換えるだけでOK) #TODO
-void textbox::updateText(std::wstring newText) {
+void textbox::updateText(wchar_t *text, int length) {
 	destroy();
-	text = newText;
-	length = newText.length();
+	this->text = std::wstring(text, length);
+	length = length;
 	render();
 }
 

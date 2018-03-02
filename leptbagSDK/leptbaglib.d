@@ -633,3 +633,59 @@ extern (C) {
 	btRigidBody createConvexHullShapeBody(parameterPack input);
 }
 
+//========[textbox]========
+
+
+extern (C++) {
+	interface textbox_interface {
+		void updateText(wchar* text, int length);
+		void updateColor(int r, int g, int b);
+		void updateSize(int size);
+		void updatePos(int x, int y);
+		void destroy();
+	}
+}
+
+extern (C) {
+	textbox_interface createTextbox_interface(wchar* text, int length, int x, int y, int size, int r, int g, int b);
+}
+
+class textbox {
+
+	textbox_interface entity;
+	bool exported;
+
+	this(wstring text, int x, int y, int size, int r, int g, int b) {
+		entity = createTextbox_interface(&text.dup[0], cast(int)text.length, x, y, size, r, g, b);
+		exported = false;
+	}
+
+	void updateText(wstring text) {
+		entity.updateText(&text.dup[0], cast(int)text.length);
+	}
+
+	void updateColor(int r, int g, int b) {
+		entity.updateColor(r, g, b);
+	}
+
+	void updateSize(int size) {
+		entity.updateSize(size);
+	}
+
+	void updatePos(int x, int y) {
+		entity.updatePos(x, y);
+	}
+
+	void destroy() {
+		entity.destroy();
+		exported = true;
+		entity = null;
+	}
+
+	~this() {
+		if(exported == false) {
+			entity.destroy();
+		}
+	}
+}
+
