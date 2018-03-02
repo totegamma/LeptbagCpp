@@ -656,12 +656,14 @@ class textbox {
 	bool exported;
 
 	this(wstring text, int x, int y, int size, int r, int g, int b) {
-		entity = createTextbox_interface(&text.dup[0], cast(int)text.length, x, y, size, r, g, b);
+		wchar* cwstr = &text.dup[0];
+		entity = createTextbox_interface(cwstr, cast(int)text.length, x, y, size, r, g, b);
 		exported = false;
 	}
 
 	void updateText(wstring text) {
-		entity.updateText(&text.dup[0], cast(int)text.length);
+		wchar* cwstr = &text.dup[0];
+		entity.updateText(cwstr, cast(int)text.length);
 	}
 
 	void updateColor(int r, int g, int b) {

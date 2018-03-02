@@ -14,7 +14,8 @@ import dlib.math.quaternion;
 extern (C) void init(){
 	rt_init();
 
-	textbox newtextbox = new textbox("testdeath", 0, 0, 30, 0, 0, 0);
+	wstring message = "message";
+	textbox newtextbox = new textbox(message, 0, 0, 30, 0, 0, 0);
 
 }
 

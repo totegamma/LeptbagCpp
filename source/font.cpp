@@ -13,10 +13,12 @@ textbox::textbox(std::wstring text, int x, int y, int size, int r, int g, int b)
 }
 
 extern "C" textbox_interface* createTextbox_interface(wchar_t* text, int length, int x, int y, int size, int r, int g, int b) {
+	char16_t* test = (char16_t*)text;
+	wchar_t* buf = new wchar_t[length];
 	for(int i = 0; i < length; i++) {
-		std::cout << text[i] << std::endl;
+		buf[i] = test[i];
 	}
-	return new textbox(std::wstring(text, length), x, y, size, r, g, b);
+	return new textbox(std::wstring(buf, length), x, y, size, r, g, b);
 }
 
 // 要求のあった文字列を再現する為、一文字一文字をきれいに並べて描画リストに挿入する。
@@ -37,6 +39,8 @@ void textbox::render() {
 
 		// 文字の大きさ等を計算
 		auto info = font::getCharInfo(text[i]);
+
+		std::cout << &info << std::endl;
 
 		float scaledWidth        = fontScaleWidth  * ((float)info.width        / (float)font::textureHeight);
 		float scaledHeight       = fontScaleHeight * ((float)info.height       / (float)font::textureHeight);

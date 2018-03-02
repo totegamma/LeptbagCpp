@@ -289,7 +289,8 @@ int main() {
 
 	initPrimitives();
 
-
+	//フォント描画モジュールの初期化
+	font::setup();
 
 
 	//ロードされるダイナミックライブラリのリスト
@@ -343,8 +344,7 @@ int main() {
 
 
 
-	//フォント描画モジュールの初期化
-	font::setup();
+
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
