@@ -16,7 +16,19 @@
 #include "shader.hpp"
 
 
-class textbox {
+class textbox_interface {
+	public:
+	virtual void updateText(wchar_t * text, int length) = 0;
+	virtual void updateColor(int newR, int newG, int newB) = 0;
+	virtual void updateSize(int newSize) = 0;
+	virtual void updatePos(int newX, int newY) = 0;
+	virtual void destroy() = 0;
+};
+
+extern "C" textbox_interface* createTextbox_interface(wchar_t* text, int length, int x, int y, int size, int r, int g, int b);
+
+
+class textbox : public textbox_interface {
 	const int windowWidth = 1000;
 	const int windowHeight = 800;
 
@@ -40,16 +52,16 @@ class textbox {
 
 	public:
 	textbox(std::wstring text, int x, int y, int size, int r, int g, int b);
-	void updateText(std::wstring newText);
-	void updateColor(int newR, int newG, int newB);
-	void updateSize(int newSize);
-	void updatePos(int newX, int newY);
+	virtual void updateText(wchar_t *text, int length);
+	virtual void updateColor(int newR, int newG, int newB);
+	virtual void updateSize(int newSize);
+	virtual void updatePos(int newX, int newY);
+	virtual void destroy();
 
 	//void render() : これは実際に画面に描画する訳ではなく、
 	//                描画するために頂点情報を計算して記録する関数である。(ネーミングが下手)
 	void render();
 	void updateID(int before, int after);
-	void destroy();
 };
 
 
