@@ -18,14 +18,14 @@
 
 class textbox_interface {
 	public:
-	virtual void updateText(wchar_t * text, int length) = 0;
+	virtual void updateText(char16_t * text, int length) = 0;
 	virtual void updateColor(int newR, int newG, int newB) = 0;
 	virtual void updateSize(int newSize) = 0;
 	virtual void updatePos(int newX, int newY) = 0;
 	virtual void destroy() = 0;
 };
 
-extern "C" textbox_interface* createTextbox_interface(wchar_t* text, int length, int x, int y, int size, int r, int g, int b);
+extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length, int x, int y, int size, int r, int g, int b);
 
 
 class textbox : public textbox_interface {
@@ -38,7 +38,7 @@ class textbox : public textbox_interface {
 	static std::unordered_map<int, textbox*> ownerList;
 
 	// テキストのプロパティ
-	std::wstring text;
+	std::u16string text;
 	int x;
 	int y;
 	int size;
@@ -51,8 +51,8 @@ class textbox : public textbox_interface {
 	std::unique_ptr<int[]> characterIDArray;
 
 	public:
-	textbox(std::wstring text, int x, int y, int size, int r, int g, int b);
-	virtual void updateText(wchar_t *text, int length);
+	textbox(std::u16string text, int x, int y, int size, int r, int g, int b);
+	virtual void updateText(char16_t *text, int length);
 	virtual void updateColor(int newR, int newG, int newB);
 	virtual void updateSize(int newSize);
 	virtual void updatePos(int newX, int newY);
@@ -134,12 +134,12 @@ namespace font {
 
 	// 文字情報を高速に取得するために使う。
 	// Unicodeから文字の幅などの情報を引ける。
-	extern std::unordered_map<wchar_t, charInfo> charMap;
+	extern std::unordered_map<char16_t, charInfo> charMap;
 
 
 
 	//字形情報を返す。フォントレンダからの字形登録までやってくれる。
-	charInfo getCharInfo(wchar_t request);
+	charInfo getCharInfo(char16_t request);
 
 	void reloadVBO();
 
