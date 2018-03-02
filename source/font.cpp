@@ -6,19 +6,14 @@
 std::unordered_map<int, textbox*> textbox::ownerList;
 
 
-textbox::textbox(std::wstring text, int x, int y, int size, int r, int g, int b):
+textbox::textbox(std::u16string text, int x, int y, int size, int r, int g, int b):
 											text(text), x(x), y(y), size(size), r(r), g(g), b(b) {
 	length = text.length();
 	render();
 }
 
-extern "C" textbox_interface* createTextbox_interface(wchar_t* text, int length, int x, int y, int size, int r, int g, int b) {
-	char16_t* test = (char16_t*)text;
-	wchar_t* buf = new wchar_t[length];
-	for(int i = 0; i < length; i++) {
-		buf[i] = test[i];
-	}
-	return new textbox(std::wstring(buf, length), x, y, size, r, g, b);
+extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length, int x, int y, int size, int r, int g, int b) {
+	return new textbox(std::u16string(text, length), x, y, size, r, g, b);
 }
 
 // 要求のあった文字列を再現する為、一文字一文字をきれいに並べて描画リストに挿入する。
@@ -39,8 +34,6 @@ void textbox::render() {
 
 		// 文字の大きさ等を計算
 		auto info = font::getCharInfo(text[i]);
-
-		std::cout << &info << std::endl;
 
 		float scaledWidth        = fontScaleWidth  * ((float)info.width        / (float)font::textureHeight);
 		float scaledHeight       = fontScaleHeight * ((float)info.height       / (float)font::textureHeight);
@@ -77,9 +70,9 @@ void textbox::render() {
 
 // --以下テクストボックスの更新系。めんどくさいのでプロパティを適切に変更した後、--------┐
 // 文字を全部削除して追加し直している。(本当は一部のプロパティを書き換えるだけでOK) #TODO
-void textbox::updateText(wchar_t *text, int length) {
+void textbox::updateText(char16_t *text, int length) {
 	destroy();
-	this->text = std::wstring(text, length);
+	this->text = std::u16string(text, length);
 	length = length;
 	render();
 }
@@ -144,10 +137,10 @@ namespace font {
 	GLuint textAtlasItr = 0;
 	GLuint textAtlasWidth = 512;
 	std::vector<character> characterVector;
-	std::unordered_map<wchar_t, charInfo> charMap;
+	std::unordered_map<char16_t, charInfo> charMap;
 
 	//字形情報を返す。フォントレンダからの字形登録までやってくれる。
-	charInfo getCharInfo(wchar_t request) {
+	charInfo getCharInfo(char16_t request) {
 
 		// 要求された文字が登録済みかどうか調べる
 		if (auto iter = charMap.find(request); iter != end(charMap)) {
