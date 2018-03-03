@@ -28,6 +28,7 @@
 #include "elementManager.hpp"
 #include "bodyGenerator.hpp"
 #include "primitiveShape.hpp"
+#include "font.hpp"
 #include "misc.hpp"
 
 
@@ -288,8 +289,11 @@ int main() {
 
 	initPrimitives();
 
+	//フォント描画モジュールの初期化
+	font::setup();
 
 
+	//ロードされるダイナミックライブラリのリスト
 	std::vector<void*> dllList;
 
 	const char* path = "./friends/";
@@ -340,6 +344,8 @@ int main() {
 
 
 
+
+
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -350,7 +356,7 @@ int main() {
 
 
 
-	//毎フレームごとにこの中が実装される。
+	//毎フレーム描画
 	while (glfwWindowShouldClose(window) == GL_FALSE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -381,6 +387,9 @@ int main() {
 		for (auto elem: elementManager::elementManagerList) {
 			elem->render();
 		}
+
+		//フォントの描画
+		font::draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
