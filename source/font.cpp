@@ -73,7 +73,7 @@ void textbox::render() {
 void textbox::updateText(char16_t *text, int length) {
 	destroy();
 	this->text = std::u16string(text, length);
-	length = length;
+	this->length = length;
 	render();
 }
 
