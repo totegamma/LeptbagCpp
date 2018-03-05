@@ -67,6 +67,8 @@ std::vector<void (*)(int key, int scancode, int action, int mods)> pluginKeyCall
 std::vector<void (*)(double xpos, double ypos)> pluginMouseMoveCallbackVector;
 std::vector<void (*)(int button, int action, int mods)> pluginMouseButtonCallbackVector;
 
+std::vector<void (*)(int width, int height)> pluginWindowResizeCallbackVector;
+
 // TODO:　unregister関数を作成すること!!!!!
 extern "C" void registerKeyCallback(void (*func)(int key, int scancode, int action, int mods)) {
 	pluginKeyCallbackVector.push_back(func);
@@ -78,6 +80,10 @@ extern "C" void registerMouseMoveCallback(void (*func)(double xpos, double ypos)
 
 extern "C" void registerMouseButtonCallback(void (*func)(int button, int action, int mods)) {
 	pluginMouseButtonCallbackVector.push_back(func);
+}
+
+extern "C" void registerWindowResizeCallback(void (*func)(int width, int height)) {
+	pluginWindowResizeCallbackVector.push_back(func);
 }
 
 extern "C" int getWindowWidth() {
@@ -214,6 +220,11 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 void handleWindowResize(GLFWwindow* window, int width, int height) {
 	::windowWidth  = width;
 	::windowHeight = height;
+
+	for(auto elem : pluginWindowResizeCallbackVector) {
+		(elem)(width, height);
+	}
+
 	font::updateWindowSize(width, height);
 }
 
