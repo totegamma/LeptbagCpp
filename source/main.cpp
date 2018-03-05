@@ -81,15 +81,15 @@ extern "C" void registerMouseButtonCallback(void (*func)(int button, int action,
 }
 
 extern "C" int getWindowWidth() {
-	return windowWidth;
+	return ::windowWidth;
 }
 
 extern "C" int getWindowHeight() {
-	return windowHeight;
+	return ::windowHeight;
 }
 
 extern "C" void setCursorPos(float x, float y) {
-	glfwSetCursorPos(window, x, y);
+	glfwSetCursorPos(::window, x, y);
 }
 
 
@@ -148,7 +148,7 @@ extern "C" void updateCamera(float posx, float posy, float posz, float horizAng,
 
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	ProjectionMatrix = glm::perspective(FoV, (float)windowWidth/(float)windowHeight, 0.1f, 300.0f);
+	ProjectionMatrix = glm::perspective(FoV, (float)::windowWidth/(float)::windowHeight, 0.1f, 300.0f);
 
 	// Camera matrix
 	ViewMatrix = glm::lookAt(
@@ -180,10 +180,10 @@ void handleKeypress(GLFWwindow* window, int key, int scancode, int action, int m
 	if (action == GLFW_PRESS) {
 		switch(key) {
 			case GLFW_KEY_ESCAPE:
-				glfwSetCursorPosCallback(window, NULL);
-				glfwSetKeyCallback(window, NULL);
-				glfwSetCursorPos(window, windowWidth/2, windowHeight/2);
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				glfwSetCursorPosCallback(::window, NULL);
+				glfwSetKeyCallback(::window, NULL);
+				glfwSetCursorPos(::window, ::windowWidth/2, ::windowHeight/2);
+				glfwSetInputMode(::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
 
 			default:
@@ -202,18 +202,19 @@ void handleMouseButton(GLFWwindow* window, int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch(button){
 			case GLFW_MOUSE_BUTTON_1:
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				glfwSetCursorPos(window, windowWidth/2, windowHeight/2);
-				glfwSetCursorPosCallback(window, handleMouseMove);
-				glfwSetKeyCallback(window, handleKeypress);
+				glfwSetInputMode(::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetCursorPos(::window, ::windowWidth/2, ::windowHeight/2);
+				glfwSetCursorPosCallback(::window, handleMouseMove);
+				glfwSetKeyCallback(::window, handleKeypress);
 				break;
 		}
 	}
 }
 
 void handleWindowResize(GLFWwindow* window, int width, int height) {
-	windowWidth  = width;
-	windowHeight = height;
+	::windowWidth  = width;
+	::windowHeight = height;
+	font::updateWindowSize(width, height);
 }
 
 
@@ -246,11 +247,11 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(windowWidth, windowHeight, "LeptBag", NULL, NULL);
-	if (!window) {
+	::window = glfwCreateWindow(::windowWidth, ::windowHeight, "LeptBag", NULL, NULL);
+	if (!::window) {
 		std::cout << "cannot open OpenGL window" << std::endl;
 	}
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(::window);
 
 	glewExperimental = GL_TRUE;
 	if (glewInit () != GLEW_OK) {
@@ -411,12 +412,12 @@ int main() {
 
 
 	//入力のコールバック・カーソルタイプの設定
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
-	glfwSetKeyCallback(window, handleKeypress);
-	glfwSetMouseButtonCallback(window, handleMouseButton);
-	glfwSetCursorPosCallback(window, handleMouseMove);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetWindowSizeCallback(window, handleWindowResize);
+	glfwSetInputMode(::window, GLFW_STICKY_KEYS, 1);
+	glfwSetKeyCallback(::window, handleKeypress);
+	glfwSetMouseButtonCallback(::window, handleMouseButton);
+	glfwSetCursorPosCallback(::window, handleMouseMove);
+	glfwSetInputMode(::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowSizeCallback(::window, handleWindowResize);
 
 
 	//物理ワールドの生成
@@ -433,8 +434,9 @@ int main() {
 
 	initPrimitives();
 
+
 	//フォント描画モジュールの初期化
-	font::setup();
+	font::setup(::windowWidth, ::windowHeight);
 
 	//ロードされるダイナミックライブラリのリスト
 	std::vector<void*> dllList;
@@ -498,7 +500,7 @@ int main() {
 	initPrimitives();
 
 	//毎フレーム描画
-	while (glfwWindowShouldClose(window) == GL_FALSE) {
+	while (glfwWindowShouldClose(::window) == GL_FALSE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -672,7 +674,7 @@ int main() {
 		// 通常描画
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, windowWidth*2, windowHeight*2); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0, 0, ::windowWidth*2, ::windowHeight*2); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
 		//glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
 
@@ -731,7 +733,7 @@ int main() {
 		//フォントの描画
 		font::draw();
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(::window);
 		glfwPollEvents();
 	}
 

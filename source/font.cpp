@@ -1,5 +1,8 @@
 #include "font.hpp"
 
+
+std::unordered_set<textbox*> textbox::instances;
+
 // # std::unordered_map<int, textbox*> textbox::ownerList
 // どのテキストボックスが描画リスト何番目の文字を所有しているのかを管理する
 // 描画リストの並び替え(削除時に発生する)の際、持ち主テキストボックスに通知するのに使用する
@@ -8,8 +11,13 @@ std::unordered_map<int, textbox*> textbox::ownerList;
 
 textbox::textbox(std::u16string text, int x, int y, int size, int r, int g, int b):
 											text(text), x(x), y(y), size(size), r(r), g(g), b(b) {
+	this->instances.insert(this);
 	length = text.length();
 	render();
+}
+
+textbox::~textbox() {
+	this->instances.erase(this);
 }
 
 extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length, int x, int y, int size, int r, int g, int b) {
@@ -18,10 +26,10 @@ extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length
 
 // 要求のあった文字列を再現する為、一文字一文字をきれいに並べて描画リストに挿入する。
 void textbox::render() {
-	float originX         = ((float)x/(float)windowWidth)*2.0f - 1.0f;
-	float originY         = ((float)y/(float)windowWidth)*2.0f - 1.0f;
-	float fontScaleWidth  = (float)size/(float)windowWidth * 2;
-	float fontScaleHeight = (float)size/(float)windowHeight * 2;
+	float originX         = ((float)x/(float)font::windowWidth)*2.0f - 1.0f;
+	float originY         = ((float)y/(float)font::windowWidth)*2.0f - 1.0f;
+	float fontScaleWidth  = (float)size/(float)font::windowWidth * 2;
+	float fontScaleHeight = (float)size/(float)font::windowHeight * 2;
 
 	float normalR = (float)r/255.0f;
 	float normalG = (float)g/255.0f;
@@ -67,6 +75,10 @@ void textbox::render() {
 	font::reloadVBO();
 }
 
+void textbox::rerender() {
+	destroy();
+	render();
+}
 
 // --以下テクストボックスの更新系。めんどくさいのでプロパティを適切に変更した後、--------┐
 // 文字を全部削除して追加し直している。(本当は一部のプロパティを書き換えるだけでOK) #TODO
@@ -99,6 +111,7 @@ void textbox::updatePos(int newX, int newY) {
 }
 //---------------------------------------------------------------------------------------┘
 
+
 // 描画リスト内で並び替えが発生した際呼ばれる
 void textbox::updateID(int before, int after) {
 	for (int i = 0; i < length; i++) {
@@ -125,6 +138,9 @@ void textbox::destroy() {
 }
 
 namespace font {
+
+	int windowWidth;
+	int windowHeight;
 
 	GLuint textAtlas;
 
@@ -228,7 +244,6 @@ namespace font {
 
 	// characterを投げるとリストに追加してくれる。
 	// その時、今登録したcharacterが、リストの何番目に入ったのか通知してくれる。
-	// この関数を拡張すれば、複雑な並び替えなどしなくていいのでは🤔 #TODO
 	int addCharacterToDrawList(character request) {
 		int id = characterVector.size();
 		characterVector.push_back(request);
@@ -246,7 +261,12 @@ namespace font {
 	}
 
 	// 呼んで。まず。
-	void setup() {
+	void setup(int windowWidth, int windowHeight) {
+
+		font::windowWidth = windowWidth;
+		font::windowHeight = windowHeight;
+
+
 		if (FT_Init_FreeType(&ft))
 			std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 
@@ -284,6 +304,15 @@ namespace font {
 		// フォントは背景透過したいからねー
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	}
+
+	void updateWindowSize(int newWidth, int newHeight) {
+		font::windowWidth = newWidth;
+		font::windowHeight = newHeight;
+
+		for (auto elem : textbox::instances) {
+			elem->rerender();
+		}
 	}
 
 	// 実際に画面に描画する。
