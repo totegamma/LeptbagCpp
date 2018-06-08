@@ -7,6 +7,9 @@ class elementNode;
 #include "utilities/utilities.hpp"
 #include <iostream>
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 class elementNode_interface{
 	public:
 	virtual float getXpos() const = 0;
@@ -30,14 +33,14 @@ class elementNode : public elementNode_interface{
 	int id;
 	elementManager* parent;
 	btRigidBody* body;
-	vec3 initialPosition;
-	vec3 initialScale;
-	quat initialRotation;
+	Eigen::Vector3f initialPosition;
+	Eigen::Vector3f initialScale;
+	Eigen::Quaternionf initialRotation;
 
 
 	public:
 	elementNode() = delete;
-	elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation);
+	elementNode(int id, elementManager* parent, btRigidBody* body, Eigen::Vector3f position, Eigen::Vector3f scale, Eigen::Quaternionf rotation);
 	virtual float getXpos() const;
 	virtual float getYpos() const;
 	virtual float getZpos() const;

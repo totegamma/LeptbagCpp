@@ -8,9 +8,9 @@ class parameterPack;
 #include <assert.h>
 #include <memory>
 #include <exception>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
-#include "universalString.hpp"
-#include "universalVector.hpp"
 #include "../vertexManager.hpp"
 #include "../elementManager.hpp"
 
@@ -25,9 +25,9 @@ class paramWrapper{
 	union data_t{
 		int intValue;
 		float floatValue;
-		univStr* stringValue;
-		vec3* vec3Value;
-		quat* quatValue;
+		std::string* stringValue;
+		Eigen::Vector3f* vec3Value;
+		Eigen::Quaternionf* quatValue;
 		vertexManager* modelValue;
 		elementManager* emValue;
 	} data;
@@ -45,36 +45,29 @@ class paramWrapper{
 	type contain;
 
 	public:
-	std::unique_ptr<univStr> tag;
+	std::unique_ptr<std::string> tag;
 
 	paramWrapper() = delete;
-	paramWrapper(std::unique_ptr<univStr>, int intValue);
-	paramWrapper(std::unique_ptr<univStr>, float floatValue);
-	paramWrapper(std::unique_ptr<univStr>, univStr* stringValue);
-	paramWrapper(std::unique_ptr<univStr>, vec3* vec3Value);
-	paramWrapper(std::unique_ptr<univStr>, quat* quatValue);
-	paramWrapper(std::unique_ptr<univStr>, vertexManager* modelValue);
-	paramWrapper(std::unique_ptr<univStr>, elementManager* emValue);
+	paramWrapper(std::unique_ptr<std::string>, int intValue);
+	paramWrapper(std::unique_ptr<std::string>, float floatValue);
+	paramWrapper(std::unique_ptr<std::string>, std::string* stringValue);
+	paramWrapper(std::unique_ptr<std::string>, Eigen::Vector3f* vec3Value);
+	paramWrapper(std::unique_ptr<std::string>, Eigen::Quaternionf* quatValue);
+	paramWrapper(std::unique_ptr<std::string>, vertexManager* modelValue);
+	paramWrapper(std::unique_ptr<std::string>, elementManager* emValue);
 
 	virtual void destroy();
 	virtual ~paramWrapper();
 
 	int getInt();
 	float getFloat();
-	univStr* getString();
-	vec3* getVec3();
-	quat* getQuat();
+	std::string* getString();
+	Eigen::Vector3f* getVec3();
+	Eigen::Quaternionf* getQuat();
 	vertexManager* getModel();
 	elementManager* getEm();
 };
 
-extern "C" paramWrapper* createIntParam   (univStr *tag, int value);
-extern "C" paramWrapper* createFloatParam (univStr *tag, float value);
-extern "C" paramWrapper* createStringParam(univStr *tag, univStr *value);
-extern "C" paramWrapper* createVec3Param  (univStr *tag, vec3 *value);
-extern "C" paramWrapper* createQuatParam  (univStr *tag, quat *value);
-extern "C" paramWrapper* createModelParam (univStr *tag, vertexManager *value);
-extern "C" paramWrapper* createEmParam    (univStr *tag, elementManager *value);
 
 class parameterPack_interface{
 	virtual void destroy() = 0;
@@ -104,13 +97,15 @@ class parameterPack final: public parameterPack_interface{
 
 };
 
+
 extern "C" parameterPack* createParameterPack(int count, ...);
+
 
 paramWrapper* param(std::string tag, int value);
 paramWrapper* param(std::string tag, float value);
 paramWrapper* param(std::string tag, std::string value);
-paramWrapper* param(std::string tag, vec3* value);
-paramWrapper* param(std::string tag, quat* value);
+paramWrapper* param(std::string tag, Eigen::Vector3f* value);
+paramWrapper* param(std::string tag, Eigen::Quaternionf* value);
 paramWrapper* param(std::string tag, vertexManager* value);
 paramWrapper* param(std::string tag, elementManager* value);
 
