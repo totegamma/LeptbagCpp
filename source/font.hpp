@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <memory>
 
 #include <ft2build.h>
@@ -29,8 +30,7 @@ extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length
 
 
 class textbox : public textbox_interface {
-	const int windowWidth = 1000;
-	const int windowHeight = 800;
+
 
 	// # std::unordered_map<int, textbox*> textbox::ownerList
 	// どのテキストボックスが描画リスト何番目の文字を所有しているのかを管理する
@@ -51,7 +51,11 @@ class textbox : public textbox_interface {
 	std::unique_ptr<int[]> characterIDArray;
 
 	public:
+
+	static std::unordered_set<textbox*> instances;
+
 	textbox(std::u16string text, int x, int y, int size, int r, int g, int b);
+	~textbox();
 	virtual void updateText(char16_t *text, int length);
 	virtual void updateColor(int newR, int newG, int newB);
 	virtual void updateSize(int newSize);
@@ -61,6 +65,7 @@ class textbox : public textbox_interface {
 	//void render() : これは実際に画面に描画する訳ではなく、
 	//                描画するために頂点情報を計算して記録する関数である。(ネーミングが下手)
 	void render();
+	void rerender();
 	void updateID(int before, int after);
 };
 
@@ -110,6 +115,9 @@ namespace font {
 		unsigned int advanceWidth;
 	};
 
+	extern int windowWidth;
+	extern int windowHeight;
+
 	// テクスチャアトラスの高さ。この大きさに合うようフォントをFreeTypeでレンダするので、
 	// これを大きくすることできれいな文字を描画できる(ハズ)。
 	const GLuint textureHeight = 128;
@@ -158,7 +166,9 @@ namespace font {
 	int removeCharacterFromDrawList(int id);
 
 	// 呼んで。まず。
-	void setup();
+	void setup(int windowWidth, int windowHeight);
+
+	void updateWindowSize(int newWidth, int newHeight);
 
 	// 実際に画面に描画する。
 	void draw();
