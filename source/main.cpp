@@ -452,7 +452,7 @@ int main() {
 	//ロードされるダイナミックライブラリのリスト
 	std::vector<void*> dllList;
 
-	const char* path = "./friends/";
+	const char* path = "./plugins/";
 	DIR *dp;       // ディレクトリへのポインタ
 	dirent* entry; // readdir() で返されるエントリーポイント
 
@@ -461,7 +461,7 @@ int main() {
 	entry = readdir(dp);
 	while (entry != NULL) {
 		std::string filename(entry->d_name);
-		if (split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends") {
+		if (split(filename,'.').size() >= 2 && split(filename, '.')[1] == "so") {
 
 			void* lh = dlopen((path + filename).c_str(), RTLD_LAZY);
 			if (!lh) {
@@ -529,12 +529,7 @@ int main() {
 
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap0FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
+		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -571,11 +566,6 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap1FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -610,11 +600,6 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap2FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -648,11 +633,6 @@ int main() {
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap3FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
