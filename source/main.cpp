@@ -498,6 +498,34 @@ int main() {
 		(elem)();
 	}
 
+	//---------------------------------------------------------------------
+
+
+	float vertAng = 0;
+	float horizAng = 0;
+
+	glm::vec3 position = glm::vec3(0, 0, 0);
+
+	//カメラの向きを計算する
+	glm::vec3 direction(
+			cos(vertAng) * sin(horizAng), 
+			sin(vertAng),
+			cos(vertAng) * cos(horizAng)
+			);
+
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	ProjectionMatrix = glm::perspective(45.0f, (float)::windowWidth/(float)::windowHeight, 0.1f, 300.0f);
+
+	// Camera matrix
+	ViewMatrix = glm::lookAt(
+			position,           // Camera is here
+			position+direction, // and looks here : at the same position, plus "direction"
+			glm::vec3(0,1,0)    // Head is up (set to 0,-1,0 to look upside-down)
+			);
+
+	//--------------------------------------------------------------------------
+
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
