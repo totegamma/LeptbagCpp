@@ -10,25 +10,8 @@ class elementNode;
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-class elementNode_interface{
-	public:
-	virtual float getXpos() const = 0;
-	virtual float getYpos() const = 0;
-	virtual float getZpos() const = 0;
-	virtual float getXrot() const = 0;
-	virtual float getYrot() const = 0;
-	virtual float getZrot() const = 0;
-	virtual float getWrot() const = 0;
-	virtual float getBasis(int row, int column) const = 0;
-	virtual float getFriction() const = 0;
-	virtual void setFriction(float coef) = 0;
-	virtual void setLinearVelocity(float x, float y, float z) = 0;
-	virtual void setAngularVelocity(float x, float y, float z) = 0;
-	virtual void activate() = 0;
-	virtual void destroy() = 0;
-};
 
-class elementNode : public elementNode_interface{
+class elementNode {
 
 	int id;
 	elementManager* parent;
@@ -41,22 +24,22 @@ class elementNode : public elementNode_interface{
 	public:
 	elementNode() = delete;
 	elementNode(int id, elementManager* parent, btRigidBody* body, Eigen::Vector3f position, Eigen::Vector3f scale, Eigen::Quaternionf rotation);
-	virtual float getXpos() const;
-	virtual float getYpos() const;
-	virtual float getZpos() const;
-	virtual float getXrot() const;
-	virtual float getYrot() const;
-	virtual float getZrot() const;
-	virtual float getWrot() const;
-	virtual float getBasis(int row, int column) const;
-	virtual float getFriction() const;
-	virtual void setFriction(float coef);
-	virtual void setLinearVelocity(float x, float y, float z);
-	virtual void setAngularVelocity(float x, float y, float z);
-	virtual void activate();
-	virtual void destroy();
+	float getXpos() const;
+	float getYpos() const;
+	float getZpos() const;
+	float getXrot() const;
+	float getYrot() const;
+	float getZrot() const;
+	float getWrot() const;
+	float getBasis(int row, int column) const;
+	float getFriction() const;
+	void setFriction(float coef);
+	void setLinearVelocity(float x, float y, float z);
+	void setAngularVelocity(float x, float y, float z);
+	void activate();
+	void destroy();
 
-	virtual~elementNode();
+	~elementNode();
 
 	void loadMatrix(std::vector<glm::mat4> *input);
 	btRigidBody* getBody() const;

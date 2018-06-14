@@ -3,10 +3,10 @@
 extern "C"
 btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input){
 
-	Eigen::Vector3f position = *input->search("position")->getVec3();
-	Eigen::Vector3f scale    = *input->search("scale")->getVec3();
-	Eigen::Quaternionf rotation = *input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getFloat());
+	Eigen::Vector3f position = input->search("position").getVec3();
+	Eigen::Vector3f scale    = input->search("scale").getVec3();
+	Eigen::Quaternionf rotation = input->search("rotation").getQuat();
+	btScalar mass = btScalar(input->search("mass").getFloat());
 
 
 	btCollisionShape* shape = new btBoxShape(toBtVec3(scale));
@@ -25,10 +25,10 @@ btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input){
 extern "C"
 btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input){
 
-	Eigen::Vector3f position = *input->search("position")->getVec3();
-	Eigen::Vector3f face     = *input->search("face")->getVec3();
-	Eigen::Quaternionf rotation = *input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getFloat());
+	Eigen::Vector3f position = input->search("position").getVec3();
+	Eigen::Vector3f face     = input->search("face").getVec3();
+	Eigen::Quaternionf rotation = input->search("rotation").getQuat();
+	btScalar mass = btScalar(input->search("mass").getFloat());
 
 
 	btCollisionShape* shape = new btStaticPlaneShape(toBtVec3(face), 0);
@@ -48,11 +48,11 @@ btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input){
 extern "C"
 btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 
-	Eigen::Vector3f position = *input->search("position")->getVec3();
-	Eigen::Vector3f scale    = *input->search("scale")->getVec3();
-	Eigen::Quaternionf rotation = *input->search("rotation")->getQuat();
-	btScalar mass = btScalar(input->search("mass")->getFloat());
-	auto objectDataPtr = input->search("caller")->getEm()->getElementDataPtr();
+	Eigen::Vector3f position = input->search("position").getVec3();
+	Eigen::Vector3f scale    = input->search("scale").getVec3();
+	Eigen::Quaternionf rotation = input->search("rotation").getQuat();
+	btScalar mass = btScalar(input->search("mass").getFloat());
+	auto objectDataPtr = input->search("caller").getEm()->getElementDataPtr();
 
 	std::vector<btVector3> convexHullShapePoints;
 

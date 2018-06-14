@@ -1,12 +1,11 @@
-#ifndef PARAMETERPACK_HPP
-#define PARAMETERPACK_HPP
+#ifndef PARAMETERPACK_H
+#define PARAMETERPACK_H
 
-class paramWrapper;
+class param;
 class parameterPack;
 
 #include <iostream>
-#include <assert.h>
-#include <memory>
+#include <vector>
 #include <exception>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -20,17 +19,8 @@ class parameterPackException : public std::exception {
 	parameterPackException(std::string key);
 };
 
-class paramWrapper{
 
-	union data_t{
-		int intValue;
-		float floatValue;
-		std::string* stringValue;
-		Eigen::Vector3f* vec3Value;
-		Eigen::Quaternionf* quatValue;
-		vertexManager* modelValue;
-		elementManager* emValue;
-	} data;
+class param {
 
 	enum type{
 		INT,
@@ -40,80 +30,52 @@ class paramWrapper{
 		QUAT,
 		MODEL,
 		EM,
-	};
+	} type;
 
-	type contain;
+	struct data_t{
+		int intValue;
+		float floatValue;
+		std::string stringValue;
+		Eigen::Vector3f vec3Value;
+		Eigen::Quaternionf quatValue;
+		vertexManager* modelValue;
+		elementManager* emValue;
+	} data;
+
+	std::string tag;
 
 	public:
-	std::unique_ptr<std::string> tag;
+	param() = delete;
+	param(std::string tag, int data);
+	param(std::string tag, float data);
+	param(std::string tag, std::string data);
+	param(std::string tag, Eigen::Vector3f data);
+	param(std::string tag, Eigen::Quaternionf data);
+	param(std::string tag, vertexManager* data);
+	param(std::string tag, elementManager* data);
 
-	paramWrapper() = delete;
-	paramWrapper(std::unique_ptr<std::string>, int intValue);
-	paramWrapper(std::unique_ptr<std::string>, float floatValue);
-	paramWrapper(std::unique_ptr<std::string>, std::string* stringValue);
-	paramWrapper(std::unique_ptr<std::string>, Eigen::Vector3f* vec3Value);
-	paramWrapper(std::unique_ptr<std::string>, Eigen::Quaternionf* quatValue);
-	paramWrapper(std::unique_ptr<std::string>, vertexManager* modelValue);
-	paramWrapper(std::unique_ptr<std::string>, elementManager* emValue);
-
-	virtual void destroy();
-	virtual ~paramWrapper();
+	bool isTag(std::string target);
 
 	int getInt();
 	float getFloat();
-	std::string* getString();
-	Eigen::Vector3f* getVec3();
-	Eigen::Quaternionf* getQuat();
+	std::string getString();
+	Eigen::Vector3f getVec3();
+	Eigen::Quaternionf getQuat();
 	vertexManager* getModel();
 	elementManager* getEm();
 };
 
+class parameterPack {
 
-class parameterPack_interface{
-	virtual void destroy() = 0;
-};
-
-
-class parameterPack final: public parameterPack_interface{
-
-	std::vector<std::shared_ptr<paramWrapper>> paramList;
+	std::vector<param> container;
 
 	public:
-
 	parameterPack();
-	parameterPack(int count, va_list arguments);
-	parameterPack(const parameterPack& rhs);
-	~parameterPack();
+	parameterPack(int i, ...);
 
-	virtual void destroy();
-
-	std::shared_ptr<paramWrapper> search(std::string input);
-	void add(paramWrapper* input);
-
-	parameterPack& operator=(const parameterPack& rhs){
-		return *this;
-	}
-
+	param search(std::string target);
+	void add(param input);
 
 };
-
-
-extern "C" parameterPack* createParameterPack(int count, ...);
-
-
-paramWrapper* param(std::string tag, int value);
-paramWrapper* param(std::string tag, float value);
-paramWrapper* param(std::string tag, std::string value);
-paramWrapper* param(std::string tag, Eigen::Vector3f* value);
-paramWrapper* param(std::string tag, Eigen::Quaternionf* value);
-paramWrapper* param(std::string tag, vertexManager* value);
-paramWrapper* param(std::string tag, elementManager* value);
-
-
-template <typename... ARGS>
-parameterPack* paramWrap(ARGS... args){
-	return createParameterPack(sizeof... (ARGS), args...);
-}
-
 
 #endif
