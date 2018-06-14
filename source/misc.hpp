@@ -18,6 +18,15 @@
 
 extern "C" float closestRayTest(float fromx, float fromy, float fromz, float tox, float toy, float toz);
 
+extern "C" void registerKeyCallback(void (*func)(int key, int scancode, int action, int mods));
+extern "C" void registerMouseMoveCallback(void (*func)(double xpos, double ypos));
+extern "C" void registerMouseButtonCallback(void (*func)(int button, int action, int mods));
+extern "C" void registerWindowResizeCallback(void (*func)(int width, int height));
+extern "C" int getWindowWidth();
+extern "C" int getWindowHeight();
+extern "C" void setCursorPos(float x, float y);
+extern "C" int requestCameraAccess(void (*func)(void));
+extern "C" void updateCamera(float posx, float posy, float posz, float horizAng, float vertAng, float FoV);
 
 
 #endif
