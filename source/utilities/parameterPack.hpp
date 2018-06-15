@@ -38,7 +38,7 @@ class param {
 		std::string stringValue;
 		Eigen::Vector3f vec3Value;
 		Eigen::Quaternionf quatValue;
-		vertexManager* modelValue;
+		std::vector<vertex> modelValue;
 		elementManager* emValue;
 	} data;
 
@@ -51,7 +51,7 @@ class param {
 	param(std::string tag, std::string data);
 	param(std::string tag, Eigen::Vector3f data);
 	param(std::string tag, Eigen::Quaternionf data);
-	param(std::string tag, vertexManager* data);
+	param(std::string tag, std::vector<vertex> data);
 	param(std::string tag, elementManager* data);
 
 	bool isTag(std::string target);
@@ -61,7 +61,7 @@ class param {
 	std::string getString();
 	Eigen::Vector3f getVec3();
 	Eigen::Quaternionf getQuat();
-	vertexManager* getModel();
+	std::vector<vertex> getModel();
 	elementManager* getEm();
 };
 

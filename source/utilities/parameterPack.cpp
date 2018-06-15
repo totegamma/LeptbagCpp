@@ -38,7 +38,7 @@ param::param(std::string tag, Eigen::Quaternionf data) {
 	this->tag = tag;
 }
 
-param::param(std::string tag, vertexManager* data) {
+param::param(std::string tag, std::vector<vertex> data) {
 	this->type = MODEL;
 	this->data.modelValue = data;
 	this->tag = tag;
@@ -82,7 +82,7 @@ Eigen::Quaternionf param::getQuat(){
 	return data.quatValue;
 }
 
-vertexManager* param::getModel(){
+std::vector<vertex> param::getModel(){
 	assert(type == MODEL);
 	return data.modelValue;
 }

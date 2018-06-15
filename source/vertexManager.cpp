@@ -27,14 +27,14 @@ void initVBO(){
 	glGenBuffers(1, &vertexBufferObject);
 }
 
-void registervertex(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> input, std::vector<GLuint>* arrayaddr){
+void registervertex(std::vector<vertex> input, std::vector<GLuint>* arrayaddr){
 
-	for(auto elem: *input){
-		auto itr = std::find(vertexBufferArray.begin(), vertexBufferArray.end(), *elem);
+	for(auto elem: input){
+		auto itr = std::find(vertexBufferArray.begin(), vertexBufferArray.end(), elem);
 		if( itr != vertexBufferArray.end() ){
 			arrayaddr->push_back(std::distance(vertexBufferArray.begin(), itr));
 		}else{
-			vertexBufferArray.push_back(*elem);
+			vertexBufferArray.push_back(elem);
 			arrayaddr->push_back(vertexBufferArray.size() -1);
 		}
 	}
@@ -45,29 +45,4 @@ void registervertex(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> input,
 }
 
 
-void vertexManager::addVertex(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
-				GLfloat normalX, GLfloat normalY, GLfloat normalZ,
-				GLfloat colorR, GLfloat colorG, GLfloat colorB){
-	vertexList->push_back(std::make_shared<vertex>(positionX, positionY, positionZ, normalX, normalY, normalZ, colorR, colorG, colorB));
-}
-
-std::shared_ptr<std::vector<std::shared_ptr<vertex>>> vertexManager::getList(){
-	return vertexList;
-}
-
-extern "C" vertexManager* createVertexManager(){
-	return new vertexManager();
-}
-
-
-vertexManager::vertexManager(){
-	vertexList = std::make_shared<std::vector<std::shared_ptr<vertex>>>();
-}
-
-void vertexManager::destroy(){
-	delete this;
-}
-
-vertexManager::~vertexManager(){
-}
 

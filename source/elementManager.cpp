@@ -4,7 +4,7 @@
 std::vector<elementManager*> elementManager::elementManagerList;
 
 
-elementManager::elementManager(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
 	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
 
@@ -93,17 +93,13 @@ void elementManager::render(){
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-	glDrawElementsInstanced(GL_TRIANGLES, elementData->size(), GL_UNSIGNED_INT, (void*)0, elements.size());
+	glDrawElementsInstanced(GL_TRIANGLES, elementData.size(), GL_UNSIGNED_INT, (void*)0, elements.size());
 
 
 }
 
-extern "C"
-elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
-	return new elementManager(std::shared_ptr<vertexManager>(vm)->getList(), bodyGenerator);
-}
 
-std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementManager::getElementDataPtr(){
+std::vector<vertex> elementManager::getElementDataPtr(){
 	return elementData;
 
 }

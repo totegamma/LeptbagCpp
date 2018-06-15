@@ -30,21 +30,20 @@ class elementManager {
 
 	public:
 	static std::vector<elementManager*> elementManagerList;
-	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData;
+	std::vector<vertex> elementData;
 	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);
 
-	elementManager(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
+	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 	elementNode* generate(parameterPack* input);
 	void destroySelf();
 	void destroyElement(int id);
 	~elementManager();
 	void render();
-	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> getElementDataPtr();
+	std::vector<vertex> getElementDataPtr(); // TODO WEAKにする？
 
 
 };
 
-extern "C" elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 #endif
