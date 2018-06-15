@@ -31,6 +31,8 @@
 #include "font.hpp"
 #include "misc.hpp"
 
+//#define SHADOW_ENABLE
+
 constexpr int shadowMapBufferSize = 1024;
 
 GLFWwindow* window;
@@ -303,6 +305,8 @@ int main() {
 
 	//----- 影関連 -----//
 
+#ifdef SHADOW_ENABLE
+
 	// Create and compile our GLSL program from the shaders
 	GLuint depthProgramID = LoadShaders( "depthBuffer.vert", "depthBuffer.frag");
 	// Get a handle for our "VP" uniform
@@ -416,6 +420,8 @@ int main() {
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 		return false;
 	}
+
+#endif
 
 	//----- 影関連 -----//
 
@@ -552,6 +558,8 @@ int main() {
 
 
 		// :: OpenGL描画 ::
+
+#ifdef SHADOW_ENABLE
 
 		// まずはデプスバッファを作る
 
@@ -690,6 +698,8 @@ int main() {
 			elem->render();
 		}
 
+#endif
+
 		// 通常描画
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -708,21 +718,27 @@ int main() {
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 		);
+
+#ifdef ENABLE_SHADOW
 		glm::mat4 depthBiasVP0 = biasMatrix*depthVP0;
 		glm::mat4 depthBiasVP1 = biasMatrix*depthVP1;
 		glm::mat4 depthBiasVP2 = biasMatrix*depthVP2;
 		glm::mat4 depthBiasVP3 = biasMatrix*depthVP3;
+#endif
 
 		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
 		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+#ifdef ENABLE_SHADOW
 		glUniformMatrix4fv(uniform_depthBiasVP0,      1, GL_FALSE, &depthBiasVP0[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP1,      1, GL_FALSE, &depthBiasVP1[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP2,      1, GL_FALSE, &depthBiasVP2[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP3,      1, GL_FALSE, &depthBiasVP3[0][0]);
+#endif
 		glUniform3fv      (uniform_LightColor,       1, &lightColor[0]);
 		glUniform1fv      (uniform_LightPower,       1, &lightPower);
 		glUniform3fv      (uniform_LightDirection,   1, &lightDirection[0]);
 
+#ifdef ENABLE_SHADOW
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthTexture0);
 		glUniform1i(uniform_shadowmap0, 1);
@@ -738,6 +754,7 @@ int main() {
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, depthTexture3);
 		glUniform1i(uniform_shadowmap3, 4);
+#endif
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
