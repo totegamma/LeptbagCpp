@@ -15,7 +15,7 @@ class hingeConstraint {
 	btHingeConstraint* hinge;
 	public:
 	hingeConstraint() = delete;
-	hingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, Eigen::Vector3f* positionA_rawp, Eigen::Vector3f* positionB_rawp, Eigen::Vector3f* axisA_rawp, Eigen::Vector3f* axisB_rapw);
+	hingeConstraint(elementNode* elemA, elementNode* elemB, Eigen::Vector3f positionA, Eigen::Vector3f positionB, Eigen::Vector3f axisA, Eigen::Vector3f axisB);
 	void enableMotor(bool flag);
 	void setLimit(float lower, float upper);
 	void setMaxMotorImpulse(float power);
@@ -29,23 +29,19 @@ class generic6DofConstraint {
 	btGeneric6DofConstraint* gen6Dof;
 	public:
 	generic6DofConstraint() = delete;
-	generic6DofConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, Eigen::Vector3f* positionA_rawp, Eigen::Vector3f* positionB_rawp, Eigen::Quaternionf* rotation_rawp);
+	generic6DofConstraint(elementNode* elemA, elementNode* elemB, Eigen::Vector3f positionA, Eigen::Vector3f positionB, Eigen::Quaternionf rotation);
 	float getAngle(int index);
-	void setAngularLimit(Eigen::Vector3f* lower_rawp, Eigen::Vector3f* upper_rawp);
-	void setLinearLimit(Eigen::Vector3f* lower_rawp, Eigen::Vector3f* upper_rawp);
+	void setAngularLimit(Eigen::Vector3f lower, Eigen::Vector3f upper);
+	void setLinearLimit(Eigen::Vector3f lower, Eigen::Vector3f upper);
 	void setRotationalMotor(int index);
 	void setLinearMotor(int index);
 	void setMaxRotationalMotorForce(int index, float force);
-	void setMaxLinearMotorForce(Eigen::Vector3f* force_rawp);
-	void setRotationalTargetVelocity(Eigen::Vector3f* velocity_rawp);
-	void setLinearTargetVelocity(Eigen::Vector3f* velocity_rawp);
+	void setMaxLinearMotorForce(Eigen::Vector3f force);
+	void setRotationalTargetVelocity(Eigen::Vector3f velocity);
+	void setLinearTargetVelocity(Eigen::Vector3f velocity);
 	void destroy();
 	~generic6DofConstraint();
 };
-
-
-extern "C" hingeConstraint* createHingeConstraint(elementNode* elemA_rawp, elementNode* elemB_rawp, Eigen::Vector3f* positionA_rawp, Eigen::Vector3f* positionB_rawp, Eigen::Vector3f* axisA_rawp, Eigen::Vector3f* axisB_rawp);
-extern "C" generic6DofConstraint* createGeneric6DofConstraint_create(elementNode* elemA_rawp, elementNode* elemB_rawp, Eigen::Vector3f* positionA_rawp, Eigen::Vector3f* positionB_rawp, Eigen::Quaternionf* rotation_rawp);
 
 
 
