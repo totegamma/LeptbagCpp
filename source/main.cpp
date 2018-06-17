@@ -31,7 +31,7 @@
 #include "font.hpp"
 #include "misc.hpp"
 
-//#define SHADOW_ENABLE
+#define ENABLE_SHADOW
 
 constexpr int shadowMapBufferSize = 1024;
 
@@ -305,7 +305,7 @@ int main() {
 
 	//----- 影関連 -----//
 
-#ifdef SHADOW_ENABLE
+#ifdef ENABLE_SHADOW
 
 	// Create and compile our GLSL program from the shaders
 	GLuint depthProgramID = LoadShaders( "depthBuffer.vert", "depthBuffer.frag");
@@ -559,7 +559,7 @@ int main() {
 
 		// :: OpenGL描画 ::
 
-#ifdef SHADOW_ENABLE
+#ifdef ENABLE_SHADOW
 
 		// まずはデプスバッファを作る
 
