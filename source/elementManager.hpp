@@ -40,7 +40,7 @@ class elementManager {
 	void destroyElement(int id);
 	~elementManager();
 	void render();
-	std::vector<vertex> getElementDataPtr(); // TODO WEAKにする？
+	std::vector<vertex>* getElementDataPtr(); // TODO WEAKにする？
 
 
 };

@@ -98,8 +98,7 @@ void elementManager::render(){
 
 }
 
-
-std::vector<vertex> elementManager::getElementDataPtr(){
-	return elementData;
+std::vector<vertex>* elementManager::getElementDataPtr(){
+	return &elementData;
 
 }

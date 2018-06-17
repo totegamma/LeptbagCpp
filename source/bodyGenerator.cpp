@@ -49,11 +49,11 @@ btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input){
 	Eigen::Vector3f scale    = input->search("scale").getVec3();
 	Eigen::Quaternionf rotation = input->search("rotation").getQuat();
 	btScalar mass = btScalar(input->search("mass").getFloat());
-	auto objectDataPtr = input->search("caller").getEm()->getElementDataPtr();
+	std::vector<vertex>* objectDataPtr = input->search("caller").getEm()->getElementDataPtr();
 
 	std::vector<btVector3> convexHullShapePoints;
 
-	for(auto elem: objectDataPtr){
+	for(auto elem: *objectDataPtr){
 		btVector3 co = btVector3(elem.positionX, elem.positionY, elem.positionZ);
 		auto itr = std::find(convexHullShapePoints.begin(), convexHullShapePoints.end(), co);
 		if( itr == convexHullShapePoints.end() ){
