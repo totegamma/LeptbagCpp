@@ -20,9 +20,11 @@ textbox::~textbox() {
 	this->instances.erase(this);
 }
 
+/*
 extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length, int x, int y, int size, int r, int g, int b) {
 	return new textbox(std::u16string(text, length), x, y, size, r, g, b);
 }
+*/
 
 // 要求のあった文字列を再現する為、一文字一文字をきれいに並べて描画リストに挿入する。
 void textbox::render() {

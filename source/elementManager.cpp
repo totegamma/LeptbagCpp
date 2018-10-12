@@ -4,7 +4,7 @@
 std::vector<elementManager*> elementManager::elementManagerList;
 
 
-elementManager::elementManager(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
+elementManager::elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>))
 	: elementData(elementData), bodyGenerator(bodyGenerator) {
 
 
@@ -40,14 +40,14 @@ elementNode* elementManager::generate(parameterPack* raw_input){
 
 	auto input = std::unique_ptr<parameterPack>(raw_input);
 
-	vec3 position = *input->search("position")->getVec3();
-	vec3 scale    = *input->search("scale")->getVec3();
-	quat rotation = *input->search("rotation")->getQuat();
+	Eigen::Vector3f position = input->search("position").getVec3();
+	Eigen::Vector3f scale    = input->search("scale").getVec3();
+	Eigen::Quaternionf rotation = input->search("rotation").getQuat();
 
 	instanceMatrixArray.push_back(
-					glm::translate(glm::mat4(1.0f), position.toGlm())
-					* glm::toMat4(rotation.toGlm())
-					* glm::scale(glm::mat4(1.0f), scale.toGlm())
+					glm::translate(glm::mat4(1.0f), toGlmVec3(position))
+					* glm::toMat4(toGlmQuat(rotation))
+					* glm::scale(glm::mat4(1.0f), toGlmVec3(scale))
 					);
 
 	input->add(param("caller", this));
@@ -93,17 +93,12 @@ void elementManager::render(){
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-	glDrawElementsInstanced(GL_TRIANGLES, elementData->size(), GL_UNSIGNED_INT, (void*)0, elements.size());
+	glDrawElementsInstanced(GL_TRIANGLES, elementData.size(), GL_UNSIGNED_INT, (void*)0, elements.size());
 
 
 }
 
-extern "C"
-elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>)){
-	return new elementManager(std::shared_ptr<vertexManager>(vm)->getList(), bodyGenerator);
-}
-
-std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementManager::getElementDataPtr(){
-	return elementData;
+std::vector<vertex>* elementManager::getElementDataPtr(){
+	return &elementData;
 
 }
