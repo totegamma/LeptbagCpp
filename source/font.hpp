@@ -47,6 +47,7 @@ class textbox {
 	textbox(std::u16string text, int x, int y, int size, int r, int g, int b);
 	~textbox();
 	void updateText(char16_t *text, int length);
+	void updateText(std::u16string newtext);
 	void updateColor(int newR, int newG, int newB);
 	void updateSize(int newSize);
 	void updatePos(int newX, int newY);

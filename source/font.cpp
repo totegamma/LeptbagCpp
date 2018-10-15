@@ -91,6 +91,13 @@ void textbox::updateText(char16_t *text, int length) {
 	render();
 }
 
+void textbox::updateText(std::u16string newtext) {
+	destroy();
+	this->text = newtext;
+	this->length = newtext.size();
+	render();
+}
+
 void textbox::updateColor(int newR, int newG, int newB) {
 	destroy();
 	r = newR;
