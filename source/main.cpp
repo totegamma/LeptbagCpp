@@ -31,8 +31,6 @@
 #include "font.hpp"
 #include "misc.hpp"
 
-#define ENABLE_SHADOW
-
 constexpr int shadowMapBufferSize = 1024;
 
 GLFWwindow* window;
@@ -49,14 +47,6 @@ GLuint uniform_projectionMatrix;
 GLuint uniform_LightColor;
 GLuint uniform_LightPower;
 GLuint uniform_LightDirection;
-GLuint uniform_depthBiasVP0;
-GLuint uniform_depthBiasVP1;
-GLuint uniform_depthBiasVP2;
-GLuint uniform_depthBiasVP3;
-GLuint uniform_shadowmap0;
-GLuint uniform_shadowmap1;
-GLuint uniform_shadowmap2;
-GLuint uniform_shadowmap3;
 
 
 btDiscreteDynamicsWorld* dynamicsWorld;
@@ -293,137 +283,8 @@ int main() {
 	uniform_LightColor = glGetUniformLocation(programID, "LightColor");
 	uniform_LightPower = glGetUniformLocation(programID, "LightPower");
 	uniform_LightDirection = glGetUniformLocation(programID, "LightDirection");
-	uniform_depthBiasVP0 = glGetUniformLocation(programID, "DepthBiasVP0");
-	uniform_depthBiasVP1 = glGetUniformLocation(programID, "DepthBiasVP1");
-	uniform_depthBiasVP2 = glGetUniformLocation(programID, "DepthBiasVP2");
-	uniform_depthBiasVP3 = glGetUniformLocation(programID, "DepthBiasVP3");
-	uniform_shadowmap0 = glGetUniformLocation(programID, "shadowMap0");
-	uniform_shadowmap1 = glGetUniformLocation(programID, "shadowMap1");
-	uniform_shadowmap2 = glGetUniformLocation(programID, "shadowMap2");
-	uniform_shadowmap3 = glGetUniformLocation(programID, "shadowMap3");
 
 
-	//----- 影関連 -----//
-
-#ifdef ENABLE_SHADOW
-
-	// Create and compile our GLSL program from the shaders
-	GLuint depthProgramID = LoadShaders( "depthBuffer.vert", "depthBuffer.frag");
-	// Get a handle for our "VP" uniform
-	GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMV");
-
-	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-	GLuint shadowMap0FrameBuffer;
-	glGenFramebuffers(1, &shadowMap0FrameBuffer);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap0FrameBuffer);
-
-	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-	GLuint depthTexture0;
-	glGenTextures(1, &depthTexture0);
-	glBindTexture(GL_TEXTURE_2D, depthTexture0);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, shadowMapBufferSize, shadowMapBufferSize, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture0, 0);
-
-	// No color output in the bound framebuffer, only depth.
-	glDrawBuffer(GL_NONE);
-
-	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-		return false;
-	}
-
-	GLuint shadowMap1FrameBuffer;
-	glGenFramebuffers(1, &shadowMap1FrameBuffer);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap1FrameBuffer);
-
-	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-	GLuint depthTexture1;
-	glGenTextures(1, &depthTexture1);
-	glBindTexture(GL_TEXTURE_2D, depthTexture1);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, shadowMapBufferSize, shadowMapBufferSize, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture1, 0);
-
-	// No color output in the bound framebuffer, only depth.
-	glDrawBuffer(GL_NONE);
-
-	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-		return false;
-	}
-
-	GLuint shadowMap2FrameBuffer;
-	glGenFramebuffers(1, &shadowMap2FrameBuffer);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap2FrameBuffer);
-
-	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-	GLuint depthTexture2;
-	glGenTextures(1, &depthTexture2);
-	glBindTexture(GL_TEXTURE_2D, depthTexture2);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, shadowMapBufferSize, shadowMapBufferSize, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture2, 0);
-
-	// No color output in the bound framebuffer, only depth.
-	glDrawBuffer(GL_NONE);
-
-	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-		return false;
-	}
-
-	GLuint shadowMap3FrameBuffer;
-	glGenFramebuffers(1, &shadowMap3FrameBuffer);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap3FrameBuffer);
-
-	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-	GLuint depthTexture3;
-	glGenTextures(1, &depthTexture3);
-	glBindTexture(GL_TEXTURE_2D, depthTexture3);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, shadowMapBufferSize, shadowMapBufferSize, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture3, 0);
-
-	// No color output in the bound framebuffer, only depth.
-	glDrawBuffer(GL_NONE);
-
-	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-		return false;
-	}
-
-#endif
-
-	//----- 影関連 -----//
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -559,147 +420,6 @@ int main() {
 
 		// :: OpenGL描画 ::
 
-#ifdef ENABLE_SHADOW
-
-		// まずはデプスバッファを作る
-
-		// Render to our framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap0FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize);
-
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use our shader
-		glUseProgram(depthProgramID);
-
-		glm::vec3 lightPosition = glm::vec3(camx, 0, camz);
-
-		// Compute the VP matrix from the light's point of view
-		glm::mat4 depthProjectionMatrix0 = glm::ortho<float>(-4,4,-4,4,-30,30);
-		glm::mat4 depthViewMatrix0 = glm::lookAt(lightPosition, lightPosition-lightDirection, glm::vec3(0,1,0));
-
-		glm::mat4 depthVP0 = depthProjectionMatrix0 * depthViewMatrix0;
-
-		// Send our transformation to the currently bound shader,
-		// in the "VP" uniform
-		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthVP0[0][0]);
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
-
-
-		for(auto elem: elementManager::elementManagerList){ //TODO 最適化できるはず(下にも同じコード)
-			elem->render();
-		}
-
-		// まずはデプスバッファを作る
-
-		// Render to our framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap1FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use our shader
-		glUseProgram(depthProgramID);
-
-
-		// Compute the VP matrix from the light's point of view
-		glm::mat4 depthProjectionMatrix1 = glm::ortho<float>(-8,8,-8,8,-30,30);
-		glm::mat4 depthViewMatrix1 = glm::lookAt(lightPosition, lightPosition-lightDirection, glm::vec3(0,1,0));
-
-		glm::mat4 depthVP1 = depthProjectionMatrix1 * depthViewMatrix1;
-
-		// Send our transformation to the currently bound shader,
-		// in the "VP" uniform
-		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthVP1[0][0]);
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
-
-
-		for(auto elem: elementManager::elementManagerList){ //TODO 最適化できるはず(下にも同じコード)
-			elem->render();
-		}
-
-		// まずはデプスバッファを作る
-
-		// Render to our framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap2FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use our shader
-		glUseProgram(depthProgramID);
-
-
-		// Compute the VP matrix from the light's point of view
-		glm::mat4 depthProjectionMatrix2 = glm::ortho<float>(-16,16,-16,16,-30,30);
-		glm::mat4 depthViewMatrix2 = glm::lookAt(lightPosition, lightPosition-lightDirection, glm::vec3(0,1,0));
-
-		glm::mat4 depthVP2 = depthProjectionMatrix2 * depthViewMatrix2;
-
-		// Send our transformation to the currently bound shader,
-		// in the "VP" uniform
-		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthVP2[0][0]);
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
-
-
-		for(auto elem: elementManager::elementManagerList){ //TODO 最適化できるはず(下にも同じコード)
-			elem->render();
-		}
-
-		// まずはデプスバッファを作る
-
-		// Render to our framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap3FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use our shader
-		glUseProgram(depthProgramID);
-
-
-		// Compute the VP matrix from the light's point of view
-		glm::mat4 depthProjectionMatrix3 = glm::ortho<float>(-32,32,-32,32,-30,30);
-		glm::mat4 depthViewMatrix3 = glm::lookAt(lightPosition, lightPosition-lightDirection, glm::vec3(0,1,0));
-
-		glm::mat4 depthVP3 = depthProjectionMatrix3 * depthViewMatrix3;
-
-		// Send our transformation to the currently bound shader,
-		// in the "VP" uniform
-		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthVP3[0][0]);
-
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*3));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(sizeof(GLfloat)*6));
-
-
-		for(auto elem: elementManager::elementManagerList){ //TODO 最適化できるはず(下にも同じコード)
-			elem->render();
-		}
-
-#endif
-
 		// 通常描画
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -719,42 +439,14 @@ int main() {
 			0.5, 0.5, 0.5, 1.0
 		);
 
-#ifdef ENABLE_SHADOW
-		glm::mat4 depthBiasVP0 = biasMatrix*depthVP0;
-		glm::mat4 depthBiasVP1 = biasMatrix*depthVP1;
-		glm::mat4 depthBiasVP2 = biasMatrix*depthVP2;
-		glm::mat4 depthBiasVP3 = biasMatrix*depthVP3;
-#endif
 
 		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
 		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
-#ifdef ENABLE_SHADOW
-		glUniformMatrix4fv(uniform_depthBiasVP0,      1, GL_FALSE, &depthBiasVP0[0][0]);
-		glUniformMatrix4fv(uniform_depthBiasVP1,      1, GL_FALSE, &depthBiasVP1[0][0]);
-		glUniformMatrix4fv(uniform_depthBiasVP2,      1, GL_FALSE, &depthBiasVP2[0][0]);
-		glUniformMatrix4fv(uniform_depthBiasVP3,      1, GL_FALSE, &depthBiasVP3[0][0]);
-#endif
+
 		glUniform3fv      (uniform_LightColor,       1, &lightColor[0]);
 		glUniform1fv      (uniform_LightPower,       1, &lightPower);
 		glUniform3fv      (uniform_LightDirection,   1, &lightDirection[0]);
 
-#ifdef ENABLE_SHADOW
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, depthTexture0);
-		glUniform1i(uniform_shadowmap0, 1);
-
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, depthTexture1);
-		glUniform1i(uniform_shadowmap1, 2);
-
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, depthTexture2);
-		glUniform1i(uniform_shadowmap2, 3);
-
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, depthTexture3);
-		glUniform1i(uniform_shadowmap3, 4);
-#endif
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
