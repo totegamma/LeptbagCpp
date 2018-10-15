@@ -17,19 +17,9 @@
 #include "shader.hpp"
 
 
-class textbox_interface {
-	public:
-	virtual void updateText(char16_t * text, int length) = 0;
-	virtual void updateColor(int newR, int newG, int newB) = 0;
-	virtual void updateSize(int newSize) = 0;
-	virtual void updatePos(int newX, int newY) = 0;
-	virtual void destroy() = 0;
-};
-
-extern "C" textbox_interface* createTextbox_interface(char16_t* text, int length, int x, int y, int size, int r, int g, int b);
 
 
-class textbox : public textbox_interface {
+class textbox {
 
 
 	// # std::unordered_map<int, textbox*> textbox::ownerList
@@ -56,11 +46,11 @@ class textbox : public textbox_interface {
 
 	textbox(std::u16string text, int x, int y, int size, int r, int g, int b);
 	~textbox();
-	virtual void updateText(char16_t *text, int length);
-	virtual void updateColor(int newR, int newG, int newB);
-	virtual void updateSize(int newSize);
-	virtual void updatePos(int newX, int newY);
-	virtual void destroy();
+	void updateText(char16_t *text, int length);
+	void updateColor(int newR, int newG, int newB);
+	void updateSize(int newSize);
+	void updatePos(int newX, int newY);
+	void destroy();
 
 	//void render() : これは実際に画面に描画する訳ではなく、
 	//                描画するために頂点情報を計算して記録する関数である。(ネーミングが下手)

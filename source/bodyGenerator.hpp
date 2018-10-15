@@ -9,8 +9,8 @@
 
 extern btDiscreteDynamicsWorld* dynamicsWorld;
 
-extern "C" btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input);
-extern "C" btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input);
-extern "C" btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input);
+btRigidBody* createBoxBody(std::unique_ptr<parameterPack> input);
+btRigidBody* createPlaneBody(std::unique_ptr<parameterPack> input);
+btRigidBody* createConvexHullShapeBody(std::unique_ptr<parameterPack> input);
 
 #endif

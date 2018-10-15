@@ -19,14 +19,8 @@ class elementManager;
 #include "bodyGenerator.hpp"
 #include "vertexManager.hpp"
 
-class elementManager_interface{
-	public:
-	virtual elementNode* generate(parameterPack* raw_input) = 0;
-	virtual void destroySelf() = 0;
-	virtual void destroyElement(int id) = 0;
-};
 
-class elementManager : public elementManager_interface {
+class elementManager {
 
 	GLuint indexBufferObject;
 	GLuint instanceMatrixBuffer;
@@ -36,21 +30,20 @@ class elementManager : public elementManager_interface {
 
 	public:
 	static std::vector<elementManager*> elementManagerList;
-	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData;
+	std::vector<vertex> elementData;
 	btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>);
 
-	elementManager(std::shared_ptr<std::vector<std::shared_ptr<vertex>>> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
+	elementManager(std::vector<vertex> elementData, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
-	virtual elementNode* generate(parameterPack* input);
-	virtual void destroySelf();
-	virtual void destroyElement(int id);
-	virtual ~elementManager();
+	elementNode* generate(parameterPack* input);
+	void destroySelf();
+	void destroyElement(int id);
+	~elementManager();
 	void render();
-	std::shared_ptr<std::vector<std::shared_ptr<vertex>>> getElementDataPtr();
+	std::vector<vertex>* getElementDataPtr(); // TODO WEAKにする？
 
 
 };
 
-extern "C" elementManager* createElementManager(vertexManager* vm, btRigidBody* (*bodyGenerator)(std::unique_ptr<parameterPack>));
 
 #endif

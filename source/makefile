@@ -1,6 +1,6 @@
 
 PROG := LeptBag
-SRCS := main.cpp elementNode.cpp elementManager.cpp bodyGenerator.cpp vertexManager.cpp constraints.cpp shader.cpp font.cpp primitiveShape.cpp misc.cpp utilities/universalVector.cpp utilities/universalString.cpp utilities/parameterPack.cpp
+SRCS := main.cpp elementNode.cpp elementManager.cpp bodyGenerator.cpp vertexManager.cpp constraints.cpp shader.cpp font.cpp primitiveShape.cpp misc.cpp utilities/parameterPack.cpp utilities/converter.cpp
 OBJS := $(SRCS:%.cpp=%.o)
 
 DEPS := $(SRCS:%.cpp=%.depend)
@@ -18,8 +18,8 @@ endif
 
 # Macの場合
 ifeq ($(UNAME),Darwin)
-CC := g++-7
-CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0
+CC := g++-8
+CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0 -DGLM_ENABLE_EXPERIMENTAL
 INCLUDEPATH := -I/usr/local/include/freetype2
 LIBPATH := -L/usr/local/lib
 LIBS := -ldl -lfreetype -lBulletDynamics -lBulletCollision -lLinearMath -lglfw -lglew -framework OpenGL
