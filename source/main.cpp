@@ -1,14 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <wchar.h>
+#include <dlfcn.h>
+#include <dirent.h>
+
 #include <iostream>
 #include <vector>
 #include <random>
 #include <string>
 #include <sstream>
 #include <cstdlib>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <dlfcn.h>
-#include <dirent.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -250,6 +251,8 @@ btQuaternion btcreateq(double RotationAngle, double RotationAxisX, double Rotati
 
 
 int main() {
+
+	setlocale(LC_ALL, "ja_JP.UTF-8");
 
 	if (!glfwInit()) {
 		std::cout << "glfw init failed...." << std::endl;
