@@ -31,6 +31,8 @@
 #include "font.hpp"
 #include "misc.hpp"
 
+#define ENABLE_SHADOW
+
 constexpr int shadowMapBufferSize = 1024;
 
 GLFWwindow* window;
@@ -303,6 +305,8 @@ int main() {
 
 	//----- 影関連 -----//
 
+#ifdef ENABLE_SHADOW
+
 	// Create and compile our GLSL program from the shaders
 	GLuint depthProgramID = LoadShaders( "depthBuffer.vert", "depthBuffer.frag");
 	// Get a handle for our "VP" uniform
@@ -417,6 +421,8 @@ int main() {
 		return false;
 	}
 
+#endif
+
 	//----- 影関連 -----//
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -452,7 +458,7 @@ int main() {
 	//ロードされるダイナミックライブラリのリスト
 	std::vector<void*> dllList;
 
-	const char* path = "./friends/";
+	const char* path = "./plugins/";
 	DIR *dp;       // ディレクトリへのポインタ
 	dirent* entry; // readdir() で返されるエントリーポイント
 
@@ -461,7 +467,7 @@ int main() {
 	entry = readdir(dp);
 	while (entry != NULL) {
 		std::string filename(entry->d_name);
-		if (split(filename,'.').size() >= 2 && split(filename, '.')[1] == "friends") {
+		if (split(filename,'.').size() >= 2 && split(filename, '.')[1] == "so") {
 
 			void* lh = dlopen((path + filename).c_str(), RTLD_LAZY);
 			if (!lh) {
@@ -498,6 +504,34 @@ int main() {
 		(elem)();
 	}
 
+	//---------------------------------------------------------------------
+
+
+	float vertAng = 0;
+	float horizAng = 0;
+
+	glm::vec3 position = glm::vec3(0, 0, 0);
+
+	//カメラの向きを計算する
+	glm::vec3 direction(
+			cos(vertAng) * sin(horizAng), 
+			sin(vertAng),
+			cos(vertAng) * cos(horizAng)
+			);
+
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	ProjectionMatrix = glm::perspective(45.0f, (float)::windowWidth/(float)::windowHeight, 0.1f, 300.0f);
+
+	// Camera matrix
+	ViewMatrix = glm::lookAt(
+			position,           // Camera is here
+			position+direction, // and looks here : at the same position, plus "direction"
+			glm::vec3(0,1,0)    // Head is up (set to 0,-1,0 to look upside-down)
+			);
+
+	//--------------------------------------------------------------------------
+
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -525,16 +559,13 @@ int main() {
 
 		// :: OpenGL描画 ::
 
+#ifdef ENABLE_SHADOW
+
 		// まずはデプスバッファを作る
 
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap0FrameBuffer);
-		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
+		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -571,11 +602,6 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap1FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -609,11 +635,6 @@ int main() {
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap2FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -649,11 +670,6 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMap3FrameBuffer);
 		glViewport(0,0,shadowMapBufferSize,shadowMapBufferSize); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		//glCullFace(GL_FRONT); // Cull back-facing triangles -> draw only front-facing triangles
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -682,6 +698,8 @@ int main() {
 			elem->render();
 		}
 
+#endif
+
 		// 通常描画
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -700,21 +718,27 @@ int main() {
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 		);
+
+#ifdef ENABLE_SHADOW
 		glm::mat4 depthBiasVP0 = biasMatrix*depthVP0;
 		glm::mat4 depthBiasVP1 = biasMatrix*depthVP1;
 		glm::mat4 depthBiasVP2 = biasMatrix*depthVP2;
 		glm::mat4 depthBiasVP3 = biasMatrix*depthVP3;
+#endif
 
 		glUniformMatrix4fv(uniform_viewMatrix,       1, GL_FALSE, &ViewMatrix[0][0]);
 		glUniformMatrix4fv(uniform_projectionMatrix, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+#ifdef ENABLE_SHADOW
 		glUniformMatrix4fv(uniform_depthBiasVP0,      1, GL_FALSE, &depthBiasVP0[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP1,      1, GL_FALSE, &depthBiasVP1[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP2,      1, GL_FALSE, &depthBiasVP2[0][0]);
 		glUniformMatrix4fv(uniform_depthBiasVP3,      1, GL_FALSE, &depthBiasVP3[0][0]);
+#endif
 		glUniform3fv      (uniform_LightColor,       1, &lightColor[0]);
 		glUniform1fv      (uniform_LightPower,       1, &lightPower);
 		glUniform3fv      (uniform_LightDirection,   1, &lightDirection[0]);
 
+#ifdef ENABLE_SHADOW
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthTexture0);
 		glUniform1i(uniform_shadowmap0, 1);
@@ -730,6 +754,7 @@ int main() {
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, depthTexture3);
 		glUniform1i(uniform_shadowmap3, 4);
+#endif
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);

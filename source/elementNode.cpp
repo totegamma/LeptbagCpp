@@ -1,6 +1,6 @@
 #include "elementNode.hpp"
 
-elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, vec3 position, vec3 scale, quat rotation)
+elementNode::elementNode(int id, elementManager* parent, btRigidBody* body, Eigen::Vector3f position, Eigen::Vector3f scale, Eigen::Quaternionf rotation)
 	: id(id), parent(parent), body(body), initialPosition(position), initialScale(scale), initialRotation(rotation) {
 }
 
@@ -95,7 +95,7 @@ void elementNode::loadMatrix(std::vector<glm::mat4> *input) {
 
 	input->at(id) = glm::translate(glm::mat4(1.0f), glm::vec3(pos.getX(), pos.getY(), pos.getZ()))
 		* glm::toMat4(glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ()))
-		* glm::scale(glm::mat4(1.0f), initialScale.toGlm());
+		* glm::scale(glm::mat4(1.0f), toGlmVec3(initialScale));
 }
 
 void elementNode::activate() {
