@@ -18,8 +18,8 @@ endif
 
 # Macの場合
 ifeq ($(UNAME),Darwin)
-CC := g++-7
-CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0
+CC := g++-8
+CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0 -DGLM_ENABLE_EXPERIMENTAL
 INCLUDEPATH := -I/usr/local/include/freetype2
 LIBPATH := -L/usr/local/lib
 LIBS := -ldl -lfreetype -lBulletDynamics -lBulletCollision -lLinearMath -lglfw -lglew -framework OpenGL
