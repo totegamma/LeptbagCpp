@@ -20,7 +20,7 @@ endif
 ifeq ($(UNAME),Darwin)
 CC := g++-8
 CCFLAGS := -std=c++17 -rdynamic -Wall -g -O0 -DGLM_ENABLE_EXPERIMENTAL
-INCLUDEPATH := -I/usr/local/include/freetype2
+INCLUDEPATH := -I/usr/local/include/freetype2 -I/usr/local/include -I/usr/local/include/bullet -I/usr/local/include/eigen3
 LIBPATH := -L/usr/local/lib
 LIBS := -ldl -lfreetype -lBulletDynamics -lBulletCollision -lLinearMath -lglfw -lglew -framework OpenGL
 endif
